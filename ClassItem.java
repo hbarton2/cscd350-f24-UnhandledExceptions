@@ -1,44 +1,46 @@
+import java.util.HashMap;
 import java.util.List;
 	
 public class ClassItem
 {	
     String name;
 
-    List<FieldItem> fieldItems;
 
-    List<MethodItem> methodItems;
-	//List<FieldItem> fieldItem
-	//List<MethodItem> methodItem
-    
-	
-    public static void ClassItem()
-    {
-        //nothing
-    }
-    
+    //Names of FieldItem/MethodItem are keys to HashMap<k,v>
+    HashMap<String,FieldItem> fieldItems;
+    HashMap<String,MethodItem> methodItems;  
 
-    /* Add class method
-     * Checks name is valid
-     * 
-     * if valid
-     *  creates classItem object with field list and method list null.
-     *  prints "class created successfully"
-     *  returns classItem object
-     * 
-     * if not valid
-     *  does not create class object
-     *  
-     */
-    private ClassItem(String classItemName){
+    private ClassItem(final String classItemName){
         this.name = classItemName;
-        this.fieldItems = new ArrayList<>();
-        this.methodItems = new ArrayList<>();
+
+        //initializes HashMaps
+        this.fieldItems = new HashMap<>();
+        this.methodItems = new HashMap<>();
     }
 
     //returns a class object, to be added to the map in Main.java
-    public ClassItem createClassItem(String classItemName){
-        ClassItem createdClass = new ClassItem(classItemName);
-        return createdClass;
+    //need to add precondition checking
+    public ClassItem createClassItem(final HashMap classItemList,final String classItemName){
+        
+            //if the classItemList does not already have a class named classItemName, we create a new class
+        if(!(classItemList.containsKey(classItemName))){
+            ClassItem createdClass = new ClassItem(classItemName);
+            classItemList.put(createdClass.getClassItemName(),createdClass);
+            return createdClass;
+        }else{
+            //if classItemName is already in use in the classItemList that's passed in.
+            System.out.println("Class name must be unique.");
+            return classItemList;
+        }
+    }
+
+    public String getClassItemName(){
+        return this.name;
     }
     
+    //not sure what format we want to return yet.
+    public String toString(){
+        return "Class name: classFields: classMethods";
+    }
+
 };
