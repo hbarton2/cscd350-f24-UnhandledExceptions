@@ -1,9 +1,25 @@
 public class FieldItem
 {
-	String name = "new field";
+	private String fieldName;
 	
-    public static void FieldItem()
-    {
-        //nothing
-    }
-};
+	public FieldItem(String fieldName)
+    	{
+        	this.fieldName = fieldName;
+    	}
+
+	public String getFieldName()
+	{
+		return this.fieldName;
+	}
+
+	public void setFieldName(String fieldName)
+	{
+		this.fieldName = fieldName;
+	}
+
+	@Override
+	public String toString()
+	{
+		return this.fieldName;
+	}
+}
