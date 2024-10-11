@@ -1,6 +1,6 @@
 import java.util.Map;
 
-public class Interface
+public class UI
 {
 		/*
 			ListClasses takes a list of ClassItem, and displays them
@@ -9,7 +9,7 @@ public class Interface
 		{
 			for (Map.Entry<String, ClassItem> entry : classItems.entrySet()) 
 			{
-				System.out.println(entry.getValue().getName);
+				System.out.println(entry.getValue().toString());
       }
 		}
 		
@@ -28,7 +28,7 @@ public class Interface
 		{
 			for (Map.Entry<String, RelationshipItem> entry : relationshipItems.entrySet()) 
 			{
-				System.out.println(entry.getValue().getName);
+				System.out.println(entry.getValue().toString());
       }
 		}
 		
