@@ -14,7 +14,7 @@ public class ParameterItem
 
     public void setParameterName(String parameterName)
     {
-        this.parameterName = parametername;
+        this.parameterName = parameterName;
     }
 
     @Override
