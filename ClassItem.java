@@ -38,6 +38,15 @@ public class ClassItem
         return this.name;
     }
     
+    //Check if the new name to be used is available (not a duplicate name)
+    private boolean checkValidNewName(final HashMap classItemList, final String newClassItemName){
+        if(!(classItemList.containsKey(newClassItemName))){    //if the name is not 
+            return true;
+        }
+        return false;
+    }
+    
+
     //not sure what format we want to return yet.
     public String toString(){
         return "Class name: classFields: classMethods";
