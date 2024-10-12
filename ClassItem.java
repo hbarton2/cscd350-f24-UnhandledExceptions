@@ -37,6 +37,11 @@ public class ClassItem
     public String getClassItemName(){
         return this.name;
     }
+
+    //private setter method to force condition checking through renameClassItem
+    private void setClassItemName(String newClassItemName){
+        this.name = newClassItemName;
+    }
     
     //Check if the new name to be used is available (not a duplicate name)
     private boolean checkValidNewName(final HashMap classItemList, final String newClassItemName){
