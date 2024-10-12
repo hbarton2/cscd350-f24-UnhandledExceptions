@@ -1,7 +1,25 @@
 public class ParameterItem
 {
-    public static void ParameterItem()
+    private String parameterName;
+    
+    public ParameterItem(String parameterName)
     {
-        //nothing
+        this.parameterName = parameterName;
     }
-};
+
+    public String getParameterName()
+    {
+        return this.parameterName;
+    }
+
+    public void setParameterName(String parameterName)
+    {
+        this.parameterName = parameterName;
+    }
+
+    @Override
+    public String toString()
+    {
+        return this.parameterName;
+    }
+}
