@@ -31,7 +31,7 @@ public class RelationshipItem
         }
 
         // creating the key for the relationship
-        String key = source.getName() + "_" + destination.getName();
+        String key = source.getClassItemName() + "_" + destination.getClassItemName();
 
         // checking if the relationship is already created and stored in the map
         if (map.containsKey(key)) {
@@ -45,7 +45,7 @@ public class RelationshipItem
         map.put(key, relationship);
 
         // returning a message that the relationship has been created
-        return "A relationship has been created between" + source.getName() + " and " + destination.getName();
+        return "A relationship has been created between" + source.getClassItemName() + " and " + destination.getClassItemName();
     }
 
     //returns the source ClassItem object
@@ -63,7 +63,7 @@ public class RelationshipItem
     public String toString(){
 
         //the ClassItem objects have a getName() method that returns the name of the class
-        return this.source.getName() + "has a relationship with " + this.destination.getName();
+        return this.source.getClassItemName() + "has a relationship with " + this.destination.getClassItemName();
     }
 
 
