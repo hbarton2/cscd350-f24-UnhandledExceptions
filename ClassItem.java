@@ -1,5 +1,5 @@
 import java.util.HashMap;
-import java.util.List;
+import java.util.Map;
 	
 public class ClassItem
 {	
@@ -20,12 +20,13 @@ public class ClassItem
 
     //returns a class object, to be added to the map in Main.java
     //need to add precondition checking
-    public ClassItem createClassItem(final HashMap classItemList,final String classItemName){
+    public static ClassItem createClassItem(final Map<String, ClassItem> classItems,final String classItemName){
         
             //if the classItemList does not already have a class named classItemName, we create a new class
-        if(!(classItemList.containsKey(classItemName))){
+        if(!(classItems.containsKey(classItemName))){
             ClassItem createdClass = new ClassItem(classItemName);
-            classItemList.put(createdClass.getClassItemName(),createdClass);
+            classItems.put(createdClass.getClassItemName(),createdClass);
+            System.out.println("Class " + createdClass.getClassItemName() + " created.");
             return createdClass;
         }else{
             //if classItemName is already in use in the classItemList that's passed in.
