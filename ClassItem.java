@@ -30,7 +30,7 @@ public class ClassItem
         }else{
             //if classItemName is already in use in the classItemList that's passed in.
             System.out.println("Class name must be unique.");
-            return classItemList;
+            return null;
         }
     }
 
