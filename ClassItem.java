@@ -46,7 +46,7 @@ public class ClassItem
     //check that the oldClassItemName exists in the classItemList
     //check that the newClassItemName is available to use
 
-    private void renameClassItem(final HashMap classItemList, final String newClassItemName, final String oldClassItemName){
+    public void renameClassItem(final HashMap<String, ClassItem> classItemList, final String newClassItemName, final String oldClassItemName){
         if(classItemList == null){
             throw new IllegalArgumentException("classItemList cannot be null");
         }
@@ -62,15 +62,15 @@ public class ClassItem
         //checks that the name is not a duplicate, and that the old name to be changed, exists.
         if(checkValidOldName(classItemList, oldClassItemName) && checkValidNewName(classItemList, newClassItemName)){
             //sets the classItem Object that is stored in the value associated with the HashMap for the key oldClassItemName to be newClassItemName
-            String oldName = classItemList.get(oldClassItemName).getClassItemName;
-            classItemList.get(oldClassItemName).setClassItemName(newClassItemName);
+            String oldName = ((ClassItem) classItemList.get(oldClassItemName)).getClassItemName();
+            ((ClassItem) classItemList.get(oldClassItemName)).setClassItemName(newClassItemName);
             System.out.println(oldName + " class renamed to \"" + newClassItemName + "\"" );
         }
         //if either of the checks fail, an error message is displayed from their respective method.
     }
 
     //Check if the new name to be used is available (not a duplicate name)
-    private boolean checkValidNewName(final HashMap classItemList, final String newClassItemName){
+    private boolean checkValidNewName(final HashMap<String, ClassItem> classItemList, final String newClassItemName){
         if(!(classItemList.containsKey(newClassItemName))){    //if the name is not 
             return true;
         }
@@ -80,8 +80,8 @@ public class ClassItem
 
     //checks if the oldClassItem is a class already contained in the HashMap passed in.
         //displays error message when false.
-    private boolean checkValidOldName(final HashMap classItemList, final String oldClassItemName){
-        if(!(classItemList.contains(oldClassItemName))){
+    private boolean checkValidOldName(final HashMap<String, ClassItem> classItemList, final String oldClassItemName){
+        if(!(classItemList.containsKey(oldClassItemName))){
             return true;
         }
         System.out.println("\"" + oldClassItemName + "\" class does not exist");
