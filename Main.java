@@ -5,7 +5,7 @@ import java.util.Scanner;
 public class Main
 {	
 	UI ui = new UI();
-	Map<String, ClassItem> classItems = new HashMap<String, ClassItem>();
+	Map<String, ClassItem> classItems = new HashMap();
 	Map<String, RelationshipItem> relationshipItems = new HashMap();
 	Scanner scanner = new Scanner(System.in);
 	String input;
@@ -34,10 +34,6 @@ public class Main
 				break;
 			case "3":
 				ui.Exit();
-				break;
-			case "4":
-				String input = scanner.nextLine();
-				ClassItem.createClassItem(classItems, input);
 				break;
 			default:
 					System.out.println("Default: ?");
