@@ -7,7 +7,7 @@ public class RelationshipItem
     private ClassItem source;
     private ClassItem destination;
     
-    public RelationshipItem(final ClassItem source, final ClassItem destination){
+    private RelationshipItem(final ClassItem source, final ClassItem destination){
 
         // checking for null values and throwing an exception if the source or destination are null
         // we can't have a relationship with only a source or only a destination
