@@ -76,7 +76,7 @@ public class RelationshipItem
      * If the relationship is typed incorrectly, a message will be returned that the relationship does not exist. The user will be prompted again.
      * If the user types "exit", the method will return a message that the user has exited the method, and the method ends.
      */
-    public String removeRelationship(Map<String, RelationshipItem> relationshipMap){
+    public static String removeRelationship(Map<String, RelationshipItem> relationshipMap){
         // can't have a null relationshipMap
         if(relationshipMap == null) {
             throw new IllegalArgumentException("relationshipMap must not be null");
