@@ -37,6 +37,36 @@ public class ClassItem
     public String getClassItemName(){
         return this.name;
     }
+
+    //method to add a new method to the hashmap for this class item
+    public void addMethod(String methodName){
+        //check if the method name already exists in the class
+        if(methodItems.containsKey(methodName))
+        {
+            System.out.println("Method name already in use.");
+            return;
+        }
+
+        //create a new method object with the method name
+        MethodItem newMethod = new MethodItem(methodName);
+
+        //insert new method item into hashmap
+        methodItems.put(methodName, newMethod);
+    }
+
+    // method to remove a method from class
+    public void removeMethod(String methodName)
+    {
+        //check if the method name is a valid key
+        if(!methodItems.containsKey(methodName))
+        {
+            System.out.println("Method name: " + methodName + " does not exist");
+            return;
+        }
+
+        //remove method item from hash map
+        methodItems.remove(methodName);
+    }
     
     //not sure what format we want to return yet.
     public String toString(){
