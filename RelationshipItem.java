@@ -24,29 +24,50 @@ public class RelationshipItem
      * The goal is to create a relationship object between the source and destination and store it in the map.
      * If the relationship already exists, we return a message that the relationship already exists.
      */
-    public String addRelationship(Map<String, RelationshipItem> map, final ClassItem source, final ClassItem destination){
-        // checking for null values and throwing an exception if the source or destination are null
-        // we can't have a relationship with only a source or only a destination
-        if (source == null || destination == null) {
-            throw new IllegalArgumentException("source and destination must not be null");
+    public static String addRelationship(Map<String, RelationshipItem> relationships, Map<String, ClassItem> classes){
+        // checks for null values and throws an exception if relationships or classes are null
+        if(relationships == null || classes == null){
+            throw new IllegalArgumentException("relationships and classes must not be null");
+        }
+
+        // can't make a relationship without at least two classes
+        if(classes.size() < 2){
+            return "Not enough classes to create a relationship with";
         }
 
         // creating the key for the relationship
-        String key = source.getClassItemName() + "_" + destination.getClassItemName();
+        // key should be classname1_classname2
+        Scanner kb = new Scanner(System.in);
+        System.out.println("Enter the name of the first class:");
+        String source = kb.nextLine();
+        source.toLowerCase();
+        System.out.println("Enter the name of the second class:");
+        String destination = kb.nextLine();
+        destination.toLowerCase();
+        // at this point the key is created with everything being lowercase
+        String key = source + "_" + destination;
 
-        // checking if the relationship is already created and stored in the map
-        if (map.containsKey(key)) {
+        // at this point we need to create a relationship to add to the map
+        // we need to check if the classes exist
+        if (!classes.containsKey(source) || !classes.containsKey(destination)){
+            kb.close();
+            return "One or both of the classes do not exist";
+        }
+
+        // if the relationship already exists, we return a message that the relationship already exists
+        if(relationships.containsKey(key)){
+            kb.close();
             return "Relationship already exists";
         }
 
-        // creating the relationship
-        RelationshipItem relationship = new RelationshipItem(source, destination);
+        // creating the relationship object
+        RelationshipItem relationship = new RelationshipItem(classes.get(source), classes.get(destination));
 
-        // storing the relationship in the map
-        map.put(key, relationship);
-
-        // returning a message that the relationship has been created
-        return "A relationship has been created between" + source.getClassItemName() + " and " + destination.getClassItemName();
+        // adding the relationship to the map
+        relationships.put(key, relationship);
+        kb.close();
+        
+        return "Relationship created successfully";
     }
     /*
      * removeRelationship takes a Map of relationships we currently have created from the main.java.
