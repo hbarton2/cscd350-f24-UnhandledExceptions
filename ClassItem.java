@@ -7,31 +7,29 @@ public class ClassItem
 
 
     //Names of FieldItem/MethodItem are keys to HashMap<k,v>
-    HashMap<String,FieldItem> fieldItems;
-    HashMap<String,MethodItem> methodItems;  
+    Map<String,FieldItem> fieldItems;
+    Map<String,MethodItem> methodItems;  
 
     private ClassItem(final String classItemName){
         this.name = classItemName;
 
         //initializes HashMaps
-        this.fieldItems = new HashMap<>();
-        this.methodItems = new HashMap<>();
+        this.fieldItems = new Map<>();
+        this.methodItems = new Map<>();
     }
 
     //returns a class object, to be added to the map in Main.java
     //need to add precondition checking
-    public static ClassItem createClassItem(final Map<String, ClassItem> classItems,final String classItemName){
+    public static void createClassItem(final Map<String, ClassItem> classItems,final String classItemName){
         
             //if the classItemList does not already have a class named classItemName, we create a new class
         if(!(classItems.containsKey(classItemName))){
             ClassItem createdClass = new ClassItem(classItemName);
             classItems.put(createdClass.getClassItemName(),createdClass);
             System.out.println("Class " + createdClass.getClassItemName() + " created.");
-            return createdClass;
         }else{
             //if classItemName is already in use in the classItemList that's passed in.
             System.out.println("Class name must be unique.");
-            return null;
         }
     }
 
