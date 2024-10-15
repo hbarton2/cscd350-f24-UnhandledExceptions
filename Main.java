@@ -27,7 +27,6 @@ public class Main
 		System.out.println("6. Delete a Class");
 		System.out.println("7. Exit");
 		input = scanner.nextLine();
-		String response;
 
 		switch (input)
 		{
@@ -58,14 +57,12 @@ public class Main
 			case "5":	//Add a Class
 				System.out.println("Input name of class you would like to create");
 				input = scanner.nextLine();
-				response = ClassItem.addClassItem(classItems, input);
-				System.out.println(response);
+				System.out.println(ClassItem.addClassItem(classItems, input));
 				break;	
 			case "6":	//Delete a Class
 				System.out.println("Input name of class you would like to delete");
 				input = scanner.nextLine();
-				response = ClassItem.removeClassItem(classItems, input);
-				System.out.println(response);
+				System.out.println(ClassItem.removeClassItem(classItems, input));
 				break;
 			case "7":
 				ui.Exit();
