@@ -61,13 +61,20 @@ public class ClassItem
         }
 
         //checks that the old name to be changed exists, and that the name is not a duplicate.
-        if(classItemList.containsKey(oldClassItemName) && !classItemList.containsKey(newClassItemName)){
-            //sets the classItem Object that is stored in the value associated with the Map for the key oldClassItemName to be newClassItemName
-            String oldName = ((ClassItem) classItemList.get(oldClassItemName)).getClassItemName();
-            ((ClassItem) classItemList.get(oldClassItemName)).setClassItemName(newClassItemName);
-            System.out.println(oldName + " class renamed to \"" + newClassItemName + "\"" );
-        }
+        if(classItemList.containsKey(oldClassItemName)){
+
+            if(!classItemList.containsKey(newClassItemName)){
+                //sets the classItem Object that is stored in the value associated with the Map for the key oldClassItemName to be newClassItemName
+                String oldName = ((ClassItem) classItemList.get(oldClassItemName)).getClassItemName();
+                ((ClassItem) classItemList.get(oldClassItemName)).setClassItemName(newClassItemName);
+                System.out.println(oldName + " class renamed to \"" + newClassItemName + "\"" );
+           }else{
+                System.out.println(newClassItemName + " is already in use.");
+           }
+        }else{ 
+            System.out.println(oldClassItemName+ " does not exist.");
         //if either of the checks fail, an error message is displayed from their respective method.
+        }
     }
 
     /*
