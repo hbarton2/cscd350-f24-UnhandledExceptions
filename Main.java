@@ -25,7 +25,8 @@ public class Main
 		System.out.println("4. Delete Relationship");
 		System.out.println("5. Add a Class");
 		System.out.println("6. Delete a Class");
-		System.out.println("7. Exit");
+		System.out.println("7. Rename a Class");
+		System.out.println("8. Exit");
 		input = scanner.nextLine();
 
 		switch (input)
@@ -63,7 +64,14 @@ public class Main
 				input = scanner.nextLine();
 				System.out.println(ClassItem.removeClassItem(classItems, input));
 				break;
-			case "7":
+			case "7":	//Rename a Class
+				System.out.println("Input name of class you want to rename");
+				String oldName = scanner.nextLine();
+				System.out.println("Input new name for " + oldName);
+				String newName = scanner.nextLine();
+				ClassItem.renameClassItem(classItems, newName, oldName);
+				break;
+			case "8":	//Exit
 				ui.Exit();
 				//add scanner.close() inside of ui.Exit() method
 				break;
