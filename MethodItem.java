@@ -11,11 +11,11 @@ public class MethodItem
 		//preconditions
 		if(methodName == null || methodName.isBlank())
 		{
-			throw new IllegalArgumentException("Method name cannot be null or blank - constructor")
+			throw new IllegalArgumentException("Method name cannot be null or blank - constructor");
 		}
 
 		//strip input to remove any leading or trailing whitespace
-		methodname.trim();
+		methodName.trim();
 
 		this.methodName = methodName;
 		//initialize hash map
