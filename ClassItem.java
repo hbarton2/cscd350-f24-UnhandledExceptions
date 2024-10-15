@@ -83,7 +83,7 @@ public class ClassItem
         }
 
         //if the classItemName to delete is a key inside of the map given, we remove the mapping for the key from the map.    
-        //.remove returns a boolean if removed or not.
+        //.remove returns the previous value associated with the key, or null if it did not exist.
         if(classItems.remove(classItemName) != null){
             return classItemName + " has been removed.";
         }else{
