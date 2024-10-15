@@ -22,7 +22,8 @@ public class Main
 		System.out.println("1. List Classes");
 		System.out.println("2. List Relationships");
 		System.out.println("3. Add Relationship");
-		System.out.println("4. Exit");
+		System.out.println("4. Delete Relationship");
+		System.out.println("5. Exit");
 		input = scanner.nextLine();
 
 		switch (input)
@@ -34,10 +35,12 @@ public class Main
 				ui.ListRelationships(relationshipItems);
 				break;
 			case "3":
-				String response = RelationshipItem.addRelationship(relationshipItems, classItems);
-				System.out.println(response);
+				System.out.println(RelationshipItem.addRelationship(relationshipItems, classItems));
 				break;
 			case "4":
+				System.out.println(RelationshipItem.removeRelationship(relationshipItems));
+				break;
+			case "5":
 				ui.Exit();
 				break;
 			default:

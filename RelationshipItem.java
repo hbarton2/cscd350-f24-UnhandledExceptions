@@ -7,7 +7,7 @@ public class RelationshipItem
     private ClassItem source;
     private ClassItem destination;
     
-    public RelationshipItem(final ClassItem source, final ClassItem destination){
+    private RelationshipItem(final ClassItem source, final ClassItem destination){
 
         // checking for null values and throwing an exception if the source or destination are null
         // we can't have a relationship with only a source or only a destination
@@ -76,7 +76,7 @@ public class RelationshipItem
      * If the relationship is typed incorrectly, a message will be returned that the relationship does not exist. The user will be prompted again.
      * If the user types "exit", the method will return a message that the user has exited the method, and the method ends.
      */
-    public String removeRelationship(Map<String, RelationshipItem> relationshipMap){
+    public static String removeRelationship(Map<String, RelationshipItem> relationshipMap){
         // can't have a null relationshipMap
         if(relationshipMap == null) {
             throw new IllegalArgumentException("relationshipMap must not be null");
