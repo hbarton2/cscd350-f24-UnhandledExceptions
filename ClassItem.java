@@ -90,12 +90,22 @@ public class ClassItem
     }
 
     //method to add a new method to the hashmap for this class item
-    public void addMethod(String methodName){
+    public String addMethod(String methodName)
+    {
+	//preconditions
+	if(methodName == null || methodName.isBlank())
+	{
+	    throw new IllegalArgumentException("Method name cannot be null or blank");
+	}
+
+	//trim any leading or trailing whitespace to ensure valid input
+	methodName = methodName.strip();
+	    
         //check if the method name already exists in the class
         if(methodItems.containsKey(methodName))
         {
-            System.out.println("Method name already in use.");
-            return;
+	    //return failure message
+            return "Method name: " + methodName + " already in use.";
         }
 
         //create a new method object with the method name
@@ -103,20 +113,35 @@ public class ClassItem
 
         //insert new method item into hashmap
         methodItems.put(methodName, newMethod);
+
+	//return successful add of method
+	return "Method name: " + methodName + " successfully added.";
     }
 
     // method to remove a method from class
-    public void removeMethod(String methodName)
+    public String removeMethod(String methodName)
     {
+	//preconditions
+	if(methodName == null || methodName.isBlank())
+	{
+	    throw new IllegalArgumentException("Method name cannot be null or blank");
+	}
+	    
+	//trim any leading or trailing whitespace to ensure valid input
+	methodName = methodName.strip();
+	    
         //check if the method name is a valid key
         if(!methodItems.containsKey(methodName))
         {
-            System.out.println("Method name: " + methodName + " does not exist");
-            return;
+	    //return failure message
+            return "Method name: " + methodName + " does not exist";
         }
 
         //remove method item from hash map
         methodItems.remove(methodName);
+
+	//return successful removal of method
+	return "Method name: " + methodName + " successfully removed";
     }
     
 
