@@ -22,23 +22,50 @@ public class Main
 		System.out.println("1. List Classes");
 		System.out.println("2. List Relationships");
 		System.out.println("3. Add Relationship");
-		System.out.println("4. Exit");
+		System.out.println("4. Add a Class");
+		System.out.println("5. Delete a Class");
+		System.out.println("6. Exit");
 		input = scanner.nextLine();
+		String response;
 
 		switch (input)
 		{
 			case "1":
 				ui.ListClasses(classItems);
+
+				//list class for testing
+				// System.out.println("	Classes:");
+
+				
+				// for (Map.Entry<String, ClassItem> entry : classItems.entrySet()) {
+				// 	String key = entry.getKey();
+				// 	//ClassItem value = entry.getValue();
+				// 	System.out.println("		-" + key);
+				// }
+				
 				break;
 			case "2":
 				ui.ListRelationships(relationshipItems);
 				break;
 			case "3":
-				String response = RelationshipItem.addRelationship(relationshipItems, classItems);
+				response = RelationshipItem.addRelationship(relationshipItems, classItems);
 				System.out.println(response);
 				break;
 			case "4":
+				System.out.println("Input name of class you would like to create");
+				input = scanner.nextLine();
+				response = ClassItem.addClassItem(classItems, input);
+				System.out.println(response);
+				break;
+			case "5":
+				System.out.println("Input name of class you would like to delete");
+				input = scanner.nextLine();
+				response = ClassItem.removeClassItem(classItems, input);
+				System.out.println(response);
+				break;
+			case "6":
 				ui.Exit();
+				//add scanner.close() inside of ui.Exit() method
 				break;
 			default:
 					System.out.println("Default: ?");
