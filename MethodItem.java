@@ -15,7 +15,7 @@ public class MethodItem
 		}
 
 		//strip input to remove any leading or trailing whitespace
-		methodname.strip();
+		methodname.trim();
 
 		this.methodName = methodName;
 		//initialize hash map
@@ -32,7 +32,7 @@ public class MethodItem
 		}
 
 		//strip input to remove any leading or trailing whitespace
-		parameterName = parameterName.strip();
+		parameterName = parameterName.trim();
 
 		//check if the parameter already exists
 		if(parameters.containsKey(parameterName))
@@ -67,7 +67,7 @@ public class MethodItem
 		}
 
 		//strip input to remove any leading or trailing whitespace
-		parameterName = parameterName.strip();
+		parameterName = parameterName.trim();
 
 		//check if the parameter exists in the map
 		if(!parameters.containsKey(parameterName))
@@ -93,8 +93,8 @@ public class MethodItem
 		}
 
 		//strip input to remove any leading or traililng whitespace
-		oldName = oldName.strip();
-		newName = newName.strip();
+		oldName = oldName.trim();
+		newName = newName.trim();
 
 		//check if the new name is valid or is already attached to another ParameterItem
 		if(parameters.containsKey(newName))
