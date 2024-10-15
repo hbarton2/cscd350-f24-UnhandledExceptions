@@ -1,4 +1,5 @@
 import java.util.Map;
+import java.util.HashMap;
 	
 public class ClassItem
 {	
@@ -13,22 +14,22 @@ public class ClassItem
         this.name = classItemName;
 
         //initializes Maps
-        this.fieldItems = new Map<>();
-        this.methodItems = new Map<>();
+        this.fieldItems = new HashMap<String, FieldItem>();
+        this.methodItems = new HashMap<String, MethodItem>();
     }
 
     //returns a class object, to be added to the map in Main.java
     //need to add precondition checking
-    public static void createClassItem(final Map<String, ClassItem> classItems,final String classItemName){
-        
+    public static String createClassItem(final Map<String, ClassItem> classItems,final String classItemName){
+        String name = classItemName.toLowerCase().trim();//forces all classes to be in lower case and trims all leading and trailing "space" (refernce .trim() Java API for space definition).
             //if the classItemList does not already have a class named classItemName, we create a new class
-        if(!(classItems.containsKey(classItemName))){
-            ClassItem createdClass = new ClassItem(classItemName);
+        if(!(classItems.containsKey(name))){
+            ClassItem createdClass = new ClassItem(name);
             classItems.put(createdClass.getClassItemName(),createdClass);
-            System.out.println("Class " + createdClass.getClassItemName() + " created.");
+            return "Class \"" + createdClass.getClassItemName() + "\" created.";
         }else{
             //if classItemName is already in use in the classItemList that's passed in.
-            System.out.println("Class name must be unique.");
+            return "Class name must be unique.";
         }
     }
 
@@ -71,8 +72,9 @@ public class ClassItem
      * takes Map to work with
      * and the name of the class to delete
      */
-    public static void deleteClassItem(final Map<String, ClassItem> classItems,final String classItemName){
+    public static String deleteClassItem(final Map<String, ClassItem> classItems,final String classItemName){
         //precondition checking
+
         if(classItems == null){
             throw new IllegalArgumentException("classItems cannot be null");
         }
@@ -83,15 +85,13 @@ public class ClassItem
         //if the classItemName to delete is a key inside of the map given, we remove the mapping for the key from the map.    
         //.remove returns a boolean if removed or not.
         if(classItems.remove(classItemName) != null){
-            System.out.println(classItemName + " has been removed.");
+            return classItemName + " has been removed.";
         }else{
-            System.out.println("No class with name \"" + classItemName + "\" exists.");
+            return "No class with name \"" + classItemName + "\" exists.";
         }
 
         }
         
-
-}
 
 
     //Check if the new name to be used is available (not a duplicate name), if duplicate, display message.
@@ -146,7 +146,7 @@ public class ClassItem
 
     //not sure what format we want to return yet.
     public String toString(){
-        return "Class name: classFields: classMethods";
+        return this.name;
     }
 
 };
