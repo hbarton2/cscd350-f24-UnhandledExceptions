@@ -48,8 +48,7 @@ public class Main
 				ui.ListRelationships(relationshipItems);
 				break;
 			case "3":	//Add a Relationship
-				response = RelationshipItem.addRelationship(relationshipItems, classItems);
-				System.out.println(response);
+				System.out.println(RelationshipItem.addRelationship(relationshipItems, classItems));
 				break;
 			case "4":	//Delete a Relationship
 				System.out.println(RelationshipItem.removeRelationship(relationshipItems));
