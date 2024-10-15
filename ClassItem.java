@@ -47,7 +47,7 @@ public class ClassItem
     //check that the oldClassItemName exists in the classItemList
     //check that the newClassItemName is available to use
 
-    public static void renameClassItem(final Map<String, ClassItem> classItemList, final String newClassItemName, final String oldClassItemName){
+    public static String renameClassItem(final Map<String, ClassItem> classItemList, final String newClassItemName, final String oldClassItemName){
         if(classItemList == null){
             throw new IllegalArgumentException("classItemList cannot be null");
         }
@@ -67,13 +67,14 @@ public class ClassItem
                 //sets the classItem Object that is stored in the value associated with the Map for the key oldClassItemName to be newClassItemName
                 String oldName = ((ClassItem) classItemList.get(oldClassItemName)).getClassItemName();
                 ((ClassItem) classItemList.get(oldClassItemName)).setClassItemName(newClassItemName);
-                System.out.println(oldName + " class renamed to \"" + newClassItemName + "\"" );
+                return oldName + " class renamed to \"" + newClassItemName + "\"";
            }else{
-                System.out.println(newClassItemName + " is already in use.");
+                //displayed if newClassItemName is already a key in the HashMap
+                return newClassItemName + " is already in use.";
            }
         }else{ 
-            System.out.println(oldClassItemName+ " does not exist.");
-        //if either of the checks fail, an error message is displayed from their respective method.
+            //displayed when oldClassItemName is not in the HashMap
+            return oldClassItemName+ " does not exist.";
         }
     }
 
