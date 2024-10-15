@@ -1,8 +1,10 @@
 import java.util.Map;
 import java.util.HashMap;
+import java.util.Scanner;
 	
 public class ClassItem
 {	
+    Scanner kb = new Scanner(System.in);
     String name;
 
 
@@ -45,7 +47,7 @@ public class ClassItem
     //check that the oldClassItemName exists in the classItemList
     //check that the newClassItemName is available to use
 
-    public void renameClassItem(final Map<String, ClassItem> classItemList, final String newClassItemName, final String oldClassItemName){
+    public static void renameClassItem(final Map<String, ClassItem> classItemList, final String newClassItemName, final String oldClassItemName){
         if(classItemList == null){
             throw new IllegalArgumentException("classItemList cannot be null");
         }
@@ -58,8 +60,8 @@ public class ClassItem
             throw new IllegalArgumentException("classItemNames cannot be null");
         }
 
-        //checks that the name is not a duplicate, and that the old name to be changed, exists.
-        if(checkValidOldName(classItemList, oldClassItemName) && checkValidNewName(classItemList, newClassItemName)){
+        //checks that the old name to be changed exists, and that the name is not a duplicate.
+        if(classItemList.containsKey(oldClassItemName) && !classItemList.containsKey(newClassItemName)){
             //sets the classItem Object that is stored in the value associated with the Map for the key oldClassItemName to be newClassItemName
             String oldName = ((ClassItem) classItemList.get(oldClassItemName)).getClassItemName();
             ((ClassItem) classItemList.get(oldClassItemName)).setClassItemName(newClassItemName);
@@ -95,23 +97,23 @@ public class ClassItem
 
 
     //Check if the new name to be used is available (not a duplicate name), if duplicate, display message.
-    private boolean checkValidNewName(final Map<String, ClassItem> classItemList, final String newClassItemName){
-        if(!(classItemList.containsKey(newClassItemName))){    //if the name is not 
-            return true;
-        }
-        System.out.println("\"" + newClassItemName + "\" is already in use." );
-        return false;
-    }
+    // private static boolean checkValidNewName(final Map<String, ClassItem> classItemList, final String newClassItemName){
+    //     if(!(classItemList.containsKey(newClassItemName))){    //if the name is not 
+    //         return true;
+    //     }
+    //     System.out.println("\"" + newClassItemName + "\" is already in use." );
+    //     return false;
+    // }
 
     //checks if the oldClassItem is a class already contained in the Map passed in.
         //displays error message when false.
-    private boolean checkValidOldName(final Map<String, ClassItem> classItemList, final String oldClassItemName){
-        if(!(classItemList.containsKey(oldClassItemName))){
-            return true;
-        }
-        System.out.println("\"" + oldClassItemName + "\" class does not exist");
-        return false;
-    }
+    // private static boolean checkValidOldName(final Map<String, ClassItem> classItemList, final String oldClassItemName){
+    //     if(!(classItemList.containsKey(oldClassItemName))){
+    //         return true;
+    //     }
+    //     System.out.println("\"" + oldClassItemName + "\" class does not exist");
+    //     return false;
+    // }
 
     //method to add a new method to the map for this class item
     public String addMethod(String methodName)
