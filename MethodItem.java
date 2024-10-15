@@ -8,21 +8,47 @@ public class MethodItem
 
 	public MethodItem(String methodName)
 	{
+		//preconditions
+		if(methodName == null || methodName.isBlank())
+		{
+			throw new IllegalArgumentException("Method name cannot be null or blank - constructor")
+		}
+
+		//strip input to remove any leading or trailing whitespace
+		methodname.strip();
+
 		this.methodName = methodName;
 		//initialize hash map
 		this.parameters = new HashMap<>();
 	}
 
 	//function to add a new parameter to the hash map
-	public void addParameter(String parameterName, ParameterItem parameter)
+	public String addParameter(String parameterName)
 	{
+		//preconditions
+		if(parameterName == null || parameterName.isBlank())
+		{
+			throw new IllegalArgumentException("Parameter name cannot be null or blank");
+		}
+
+		//strip input to remove any leading or trailing whitespace
+		parameterName = parameterName.strip();
+
 		//check if the parameter already exists
 		if(parameters.containsKey(parameterName))
 		{
-			return;
+			//return failure message
+			return "Parameter name: " + parameterName + " already in use.";
 		}
+
+		//create parameter object
+		ParameterItem parameter = new ParameterItem(parameterName);
 		
+		//insert new parameter item into map
 		parameters.put(parameterName, parameter);
+
+		//return successful add of parameter
+		return "Parameter name: " + parameterName + " successfully added.";
 	}
 
 	//getter to retrieve a parameter from the map
@@ -32,25 +58,49 @@ public class MethodItem
 	}
 
 	//function to remove a parameter from the map
-	public void removeParameter(String parameterName)
+	public String removeParameter(String parameterName)
 	{
+		//preconditions
+		if(parameterName == null || parameterName.isBlank())
+		{
+			throw new IllegalArgumentException("Parameter name cannot be null or blank");
+		}
+
+		//strip input to remove any leading or trailing whitespace
+		parameterName = parameterName.strip();
+
 		//check if the parameter exists in the map
 		if(!parameters.containsKey(parameterName))
 		{
-			return;
+			//return failure (parameter not in map)
+			return "Parameter name: " + parameterName + " does not exist";
 		}
 
+		//remove parameter from map
 		parameters.remove(parameterName);
 		
+		//return successful remove message
+		return "Parameter name: " + parameterName + " removed successfully.";
 	}
 
 	//function to change a parameter name
-	public void changeParameter(String oldName, String newName)
+	public String changeParameter(String oldName, String newName)
 	{
+		//preconditions
+		if(oldName == null || newName == null || oldName.isBlank() || newName.isBlank())
+		{
+			throw new IllegalArgumentException("Parameter name cannot be null or blank");
+		}
+
+		//strip input to remove any leading or traililng whitespace
+		oldName = oldName.strip();
+		newName = newName.strip();
+
 		//check if the new name is valid or is already attached to another ParameterItem
 		if(parameters.containsKey(newName))
 		{
-			return;
+			//return failure message for new name already in use
+			return "New Parameter name: " + newName + " already in use.";
 		}
 
 		//check if the parameter exists in the map
@@ -64,6 +114,12 @@ public class MethodItem
 
 			//add parameter back to map under new name
 			parameters.put(newName, parameter);
+
+			//return successful rename message
+			return "Parameter name: " + oldName + " successfully changed to: " + newName;
+		}else{
+			//old name key does not exist in map
+			return "Parameter name: " + oldName + " does not exist.";
 		}
 	}
 
