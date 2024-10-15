@@ -20,7 +20,7 @@ public class ClassItem
 
     //returns a class object, to be added to the map in Main.java
     //need to add precondition checking
-    public static String createClassItem(final Map<String, ClassItem> classItems,final String classItemName){
+    public static String addClassItem(final Map<String, ClassItem> classItems,final String classItemName){
         String name = classItemName.toLowerCase().trim();//forces all classes to be in lower case and trims all leading and trailing "space" (refernce .trim() Java API for space definition).
             //if the classItemList does not already have a class named classItemName, we create a new class
         if(!(classItems.containsKey(name))){
@@ -72,7 +72,7 @@ public class ClassItem
      * takes Map to work with
      * and the name of the class to delete
      */
-    public static String deleteClassItem(final Map<String, ClassItem> classItems,final String classItemName){
+    public static String removeClassItem(final Map<String, ClassItem> classItems,final String classItemName){
         //precondition checking
 
         if(classItems == null){
