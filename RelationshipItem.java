@@ -65,7 +65,7 @@ public class RelationshipItem
 
         // adding the relationship to the map
         relationships.put(key, relationship);
-        kb.close();
+        // kb.close();
         
         return "Relationship created successfully";
     }

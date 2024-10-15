@@ -1,37 +1,37 @@
-import java.util.HashMap;
 import java.util.Map;
+import java.util.HashMap;
+import java.util.Scanner;
 	
 public class ClassItem
 {	
+    Scanner kb = new Scanner(System.in);
     String name;
 
 
-    //Names of FieldItem/MethodItem are keys to HashMap<k,v>
-    HashMap<String,FieldItem> fieldItems;
-    HashMap<String,MethodItem> methodItems;  
+    //Names of FieldItem/MethodItem are keys to Map<k,v>
+    Map<String,FieldItem> fieldItems;
+    Map<String,MethodItem> methodItems;  
 
     private ClassItem(final String classItemName){
         this.name = classItemName;
 
-        //initializes HashMaps
-        this.fieldItems = new HashMap<>();
-        this.methodItems = new HashMap<>();
+        //initializes Maps
+        this.fieldItems = new HashMap<String, FieldItem>();
+        this.methodItems = new HashMap<String, MethodItem>();
     }
 
     //returns a class object, to be added to the map in Main.java
     //need to add precondition checking
-    public static ClassItem createClassItem(final Map<String, ClassItem> classItems,final String classItemName){
-        
+    public static String addClassItem(final Map<String, ClassItem> classItems,final String classItemName){
+        String name = classItemName.toLowerCase().trim();//forces all classes to be in lower case and trims all leading and trailing "space" (refernce .trim() Java API for space definition).
             //if the classItemList does not already have a class named classItemName, we create a new class
-        if(!(classItems.containsKey(classItemName))){
-            ClassItem createdClass = new ClassItem(classItemName);
+        if(!(classItems.containsKey(name))){
+            ClassItem createdClass = new ClassItem(name);
             classItems.put(createdClass.getClassItemName(),createdClass);
-            System.out.println("Class " + createdClass.getClassItemName() + " created.");
-            return createdClass;
+            return "Class \"" + createdClass.getClassItemName() + "\" created.";
         }else{
             //if classItemName is already in use in the classItemList that's passed in.
-            System.out.println("Class name must be unique.");
-            return null;
+            return "Class name must be unique.";
         }
     }
 
@@ -47,7 +47,7 @@ public class ClassItem
     //check that the oldClassItemName exists in the classItemList
     //check that the newClassItemName is available to use
 
-    public void renameClassItem(final HashMap<String, ClassItem> classItemList, final String newClassItemName, final String oldClassItemName){
+    public static void renameClassItem(final Map<String, ClassItem> classItemList, final String newClassItemName, final String oldClassItemName){
         if(classItemList == null){
             throw new IllegalArgumentException("classItemList cannot be null");
         }
@@ -60,36 +60,69 @@ public class ClassItem
             throw new IllegalArgumentException("classItemNames cannot be null");
         }
 
-        //checks that the name is not a duplicate, and that the old name to be changed, exists.
-        if(checkValidOldName(classItemList, oldClassItemName) && checkValidNewName(classItemList, newClassItemName)){
-            //sets the classItem Object that is stored in the value associated with the HashMap for the key oldClassItemName to be newClassItemName
-            String oldName = ((ClassItem) classItemList.get(oldClassItemName)).getClassItemName();
-            ((ClassItem) classItemList.get(oldClassItemName)).setClassItemName(newClassItemName);
-            System.out.println(oldName + " class renamed to \"" + newClassItemName + "\"" );
-        }
+        //checks that the old name to be changed exists, and that the name is not a duplicate.
+        if(classItemList.containsKey(oldClassItemName)){
+
+            if(!classItemList.containsKey(newClassItemName)){
+                //sets the classItem Object that is stored in the value associated with the Map for the key oldClassItemName to be newClassItemName
+                String oldName = ((ClassItem) classItemList.get(oldClassItemName)).getClassItemName();
+                ((ClassItem) classItemList.get(oldClassItemName)).setClassItemName(newClassItemName);
+                System.out.println(oldName + " class renamed to \"" + newClassItemName + "\"" );
+           }else{
+                System.out.println(newClassItemName + " is already in use.");
+           }
+        }else{ 
+            System.out.println(oldClassItemName+ " does not exist.");
         //if either of the checks fail, an error message is displayed from their respective method.
-    }
-
-    //Check if the new name to be used is available (not a duplicate name)
-    private boolean checkValidNewName(final HashMap<String, ClassItem> classItemList, final String newClassItemName){
-        if(!(classItemList.containsKey(newClassItemName))){    //if the name is not 
-            return true;
         }
-        System.out.println("\"" + newClassItemName + "\" is already in use." );
-        return false;
     }
 
-    //checks if the oldClassItem is a class already contained in the HashMap passed in.
+    /*
+     * takes Map to work with
+     * and the name of the class to delete
+     */
+    public static String removeClassItem(final Map<String, ClassItem> classItems,final String classItemName){
+        //precondition checking
+
+        if(classItems == null){
+            throw new IllegalArgumentException("classItems cannot be null");
+        }
+        if(classItemName.isBlank()){
+            throw new IllegalArgumentException("classItemName cannot be blank");
+        }
+
+        //if the classItemName to delete is a key inside of the map given, we remove the mapping for the key from the map.    
+        //.remove returns the previous value associated with the key, or null if it did not exist.
+        if(classItems.remove(classItemName) != null){
+            return classItemName + " has been removed.";
+        }else{
+            return "No class with name \"" + classItemName + "\" exists.";
+        }
+
+        }
+        
+
+
+    //Check if the new name to be used is available (not a duplicate name), if duplicate, display message.
+    // private static boolean checkValidNewName(final Map<String, ClassItem> classItemList, final String newClassItemName){
+    //     if(!(classItemList.containsKey(newClassItemName))){    //if the name is not 
+    //         return true;
+    //     }
+    //     System.out.println("\"" + newClassItemName + "\" is already in use." );
+    //     return false;
+    // }
+
+    //checks if the oldClassItem is a class already contained in the Map passed in.
         //displays error message when false.
-    private boolean checkValidOldName(final HashMap<String, ClassItem> classItemList, final String oldClassItemName){
-        if(!(classItemList.containsKey(oldClassItemName))){
-            return true;
-        }
-        System.out.println("\"" + oldClassItemName + "\" class does not exist");
-        return false;
-    }
+    // private static boolean checkValidOldName(final Map<String, ClassItem> classItemList, final String oldClassItemName){
+    //     if(!(classItemList.containsKey(oldClassItemName))){
+    //         return true;
+    //     }
+    //     System.out.println("\"" + oldClassItemName + "\" class does not exist");
+    //     return false;
+    // }
 
-    //method to add a new method to the hashmap for this class item
+    //method to add a new method to the map for this class item
     public String addMethod(String methodName)
     {
 	//preconditions
@@ -111,7 +144,7 @@ public class ClassItem
         //create a new method object with the method name
         MethodItem newMethod = new MethodItem(methodName);
 
-        //insert new method item into hashmap
+        //insert new method item into map
         methodItems.put(methodName, newMethod);
 
 	//return successful add of method
@@ -147,7 +180,7 @@ public class ClassItem
 
     //not sure what format we want to return yet.
     public String toString(){
-        return "Class name: classFields: classMethods";
+        return this.name;
     }
 
 };
