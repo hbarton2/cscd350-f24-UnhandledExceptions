@@ -50,13 +50,11 @@ public class RelationshipItem
         // at this point we need to create a relationship to add to the map
         // we need to check if the classes exist
         if (!classes.containsKey(source) || !classes.containsKey(destination)){
-            kb.close();
             return "One or both of the classes do not exist";
         }
 
         // if the relationship already exists, we return a message that the relationship already exists
         if(relationships.containsKey(key)){
-            kb.close();
             return "Relationship already exists";
         }
 
@@ -65,7 +63,6 @@ public class RelationshipItem
 
         // adding the relationship to the map
         relationships.put(key, relationship);
-        // kb.close();
         
         return "Relationship created successfully";
     }
@@ -105,14 +102,12 @@ public class RelationshipItem
 
             // if the user types exit we exit the method
             if(key.equalsIgnoreCase("exit")){
-                kb.close();
                 return "exiting delete menu...";
             }
             
             // if the relationship exists, we remove it and return a message that the relationship has been removed
             if(relationshipMap.containsKey(key)){
                 relationshipMap.remove(key);
-                kb.close();
                 return "Relationship has been removed";
             }
             // if the relationship does not exist, we return a message that the relationship does not exist
