@@ -215,6 +215,7 @@ public class Main {
 		System.out.println("10. Add a Parameter");
 		System.out.println("11. Remove a Parameter");
 		System.out.println("12. Change a Parameter");
+		System.out.println("13. Add a Field");
 		System.out.println("h or help for program assistance");
 		System.out.println("e or exit. Exit the program.");
 	}
