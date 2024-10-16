@@ -247,7 +247,7 @@ public class ClassItem {
         // add new field item to map
         fieldItems.put(fieldName, newField);
 
-        return "Field name: " + fieldName + " successfully added.";
+        return fieldName + " was successfully added to " + this.name;
     }
 
     public String removeField(String fieldName) {
