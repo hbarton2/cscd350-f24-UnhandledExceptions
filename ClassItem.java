@@ -271,7 +271,7 @@ public class ClassItem {
         return "Field name: " + fieldName + " successfully removed.";
     }
 
-    public String changeField(String oldName, String newName) {
+    public String renameField(String oldName, String newName) {
         // preconditions
         if (oldName == null || oldName.isBlank() || newName == null || newName.isBlank()) {
             return "Field names cannot be null or blank";
