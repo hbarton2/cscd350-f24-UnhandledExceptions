@@ -142,7 +142,7 @@ public class Main {
 			case "12": // Change a Parameter
 				System.out.print("Input name of class method belongs to\n>");
 				ClassItem tempClassItemChangeParameter = classItems.get(scanner.nextLine());
-
+				
 				if (tempClassItemChangeParameter == null) {
 					System.out.println("Class does not exist.");
 					return;
@@ -165,6 +165,22 @@ public class Main {
 				System.out.println(
 						tempMethodItemChangeParameter.changeParameter(oldParameterNameChange, newParameterNameChange));
 
+				break;
+			case "13":	//Add a Field
+				ui.ListClasses(classItems);
+				if(!classItems.isEmpty()){
+					System.out.print("Input the name of the class that you want to add a field to:\n>");
+					ClassItem tempClassItem = classItems.get(scanner.nextLine());
+
+					if(tempClassItem != null){
+						System.out.print("Input name of field you want to add to " + tempClassItem.getClassItemName() + "\n> ");	
+						System.out.println(tempClassItem.addField(scanner.nextLine()));
+					} else {
+						System.out.println("Class Item does not exist.");
+					}
+				} else {
+					System.out.println("No classes to add field too.");
+				}
 				break;
 			case "h":
 			case "help":
