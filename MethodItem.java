@@ -128,13 +128,13 @@ public class MethodItem
 	public String toString() 
 	{
     		StringBuilder out = new StringBuilder();
-    		out.append("Method Name: ").append(methodName).append("\n");
-    		out.append("Parameters:");
+    		out.append(methodName);
+    		out.append(" Parameters: ");
 
 		//iterates through the parameters in the map, space delimiter
     		for (String parameterName : parameters.keySet())
-		{
-        		out.append(parameterName).append(" ");
+			{
+        		out.append(parameterName).append(", ");
     		}
 
     		return out.toString();

@@ -172,6 +172,9 @@ public class Main {
 			case "m": //menu
 				Menu();
 				break;
+			case "69": //shhh
+				tester();
+				break;
 			default:
 				System.out.println("Unknown command.");
 		}
@@ -194,5 +197,32 @@ public class Main {
 		System.out.println("11. Remove a Parameter");
 		System.out.println("12. Change a Parameter");
 		System.out.println("e or exit. Exit the program.");
+	}
+	
+	private void tester()
+	{
+		ClassItem.addClassItem(classItems, "mcdonalds");
+		ClassItem.addClassItem(classItems, "tacobell");
+		
+		classItems.get("mcdonalds").addMethod("cook_fries");
+		classItems.get("mcdonalds").addMethod("cook_burger");
+		classItems.get("tacobell").addMethod("cook_taco");
+		classItems.get("tacobell").addMethod("cook_casadilla");
+		classItems.get("mcdonalds").methodItems.get("cook_fries").addParameter("time");
+		classItems.get("mcdonalds").methodItems.get("cook_fries").addParameter("potatoes");
+		classItems.get("mcdonalds").methodItems.get("cook_burger").addParameter("time");
+		classItems.get("mcdonalds").methodItems.get("cook_burger").addParameter("patty");
+		
+		classItems.get("tacobell").methodItems.get("cook_taco").addParameter("time");
+		classItems.get("tacobell").methodItems.get("cook_taco").addParameter("meat");
+		classItems.get("tacobell").methodItems.get("cook_casadilla").addParameter("time");
+		classItems.get("tacobell").methodItems.get("cook_casadilla").addParameter("chicken");
+		
+		RelationshipItem relationship = new RelationshipItem(
+			classItems.get("mcdonalds"), classItems.get("tacobell"));
+
+        // adding the relationship to the map
+		String key = "mcdonalds_tacobell";
+        relationshipItems.put(key, relationship);
 	}
 };
