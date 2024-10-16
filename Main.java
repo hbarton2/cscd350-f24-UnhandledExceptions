@@ -54,16 +54,18 @@ public class Main {
 				System.out.println(ClassItem.addClassItem(classItems, input));
 				break;
 			case "6": // Delete a Class
+				ui.ListClasses(classItems);
 				System.out.print("Input name of class you would like to delete\n>");
 				input = scanner.nextLine();
 				System.out.println(ClassItem.removeClassItem(classItems, input, relationshipItems));
 				break;
 			case "7": // Rename a Class
+				ui.ListClasses(classItems);
 				System.out.print("Input name of class you want to rename\n>");
 				String oldName = scanner.nextLine();
 				System.out.println("Input new name for " + oldName);
 				String newName = scanner.nextLine();
-				ClassItem.renameClassItem(classItems, newName, oldName);
+				System.out.println(ClassItem.renameClassItem(classItems, newName, oldName));
 				break;
 			case "8": // Add a Method
 				System.out.print("Input name of class to add method to\n>");
