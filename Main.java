@@ -74,59 +74,102 @@ public class Main {
 				break;
 			case "8": // Add a Method
 				System.out.println("Input name of class to add method to");
-				String classNameAddMethod = scanner.nextLine();
-				ClassItem tempClassItemAdd = classItems.get(classNameAddMethod);
+				ClassItem tempClassItemAdd = classItems.get(scanner.nextLine());
+
+				if (tempClassItemAdd == null) {
+					System.out.println("Class does not exist.");
+					return;
+				}
+
 				System.out.println("Input name of method you want to add");
-				String methodNameAdd = scanner.nextLine();
-				System.out.println(tempClassItemAdd.addMethod(methodNameAdd));
+				System.out.println(tempClassItemAdd.addMethod(scanner.nextLine()));
+
 				break;
 			case "9": // Remove a Method
 				System.out.println("Input name of class to remove method from");
-				String classNameRemoveMethod = scanner.nextLine();
-				ClassItem tempClassItemRemove = classItems.get(classNameRemoveMethod);
+				ClassItem tempClassItemRemove = classItems.get(scanner.nextLine());
+
+				if (tempClassItemRemove == null) {
+					System.out.println("Class does not exist.");
+					return;
+				}
+
+				System.out.println("Methods in selected class: " + tempClassItemRemove.methodItems.keySet());
 				System.out.println("Input name of method you want to remove");
-				String methodNameRemove = scanner.nextLine();
-				System.out.println(tempClassItemRemove.removeMethod(methodNameRemove));
+				System.out.println(tempClassItemRemove.removeMethod(scanner.nextLine()));
+
 				break;
 			case "10": // Add a Parameter
 				System.out.println("Input name of class method belongs to");
-				String classNameAddParameter = scanner.nextLine();
-				ClassItem tempClassItemAddParameter = classItems.get(classNameAddParameter);
-				System.out.println("Methods in selected class: " + tempClassItemAddParameter.methodItems.keySet());// debugging
+				ClassItem tempClassItemAddParameter = classItems.get(scanner.nextLine());
+
+				if (tempClassItemAddParameter == null) {
+					System.out.println("Class does not exist.");
+					return;
+				}
+
+				System.out.println("Methods in selected class: " + tempClassItemAddParameter.methodItems.keySet());
 				System.out.println("Input name of method to add parameter to");
-				String methodNameAddParameter = scanner.nextLine();
 				MethodItem tempMethodItemAddParameter = tempClassItemAddParameter.methodItems
-						.get(methodNameAddParameter);
+						.get(scanner.nextLine());
+
+				if (tempMethodItemAddParameter == null) {
+					System.out.println("Method does not exist.");
+					return;
+				}
 				System.out.println("Input name of parameter to add");
-				String parameterNameAdd = scanner.nextLine();
-				System.out.println(tempMethodItemAddParameter.addParameter(parameterNameAdd));
+				System.out.println(tempMethodItemAddParameter.addParameter(scanner.nextLine()));
+
 				break;
 			case "11": // Remove a Parameter
 				System.out.println("Input name of class method belongs to");
-				String classNameRemoveParameter = scanner.nextLine();
-				ClassItem tempClassItemRemoveParameter = classItems.get(classNameRemoveParameter);
+				ClassItem tempClassItemRemoveParameter = classItems.get(scanner.nextLine());
+
+				if (tempClassItemRemoveParameter == null) {
+					System.out.println("Class does not exist.");
+					return;
+				}
+
+				System.out.println("Methods in selected class: " + tempClassItemRemoveParameter.methodItems.keySet());
 				System.out.println("Input name of method to remove parameter from");
-				String methodNameRemoveParameter = scanner.nextLine();
 				MethodItem tempMethodItemRemoveParameter = tempClassItemRemoveParameter.methodItems
-						.get(methodNameRemoveParameter);
+						.get(scanner.nextLine());
+
+				if (tempMethodItemRemoveParameter == null) {
+					System.out.println("Method does not exist.");
+					return;
+				}
+
 				System.out.println("Input name of parameter to remove");
-				String parameterNameRemove = scanner.nextLine();
-				System.out.println(tempMethodItemRemoveParameter.removeParameter(parameterNameRemove));
+				System.out.println(tempMethodItemRemoveParameter.removeParameter(scanner.nextLine()));
+
 				break;
 			case "12": // Change a Parameter
 				System.out.println("Input name of class method belongs to");
-				String classNameChangeParameter = scanner.nextLine();
-				ClassItem tempClassItemChangeParameter = classItems.get(classNameChangeParameter);
+				ClassItem tempClassItemChangeParameter = classItems.get(scanner.nextLine());
+
+				if (tempClassItemChangeParameter == null) {
+					System.out.println("Class does not exist.");
+					return;
+				}
+
+				System.out.println("Methods in selected class: " + tempClassItemChangeParameter.methodItems.keySet());
 				System.out.println("Input name of method parameter belongs to");
-				String methodNameChangeParameter = scanner.nextLine();
 				MethodItem tempMethodItemChangeParameter = tempClassItemChangeParameter.methodItems
-						.get(methodNameChangeParameter);
+						.get(scanner.nextLine());
+
+				if (tempMethodItemChangeParameter == null) {
+					System.out.println("Method does not exist.");
+					return;
+				}
+
 				System.out.println("Input name of parameter to change");
 				String oldParameterNameChange = scanner.nextLine();
 				System.out.println("Input new name for the parameter: " + oldParameterNameChange);
 				String newParameterNameChange = scanner.nextLine();
 				System.out.println(
 						tempMethodItemChangeParameter.changeParameter(oldParameterNameChange, newParameterNameChange));
+
 				break;
 			case "13": // Exit
 				ui.Exit();
