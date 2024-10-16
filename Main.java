@@ -1,12 +1,11 @@
 import java.util.HashMap;
-import java.util.Map;
 import java.util.Scanner;
 
 public class Main
 {	
 	UI ui = new UI();
-	Map<String, ClassItem> classItems = new HashMap<>();
-	Map<String, RelationshipItem> relationshipItems = new HashMap<>();
+	HashMap<String, ClassItem> classItems = new HashMap<>();
+	HashMap<String, RelationshipItem> relationshipItems = new HashMap<>();
 	Scanner scanner = new Scanner(System.in);
 	String input;
 	
@@ -26,7 +25,9 @@ public class Main
 		System.out.println("5. Add a Class");
 		System.out.println("6. Delete a Class");
 		System.out.println("7. Rename a Class");
-		System.out.println("8. Exit");
+		System.out.println("8. Save");
+		System.out.println("9. Load");
+		System.out.println("q. Exit");
 		input = scanner.nextLine();
 
 		switch (input)
@@ -71,7 +72,13 @@ public class Main
 				String newName = scanner.nextLine();
 				ClassItem.renameClassItem(classItems, newName, oldName);
 				break;
-			case "8":	//Exit
+			case "8":	//Save
+				System.out.println(IO.Save(classItems, relationshipItems));
+				break;
+			case "9":	//Load
+				System.out.println(IO.Load(classItems, relationshipItems));
+				break;
+			case "q":	//Exit
 				ui.Exit();
 				//add scanner.close() inside of ui.Exit() method
 				break;

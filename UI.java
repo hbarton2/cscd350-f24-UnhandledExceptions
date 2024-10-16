@@ -1,13 +1,13 @@
-import java.util.Map;
+import java.util.HashMap;
 
 public class UI
 {
 		/*
 			ListClasses takes a list of ClassItem, and displays them
 		*/
-		public void ListClasses(Map<String, ClassItem> classItems)
+		public void ListClasses(HashMap<String, ClassItem> classItems)
 		{
-			for (Map.Entry<String, ClassItem> entry : classItems.entrySet()) 
+			for (HashMap.Entry<String, ClassItem> entry : classItems.entrySet()) 
 			{
 				System.out.println(entry.getValue().toString());
       }
@@ -24,9 +24,9 @@ public class UI
 		/*
 			ListRelationships takes a list of RelationshipItems, and displays them
 		*/
-		public void ListRelationships(Map<String, RelationshipItem> relationshipItems)
+		public void ListRelationships(HashMap<String, RelationshipItem> relationshipItems)
 		{
-			for (Map.Entry<String, RelationshipItem> entry : relationshipItems.entrySet()) 
+			for (HashMap.Entry<String, RelationshipItem> entry : relationshipItems.entrySet()) 
 			{
 				System.out.println(entry.getValue().toString());
       }
