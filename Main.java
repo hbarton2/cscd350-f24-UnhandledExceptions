@@ -11,28 +11,21 @@ public class Main {
 
 	public static void main(String[] args) {
 		Main main = new Main();
+		main.Menu();
 		while (true)
 			main.Run();
 	}
 
 	public void Run() {
-		System.out.println("-=Unhandled Exceptions UML Editor=-");
-		System.out.println("1. List Classes");
-		System.out.println("2. List Relationships");
-		System.out.println("3. Add Relationship");
-		System.out.println("4. Delete Relationship");
-		System.out.println("5. Add a Class");
-		System.out.println("6. Delete a Class");
-		System.out.println("7. Rename a Class");
-		System.out.println("8. Add a Method");
-		System.out.println("9. Remove a Method");
-		System.out.println("10. Add a Parameter");
-		System.out.println("11. Remove a Parameter");
-		System.out.println("12. Change a Parameter");
-		System.out.println("13. Exit");
+		System.out.print("Type your choice (m for menu): ");
 		input = scanner.nextLine();
 
 		switch (input) {
+			case "0": // list class
+				System.out.print("Input name of class you would like details about:\n>");
+				input = scanner.nextLine();
+				ui.ListClass(classItems.get(input));
+				break;
 			case "1": // List Classes
 				ui.ListClasses(classItems);
 
@@ -56,24 +49,24 @@ public class Main {
 				System.out.println(RelationshipItem.removeRelationship(relationshipItems));
 				break;
 			case "5": // Add a Class
-				System.out.println("Input name of class you would like to create");
+				System.out.print("Input name of class you would like to create:\n>");
 				input = scanner.nextLine();
 				System.out.println(ClassItem.addClassItem(classItems, input));
 				break;
 			case "6": // Delete a Class
-				System.out.println("Input name of class you would like to delete");
+				System.out.print("Input name of class you would like to delete\n>");
 				input = scanner.nextLine();
 				System.out.println(ClassItem.removeClassItem(classItems, input, relationshipItems));
 				break;
 			case "7": // Rename a Class
-				System.out.println("Input name of class you want to rename");
+				System.out.print("Input name of class you want to rename\n>");
 				String oldName = scanner.nextLine();
 				System.out.println("Input new name for " + oldName);
 				String newName = scanner.nextLine();
 				ClassItem.renameClassItem(classItems, newName, oldName);
 				break;
 			case "8": // Add a Method
-				System.out.println("Input name of class to add method to");
+				System.out.print("Input name of class to add method to\n>");
 				ClassItem tempClassItemAdd = classItems.get(scanner.nextLine());
 
 				if (tempClassItemAdd == null) {
@@ -81,12 +74,12 @@ public class Main {
 					return;
 				}
 
-				System.out.println("Input name of method you want to add");
+				System.out.print("Input name of method you want to add\n>");
 				System.out.println(tempClassItemAdd.addMethod(scanner.nextLine()));
 
 				break;
 			case "9": // Remove a Method
-				System.out.println("Input name of class to remove method from");
+				System.out.print("Input name of class to remove method from\n>");
 				ClassItem tempClassItemRemove = classItems.get(scanner.nextLine());
 
 				if (tempClassItemRemove == null) {
@@ -95,12 +88,12 @@ public class Main {
 				}
 
 				System.out.println("Methods in selected class: " + tempClassItemRemove.methodItems.keySet());
-				System.out.println("Input name of method you want to remove");
+				System.out.print("Input name of method you want to remove\n>");
 				System.out.println(tempClassItemRemove.removeMethod(scanner.nextLine()));
 
 				break;
 			case "10": // Add a Parameter
-				System.out.println("Input name of class method belongs to");
+				System.out.print("Input name of class method belongs to\n>");
 				ClassItem tempClassItemAddParameter = classItems.get(scanner.nextLine());
 
 				if (tempClassItemAddParameter == null) {
@@ -109,7 +102,7 @@ public class Main {
 				}
 
 				System.out.println("Methods in selected class: " + tempClassItemAddParameter.methodItems.keySet());
-				System.out.println("Input name of method to add parameter to");
+				System.out.print("Input name of method to add parameter to\n>");
 				MethodItem tempMethodItemAddParameter = tempClassItemAddParameter.methodItems
 						.get(scanner.nextLine());
 
@@ -117,12 +110,12 @@ public class Main {
 					System.out.println("Method does not exist.");
 					return;
 				}
-				System.out.println("Input name of parameter to add");
+				System.out.print("Input name of parameter to add\n>");
 				System.out.println(tempMethodItemAddParameter.addParameter(scanner.nextLine()));
 
 				break;
 			case "11": // Remove a Parameter
-				System.out.println("Input name of class method belongs to");
+				System.out.print("Input name of class method belongs to\n>");
 				ClassItem tempClassItemRemoveParameter = classItems.get(scanner.nextLine());
 
 				if (tempClassItemRemoveParameter == null) {
@@ -131,7 +124,7 @@ public class Main {
 				}
 
 				System.out.println("Methods in selected class: " + tempClassItemRemoveParameter.methodItems.keySet());
-				System.out.println("Input name of method to remove parameter from");
+				System.out.print("Input name of method to remove parameter from\n>");
 				MethodItem tempMethodItemRemoveParameter = tempClassItemRemoveParameter.methodItems
 						.get(scanner.nextLine());
 
@@ -140,12 +133,12 @@ public class Main {
 					return;
 				}
 
-				System.out.println("Input name of parameter to remove");
+				System.out.print("Input name of parameter to remove\n>");
 				System.out.println(tempMethodItemRemoveParameter.removeParameter(scanner.nextLine()));
 
 				break;
 			case "12": // Change a Parameter
-				System.out.println("Input name of class method belongs to");
+				System.out.print("Input name of class method belongs to\n>");
 				ClassItem tempClassItemChangeParameter = classItems.get(scanner.nextLine());
 
 				if (tempClassItemChangeParameter == null) {
@@ -154,7 +147,7 @@ public class Main {
 				}
 
 				System.out.println("Methods in selected class: " + tempClassItemChangeParameter.methodItems.keySet());
-				System.out.println("Input name of method parameter belongs to");
+				System.out.print("Input name of method parameter belongs to\n>");
 				MethodItem tempMethodItemChangeParameter = tempClassItemChangeParameter.methodItems
 						.get(scanner.nextLine());
 
@@ -163,7 +156,7 @@ public class Main {
 					return;
 				}
 
-				System.out.println("Input name of parameter to change");
+				System.out.print("Input name of parameter to change\n>");
 				String oldParameterNameChange = scanner.nextLine();
 				System.out.println("Input new name for the parameter: " + oldParameterNameChange);
 				String newParameterNameChange = scanner.nextLine();
@@ -171,12 +164,35 @@ public class Main {
 						tempMethodItemChangeParameter.changeParameter(oldParameterNameChange, newParameterNameChange));
 
 				break;
-			case "13": // Exit
+			case "e":	//exit
+			case "exit": // Exit
 				ui.Exit();
 				// add scanner.close() inside of ui.Exit() method
 				break;
+			case "m": //menu
+				Menu();
+				break;
 			default:
-				System.out.println("Default: ?");
+				System.out.println("Unknown command.");
 		}
+	}
+	
+	private void Menu()
+	{
+		System.out.println("\n-=Unhandled Exceptions UML Editor=-");
+		System.out.println("0. List Class Info");
+		System.out.println("1. List Classes");
+		System.out.println("2. List Relationships");
+		System.out.println("3. Add Relationship");
+		System.out.println("4. Delete Relationship");
+		System.out.println("5. Add a Class");
+		System.out.println("6. Delete a Class");
+		System.out.println("7. Rename a Class");
+		System.out.println("8. Add a Method");
+		System.out.println("9. Remove a Method");
+		System.out.println("10. Add a Parameter");
+		System.out.println("11. Remove a Parameter");
+		System.out.println("12. Change a Parameter");
+		System.out.println("e or exit. Exit the program.");
 	}
 };
