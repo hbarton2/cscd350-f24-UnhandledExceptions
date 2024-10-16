@@ -22,6 +22,23 @@ public class MethodItem
 		this.parameters = new HashMap<>();
 	}
 
+	//getter to retrieve method name
+	public String getMethodName()
+	{
+		return this.methodName;
+	}
+
+	//setter to set method name
+	public void setMethodName(String newName)
+	{
+		if(newName == null || newName.isBlank())
+		{
+			return;
+		}
+		
+		this.methodName = newName;
+	}
+
 	//function to add a new parameter to the hash map
 	public String addParameter(String parameterName)
 	{

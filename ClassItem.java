@@ -181,6 +181,50 @@ public class ClassItem
 	//return successful removal of method
 	return "Method name: " + methodName + " successfully removed";
     }
+
+    public String renameMethod(String oldName, String newName)
+    {
+        //preconditions
+        if(oldName == null || oldName.isBlank() || newName == null || newName.isBlank())
+        {
+            return "Method names cannot be null or blank.";
+        }
+
+        //trim any leading or trailing whitespace
+        oldName = oldName.trim();
+        newName = newName.trim();
+
+        //check if the new name is already taken
+        if(methodItems.containsKey(newName))
+        {
+            return "Method name: " + newName + " already in use.";
+        }
+
+        //check if the old name is a valid key
+        if(methodItems.containsKey(oldName))
+        {
+            //copy the old method
+            MethodItem newMethod = methodItems.get(oldName);
+
+            //set new method name
+            newMethod.setMethodName(newName);
+
+            //remove old method from map
+            methodItems.remove(oldName);
+
+            //add new method item to class
+            methodItems.put(newName, newMethod);
+
+            //return success
+            return "Method name: " + oldName + " successfully changed to " + newName;
+        } 
+        else 
+        {
+            //invalid method name, return failure
+            return "Method name: " + oldName + " does not exist.";
+        }
+
+    }
     
 
     //not sure what format we want to return yet.
