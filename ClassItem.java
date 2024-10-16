@@ -235,6 +235,7 @@ public class ClassItem {
             return "Field name cannot be null or blank";
         }
 
+        fieldName = fieldName.toLowerCase().trim();
         // check if field already exists
         if (fieldItems.containsKey(fieldName)) {
             return "Field name: " + fieldName + " already in use.";
@@ -255,10 +256,14 @@ public class ClassItem {
             return "Field name cannot be null or blank";
         }
 
+        fieldName = fieldName.toLowerCase().trim();
+
         // check if field exists
         if (!fieldItems.containsKey(fieldName)) {
             return "Field name: " + fieldName + " does not exist.";
         }
+
+
 
         // remove field from map
         fieldItems.remove(fieldName);
@@ -273,8 +278,8 @@ public class ClassItem {
         }
 
         // trim to remove any leading or trailing whitespace
-        oldName = oldName.trim();
-        newName = newName.trim();
+        oldName = oldName.toLowerCase().trim();
+        newName = newName.toLowerCase().trim();
 
         // check if new name is already in use
         if (fieldItems.containsKey(newName)) {
