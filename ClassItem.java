@@ -47,7 +47,7 @@ public class ClassItem
     //check that the oldClassItemName exists in the classItemList
     //check that the newClassItemName is available to use
 
-    public static String renameClassItem(final Map<String, ClassItem> classItemList, final String newClassItemName, final String oldClassItemName){
+    public static String renameClassItem(final Map<String, ClassItem> classItemList, final String newClassItemName, final String oldClassItemName, final Map<String, RelationshipItem> relationships){
         if(classItemList == null){
             throw new IllegalArgumentException("classItemList cannot be null");
         }
@@ -71,6 +71,25 @@ public class ClassItem
                 ((ClassItem) classItemList.get(oldClassItemName)).setClassItemName(newClassItemName);
                 //ClassItem temp = new ClassItem(newClassItemName);
                 classItemList.put(newClassItemName.toLowerCase().trim(), classItemList.remove(oldClassItemName));
+                // update the key in the relationship map only, the classname is already updated because
+                // relationship stores the class object, not the name
+
+                for (Map.Entry<String, RelationshipItem> entry : relationships.entrySet()) {
+                    String[] split = entry.getKey().split("_");
+                    String source = split[0];
+                    String destination = split[1];
+                    if (source.equals(oldName)){
+                        RelationshipItem temp = relationships.get(entry.getKey());
+                        relationships.remove(entry.getKey());
+                        relationships.put(newClassItemName + "_" + destination, temp);
+                    }
+                    else {
+                        RelationshipItem temp = relationships.get(entry.getKey());
+                        relationships.remove(entry.getKey());
+                        relationships.put(source + "_" + newClassItemName, temp);
+                    }
+                }
+
                 return oldName + " class renamed to \"" + newClassItemName + "\"";
            }else{
                 //displayed if newClassItemName is already a key in the HashMap
