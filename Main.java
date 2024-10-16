@@ -182,6 +182,23 @@ public class Main {
 					System.out.println("No classes to add field too.");
 				}
 				break;
+			case "14":	//Remove a Field
+				ui.ListClasses(classItems);
+				if(!classItems.isEmpty()){
+					System.out.print("Input the name of the class that you want to remove a field from:\n>");
+					ClassItem tempClassItem = classItems.get(scanner.nextLine());
+
+					if(tempClassItem != null){
+						System.out.println("Fields in selected class: " + tempClassItem.fieldItems.keySet());
+						System.out.print("Input name of field you want to remove from " + tempClassItem.getClassItemName() + "\n> ");	
+						System.out.println(tempClassItem.removeField(scanner.nextLine()));
+					} else {
+						System.out.println("Class Item does not exist.");
+					}
+				} else {
+					System.out.println("No classes to remove field from.");
+				}
+			break;
 			case "h":
 			case "help":
 				ui.Help();
@@ -216,6 +233,7 @@ public class Main {
 		System.out.println("11. Remove a Parameter");
 		System.out.println("12. Change a Parameter");
 		System.out.println("13. Add a Field");
+		System.out.println("14. Remove a Field");
 		System.out.println("h or help for program assistance");
 		System.out.println("e or exit. Exit the program.");
 	}
