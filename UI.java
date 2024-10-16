@@ -1,5 +1,5 @@
 import java.util.Map;
-
+import java.util.Scanner;
 public class UI
 {
 	/*
@@ -63,7 +63,14 @@ public class UI
 	*/
 	public void Help()
 	{
-		System.out.println("Git Gud");
+		System.out.println("UML Editor basics: \n");
+		System.out.println("Main UI: Type in the corresponding number to each feature\n");
+		System.out.println("Add: Type in the name of the relationship/class/method of your liking\n");
+		System.out.println("Delete: Type in the name of the relationship/class/method you would like to remove from the UML\n");
+		System.out.println("Rename: Type in the name a specific relationship/class/method you would like to select,");
+		System.out.println("then include the name you would like to change the relationship/class/method to\n");
+		System.out.println("Parameter: Firstly, type in the name of the class the parameter belongs to");
+		System.out.println("then, type in the name of the paramater you want to add/delete/rename\n");
 	}
 	
 	/*
@@ -71,7 +78,7 @@ public class UI
 	*/
 	public void Exit()
 	{
-		System.out.println("Bye then.");
+		System.out.println("This concludes this program's execution. Goodbye!");
 		System.exit(0);
 	}
 };
