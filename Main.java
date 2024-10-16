@@ -62,7 +62,7 @@ public class Main
 			case "6":	//Delete a Class
 				System.out.println("Input name of class you would like to delete");
 				input = scanner.nextLine();
-				System.out.println(ClassItem.removeClassItem(classItems, input));
+				System.out.println(ClassItem.removeClassItem(classItems, input, relationshipItems));
 				break;
 			case "7":	//Rename a Class
 				System.out.println("Input name of class you want to rename");

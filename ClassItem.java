@@ -80,8 +80,9 @@ public class ClassItem
     /*
      * takes Map to work with
      * and the name of the class to delete
+     * and the map of relationships from main to remove the relationships corresponding to the deleted class
      */
-    public static String removeClassItem(final Map<String, ClassItem> classItems,final String classItemName){
+    public static String removeClassItem(final Map<String, ClassItem> classItems,final String classItemName, Map<String, RelationshipItem> relationships){
         //precondition checking
 
         if(classItems == null){
@@ -94,7 +95,11 @@ public class ClassItem
         //if the classItemName to delete is a key inside of the map given, we remove the mapping for the key from the map.    
         //.remove returns the previous value associated with the key, or null if it did not exist.
         if(classItems.remove(classItemName) != null){
-            return classItemName + " has been removed.";
+            // need to delete relationships corresponding to ClassItem that got removed
+            // this goes through all entries and if the key contains the class name, which it should, it gets removed.
+            relationships.entrySet().removeIf(entry -> entry.getKey().contains(classItemName));
+
+            return classItemName + " and corresponding relationships have been removed.";
         }else{
             return "No class with name \"" + classItemName + "\" exists.";
         }
