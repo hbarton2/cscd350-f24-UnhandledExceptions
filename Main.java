@@ -166,10 +166,14 @@ public class Main {
 						tempMethodItemChangeParameter.changeParameter(oldParameterNameChange, newParameterNameChange));
 
 				break;
+			case "h":
+			case "help":
+				ui.Help();
+				break;
 			case "e":	//exit
 			case "exit": // Exit
+				scanner.close();
 				ui.Exit();
-				// add scanner.close() inside of ui.Exit() method
 				break;
 			case "m": //menu
 				Menu();
@@ -195,6 +199,7 @@ public class Main {
 		System.out.println("10. Add a Parameter");
 		System.out.println("11. Remove a Parameter");
 		System.out.println("12. Change a Parameter");
+		System.out.println("h or help for program assistance");
 		System.out.println("e or exit. Exit the program.");
 	}
 };
