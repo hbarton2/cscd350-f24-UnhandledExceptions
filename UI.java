@@ -34,7 +34,18 @@ public class UI
 			return;
 		}
 		
-		System.out.println(classItem.toString());
+		System.out.println();
+		System.out.print("Class: " + classItem.toString() + "\nFields: ");
+		
+		//fields
+		System.out.print("not yet");
+		
+		//methods
+		StringBuilder sb = new StringBuilder();
+		for (Map.Entry<String, MethodItem> entry : classItem.methodItems.entrySet()) 
+			sb.append("\nMethod: " + entry.getValue().toString());
+		
+		System.out.println(sb.toString());
 	}
 	
 	/*
