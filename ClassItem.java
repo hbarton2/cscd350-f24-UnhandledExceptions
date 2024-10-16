@@ -65,9 +65,12 @@ public class ClassItem
 
             if(!classItemList.containsKey(newClassItemName.toLowerCase().trim())){
                 //sets the classItem Object that is stored in the value associated with the Map for the key oldClassItemName to be newClassItemName
+                // gets the old class name from map
                 String oldName = ((ClassItem) classItemList.get(oldClassItemName)).getClassItemName();
+                // sets the new class name without updating the key in the map
                 ((ClassItem) classItemList.get(oldClassItemName)).setClassItemName(newClassItemName);
-                classItemList.put(newClassItemName.toLowerCase().trim(), classItemList.remove("oldClassItemName"));
+                //ClassItem temp = new ClassItem(newClassItemName);
+                classItemList.put(newClassItemName.toLowerCase().trim(), classItemList.remove(oldClassItemName));
                 return oldName + " class renamed to \"" + newClassItemName + "\"";
            }else{
                 //displayed if newClassItemName is already a key in the HashMap
