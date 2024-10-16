@@ -306,7 +306,6 @@ public class ClassItem {
         }
     }
 
-    // not sure what format we want to return yet.
     public String toString() {
         return this.name;
     }
