@@ -63,10 +63,11 @@ public class ClassItem
         //checks that the old name to be changed exists, and that the name is not a duplicate.
         if(classItemList.containsKey(oldClassItemName)){
 
-            if(!classItemList.containsKey(newClassItemName)){
+            if(!classItemList.containsKey(newClassItemName.toLowerCase().trim())){
                 //sets the classItem Object that is stored in the value associated with the Map for the key oldClassItemName to be newClassItemName
                 String oldName = ((ClassItem) classItemList.get(oldClassItemName)).getClassItemName();
                 ((ClassItem) classItemList.get(oldClassItemName)).setClassItemName(newClassItemName);
+                classItemList.put(newClassItemName.toLowerCase().trim(), classItemList.remove("oldClassItemName"));
                 return oldName + " class renamed to \"" + newClassItemName + "\"";
            }else{
                 //displayed if newClassItemName is already a key in the HashMap
@@ -133,7 +134,7 @@ public class ClassItem
 	}
 
 	//trim any leading or trailing whitespace to ensure valid input
-	methodName = methodName.strip();
+	methodName = methodName.trim();
 	    
         //check if the method name already exists in the class
         if(methodItems.containsKey(methodName))
@@ -162,7 +163,7 @@ public class ClassItem
 	}
 	    
 	//trim any leading or trailing whitespace to ensure valid input
-	methodName = methodName.strip();
+	methodName = methodName.trim();
 	    
         //check if the method name is a valid key
         if(!methodItems.containsKey(methodName))
