@@ -72,6 +72,6 @@ public class ParameterItem {
     // placeholder toString
     @Override
     public String toString() {
-        return this.type + this.parameterName;
+        return this.type + " " + this.parameterName;
     }
 }

@@ -40,7 +40,7 @@ public class MethodItem
 	}
 
 	//function to add a new parameter to the hash map
-	public String addParameter(String parameterName)
+	public String addParameter(String type, String parameterName)
 	{
 		//preconditions
 		if(parameterName == null || parameterName.isBlank())
@@ -58,14 +58,19 @@ public class MethodItem
 			return "Parameter name: " + parameterName + " already in use.";
 		}
 
-		//create parameter object
-		ParameterItem parameter = new ParameterItem(parameterName);
-		
-		//insert new parameter item into map
-		parameters.put(parameterName, parameter);
+		try{
+
+			//create parameter object
+			ParameterItem parameter = new ParameterItem(type, parameterName);
+			//insert new parameter item into map
+			parameters.put(parameterName, parameter);
+
+		}catch(IllegalArgumentException e){
+			return e.getMessage();
+		}
 
 		//return successful add of parameter
-		return "Parameter name: " + parameterName + " successfully added.";
+		return "Parameter: " + type + " " + parameterName + " successfully added.";
 	}
 
 	//getter to retrieve a parameter from the map
@@ -75,7 +80,7 @@ public class MethodItem
 	}
 
 	//function to remove a parameter from the map
-	public String removeParameter(String parameterName)
+	public String removeParameter(String type, String parameterName)
 	{
 		//preconditions
 		if(parameterName == null || parameterName.isBlank())
@@ -90,18 +95,18 @@ public class MethodItem
 		if(!parameters.containsKey(parameterName))
 		{
 			//return failure (parameter not in map)
-			return "Parameter name: " + parameterName + " does not exist";
+			return "Parameter: " + type + " " + parameterName + " does not exist";
 		}
 
 		//remove parameter from map
 		parameters.remove(parameterName);
 		
 		//return successful remove message
-		return "Parameter name: " + parameterName + " removed successfully.";
+		return "Parameter: " + type + " " + parameterName + " removed successfully.";
 	}
 
 	//function to change a parameter name
-	public String changeParameter(String oldName, String newName)
+	public String changeParameter(String oldType, String oldName, String newType, String newName)
 	{
 		//preconditions
 		if(oldName == null || newName == null || oldName.isBlank() || newName.isBlank())
@@ -123,20 +128,21 @@ public class MethodItem
 		//check if the parameter exists in the map
 		if(parameters.containsKey(oldName))
 		{
-			//store the old parameter
-			ParameterItem parameter = parameters.get(oldName);
 
 			//delete old entry in map
 			parameters.remove(oldName);
 
-			//add parameter back to map under new name
-			parameters.put(newName, parameter);
+			//create new parameter object
+			ParameterItem newParam = new ParameterItem(newType, newName);
+
+			//add new parameter back to map
+			parameters.put(newName, newParam);
 
 			//return successful rename message
-			return "Parameter name: " + oldName + " successfully changed to: " + newName;
+			return "Parameter: " + oldType + " " + oldName + " successfully changed to: " + newType + " " + newName;
 		}else{
 			//old name key does not exist in map
-			return "Parameter name: " + oldName + " does not exist.";
+			return "Parameter: "+ oldType + " " + oldName + " does not exist.";
 		}
 	}
 
