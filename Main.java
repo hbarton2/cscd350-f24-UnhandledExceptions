@@ -140,12 +140,12 @@ public class Main {
 					return;
 				}
 
-				System.out.println("Available parameters: " + tempMethodItemRemoveParameter.toString());
+				System.out.println("Available Parameters in " + tempMethodItemRemoveParameter.toString());
 				System.out.print("Input parameter to remove in the format <data type> <name>\n>");
 				String[] partsRemove = scanner.nextLine().split(" ", 2);
 
 				if (partsRemove.length == 2) {
-					System.out.println(tempMethodItemRemoveParameter.removeParameter(parts[0], parts[1]));
+					System.out.println(tempMethodItemRemoveParameter.removeParameter(partsRemove[0], partsRemove[1]));
 					break;
 				} else {
 					System.out.println("Invalid input, please enter in the format <data type> <name>");
@@ -171,14 +171,14 @@ public class Main {
 					return;
 				}
 
-				System.out.println("Available parameters: " + tempMethodItemChangeParameter.toString());
+				System.out.println("Available Parameters in " + tempMethodItemChangeParameter.toString());
 				System.out.print("Input parameter to change in the format <data type> <name>\n>");
 				String[] oldParts = scanner.nextLine().split(" ", 2);
 				System.out.println("Input new parameter in the format <data type> <name> ");
 				String[] newParts = scanner.nextLine().split(" ", 2);
 				if (oldParts.length == 2 && newParts.length == 2) {
-					System.out.println(tempMethodItemChangeParameter.changeParameter(oldParameterNameChange,
-							newParameterNameChange));
+					System.out.println(tempMethodItemChangeParameter.changeParameter(oldParts[0], oldParts[1],
+							newParts[0], newParts[1]));
 					break;
 				} else {
 					System.out.println("Invalid input.");
@@ -290,15 +290,15 @@ public class Main {
 		classItems.get("mcdonalds").addMethod("cook_burger");
 		classItems.get("tacobell").addMethod("cook_taco");
 		classItems.get("tacobell").addMethod("cook_casadilla");
-		classItems.get("mcdonalds").methodItems.get("cook_fries").addParameter("time");
-		classItems.get("mcdonalds").methodItems.get("cook_fries").addParameter("potatoes");
-		classItems.get("mcdonalds").methodItems.get("cook_burger").addParameter("time");
-		classItems.get("mcdonalds").methodItems.get("cook_burger").addParameter("patty");
+		classItems.get("mcdonalds").methodItems.get("cook_fries").addParameter("int", "time");
+		classItems.get("mcdonalds").methodItems.get("cook_fries").addParameter("String", "potatoes");
+		classItems.get("mcdonalds").methodItems.get("cook_burger").addParameter("int", "time");
+		classItems.get("mcdonalds").methodItems.get("cook_burger").addParameter("String", "patty");
 
-		classItems.get("tacobell").methodItems.get("cook_taco").addParameter("time");
-		classItems.get("tacobell").methodItems.get("cook_taco").addParameter("meat");
-		classItems.get("tacobell").methodItems.get("cook_casadilla").addParameter("time");
-		classItems.get("tacobell").methodItems.get("cook_casadilla").addParameter("chicken");
+		classItems.get("tacobell").methodItems.get("cook_taco").addParameter("int", "time");
+		classItems.get("tacobell").methodItems.get("cook_taco").addParameter("String", "meat");
+		classItems.get("tacobell").methodItems.get("cook_casadilla").addParameter("int", "time");
+		classItems.get("tacobell").methodItems.get("cook_casadilla").addParameter("String", "chicken");
 
 		RelationshipItem relationship = new RelationshipItem(
 				classItems.get("mcdonalds"), classItems.get("tacobell"));
