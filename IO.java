@@ -1,30 +1,29 @@
 import java.util.HashMap;
 import java.io.File;
+
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import java.io.IOException;
-import java.util.ArrayList;
 
 public class IO
 {
 	public static String Save(
 		HashMap<String, ClassItem> classItems,
 		HashMap<String, RelationshipItem> relationshipItems)
-	{
+	{		
 
-		ArrayList<ClassIO> classIOs = new ArrayList<>();
-		for (String key : classItems.keySet())
-		{
-			ClassItem classItem = classItems.get(key);
-			ClassIO classIO = new ClassIO();
-			classIO.name = classItem.getClassItemName();
-			classIOs.add(classIO);
-		}
-		
+		//combind both hashmaps into 1 hashmap
+		HashMap<String, Object> items = new HashMap<>();
+		items.put("classItems", classItems);
+		items.put("relationshipItems", relationshipItems);
+
 		try
 		{
 			ObjectMapper objectMapper = new ObjectMapper();
-			objectMapper.writeValue(new File("output.json"), classIOs);
+			objectMapper.writeValue(new File("output.json"), items);
 		} catch (JsonProcessingException e) {
 			e.printStackTrace();
 			return "uh oh!";
@@ -33,38 +32,28 @@ public class IO
 			return "uh oh!";
 		}
 		
-		return "save";
+		return "saved";
 	}
 	
-	public static String Load(
+	public static HashMap<String, Object> Load(
 		HashMap<String, ClassItem> classItems,
 		HashMap<String, RelationshipItem> relationshipItems)
-	{
-		classItems.clear();
-		
-		ArrayList<ClassIO> classIOs = new ArrayList();
-		
+	{		
+		HashMap<String, Object> items =  new HashMap<>();
+
 		try
 		{
 			ObjectMapper objectMapper = new ObjectMapper();
-			classIOs = objectMapper.readValue(new File("output.json"),
-				objectMapper.getTypeFactory().constructCollectionType(ArrayList.class, ClassIO.class));
+			items = objectMapper.readValue(new File("output.json"),
+			 new TypeReference<HashMap<String, Object>>() {});
+		} catch (JsonParseException e) {
+        	e.printStackTrace();
+      	} catch (JsonMappingException e) {
+        	e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
-			return "uh oh!";
 		}
-			
-		for (ClassIO classIO : classIOs)
-		{
-				ClassItem.addClassItem(classItems, classIO.name);
-		}
-		
-		return "load";
+
+		return items;
 	}
 };
-
-class ClassIO
-{
-	public String name;
-	public ClassIO() {}
-}

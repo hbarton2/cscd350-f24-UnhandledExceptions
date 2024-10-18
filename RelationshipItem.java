@@ -7,6 +7,8 @@ public class RelationshipItem
     private ClassItem source;
     private ClassItem destination;
     
+    public RelationshipItem() {} //blank constructor for IO serialization
+
     public RelationshipItem(final ClassItem source, final ClassItem destination){
 
         // checking for null values and throwing an exception if the source or destination are null
@@ -46,6 +48,7 @@ public class RelationshipItem
         destination.toLowerCase();
         // at this point the key is created with everything being lowercase
         String key = source + "_" + destination;
+        kb.close(); // close the scanner
 
         // at this point we need to create a relationship to add to the map
         // we need to check if the classes exist
@@ -63,7 +66,7 @@ public class RelationshipItem
 
         // adding the relationship to the map
         relationships.put(key, relationship);
-        
+
         return "Relationship created successfully";
     }
     /*
@@ -102,11 +105,13 @@ public class RelationshipItem
 
             // if the user types exit we exit the method
             if(key.equalsIgnoreCase("exit")){
+                kb.close(); // close the scanner
                 return "exiting delete menu...";
             }
             
             // if the relationship exists, we remove it and return a message that the relationship has been removed
             if(relationshipMap.containsKey(key)){
+                kb.close(); // close the scanner
                 relationshipMap.remove(key);
                 return "Relationship has been removed";
             }
@@ -122,9 +127,19 @@ public class RelationshipItem
         return source;
     }
 
+    //sets the destination
+    public void setSource(ClassItem source) {
+        this.source = source;
+    }
+
     //returns the destination ClassItem object
     public ClassItem getDestination() {
         return destination;
+    }
+
+    //sets the destination
+    public void setDestination(ClassItem destination) {
+        this.destination = destination;
     }
 
     // overrides the toString method to return a string representation of the relationship
@@ -132,7 +147,7 @@ public class RelationshipItem
     public String toString(){
 
         //the ClassItem objects have a getName() method that returns the name of the class
-        return this.source.getClassItemName() + " has a relationship with " + this.destination.getClassItemName();
+        return this.source.getName() + " has a relationship with " + this.destination.getName();
     }
 
 

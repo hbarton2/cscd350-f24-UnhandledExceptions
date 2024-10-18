@@ -1,7 +1,6 @@
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 import java.util.HashMap;
-import java.util.Map;
 
 public class unittests {
   
@@ -10,8 +9,8 @@ public class unittests {
   @Test
   public void testRenameClassChangesRelationshipKey() {
     // map of class and relationship items
-    Map<String, ClassItem> classes = new HashMap<>();
-    Map<String, RelationshipItem> relationships = new HashMap<>();
+    HashMap<String, ClassItem> classes = new HashMap<>();
+    HashMap<String, RelationshipItem> relationships = new HashMap<>();
 
     // create a class item
     ClassItem.addClassItem(classes, "class1");
@@ -32,8 +31,8 @@ public class unittests {
   @Test
   public void testRenameClassChangesRelationshipKeyFlipped() {
     // map of class and relationship items
-    Map<String, ClassItem> classes = new HashMap<>();
-    Map<String, RelationshipItem> relationships = new HashMap<>();
+    HashMap<String, ClassItem> classes = new HashMap<>();
+    HashMap<String, RelationshipItem> relationships = new HashMap<>();
 
     // create a class item
     ClassItem.addClassItem(classes, "class1");
