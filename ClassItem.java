@@ -49,7 +49,7 @@ public class ClassItem {
     // check that the newClassItemName is available to use
 
     public static String renameClassItem(final Map<String, ClassItem> classItemList, final String newClassItemName,
-            final String oldClassItemName) {
+            final String oldClassItemName, Map<String, RelationshipItem> relationships) {
         if (classItemList == null) {
             throw new IllegalArgumentException("classItemList cannot be null");
         }
@@ -75,6 +75,38 @@ public class ClassItem {
                 ((ClassItem) classItemList.get(oldClassItemName)).setClassItemName(newClassItemName);
                 // ClassItem temp = new ClassItem(newClassItemName);
                 classItemList.put(newClassItemName.toLowerCase().trim(), classItemList.remove(oldClassItemName));
+
+                // need to update relationships to reflect the new class name in the keys
+                // go through all relationships and update the keys that contain the old class name
+                // the keys are source_destination
+                for (Map.Entry<String, RelationshipItem> entry : relationships.entrySet()) {
+                    String key = entry.getKey();
+                    if (key.contains(oldClassItemName)) {
+                        // split the key into source and destination
+                        String[] split = key.split("_");
+                        if (split[0].equals(oldClassItemName)){
+                            // create a new key with the new class name
+                            String newKey = newClassItemName + "_" + split[1];
+                            // get the relationship object
+                            RelationshipItem relationship = relationships.get(key);
+                            // remove the old key
+                            relationships.remove(key);
+                            // add the relationship with the new key
+                            relationships.put(newKey, relationship);
+                        }
+                        else {
+                            // create a new key with the new class name
+                            String newKey = split[0] + "_" + newClassItemName;
+                            // get the relationship object
+                            RelationshipItem relationship = relationships.get(key);
+                            // remove the old key
+                            relationships.remove(key);
+                            // add the relationship with the new key
+                            relationships.put(newKey, relationship);
+                        }
+                    }
+                }
+
                 return oldName + " class renamed to \"" + newClassItemName + "\"";
             } else {
                 // displayed if newClassItemName is already a key in the HashMap
