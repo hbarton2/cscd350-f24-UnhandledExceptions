@@ -65,7 +65,7 @@ public class Main {
 				String oldName = scanner.nextLine();
 				System.out.println("Input new name for " + oldName);
 				String newName = scanner.nextLine();
-				System.out.println(ClassItem.renameClassItem(classItems, newName, oldName));
+				System.out.println(ClassItem.renameClassItem(classItems, newName, oldName, relationshipItems));
 				break;
 			case "8": // Add a Method
 				System.out.print("Input name of class to add method to\n>");

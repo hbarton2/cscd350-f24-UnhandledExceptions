@@ -49,7 +49,7 @@ public class ClassItem {
     // check that the newClassItemName is available to use
 
     public static String renameClassItem(final Map<String, ClassItem> classItemList, final String newClassItemName,
-            final String oldClassItemName) {
+            final String oldClassItemName, Map<String, RelationshipItem> relationships) {
         if (classItemList == null) {
             throw new IllegalArgumentException("classItemList cannot be null");
         }
@@ -75,6 +75,12 @@ public class ClassItem {
                 ((ClassItem) classItemList.get(oldClassItemName)).setClassItemName(newClassItemName);
                 // ClassItem temp = new ClassItem(newClassItemName);
                 classItemList.put(newClassItemName.toLowerCase().trim(), classItemList.remove(oldClassItemName));
+
+                // need to update relationships to reflect the new class name in the keys
+                // go through all relationships and update the keys that contain the old class name
+                // the keys are source_destination
+                
+
                 return oldName + " class renamed to \"" + newClassItemName + "\"";
             } else {
                 // displayed if newClassItemName is already a key in the HashMap
