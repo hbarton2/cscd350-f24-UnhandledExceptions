@@ -5,6 +5,8 @@ public class MethodItem {
 	// hash map to store ParamterItem's with their name as the key
 	private HashMap<String, ParameterItem> parameters;
 
+	public MethodItem() {} //blank constructor for IO serialization
+
 	public MethodItem(String methodName) {
 		// preconditions
 		if (methodName == null || methodName.isBlank()) {
@@ -31,6 +33,14 @@ public class MethodItem {
 		}
 
 		this.methodName = newName;
+	}
+
+	public HashMap<String, ParameterItem> getParameters() {
+		return this.parameters;
+	}
+
+	public void setParameters(HashMap<String, ParameterItem> parameters) {
+		this.parameters = parameters;
 	}
 
 	// function to add a new parameter to the hash map

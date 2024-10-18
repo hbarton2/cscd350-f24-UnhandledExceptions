@@ -1,11 +1,13 @@
 import java.util.HashMap;
-import java.util.Map;
 import java.util.Scanner;
+
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class Main {
 	UI ui = new UI();
-	Map<String, ClassItem> classItems = new HashMap<>();
-	Map<String, RelationshipItem> relationshipItems = new HashMap<>();
+	HashMap<String, ClassItem> classItems = new HashMap<>();
+	HashMap<String, RelationshipItem> relationshipItems = new HashMap<>();
 	Scanner scanner = new Scanner(System.in);
 	String input;
 
@@ -193,7 +195,7 @@ public class Main {
 
 					if (tempClassItem != null) {
 						System.out.print(
-								"Input name of field you want to add to " + tempClassItem.getClassItemName() + "\n> ");
+								"Input name of field you want to add to " + tempClassItem.getName() + "\n> ");
 						System.out.println(tempClassItem.addField(scanner.nextLine()));
 					} else {
 						System.out.println("Class Item does not exist.");
@@ -211,7 +213,7 @@ public class Main {
 					if (tempClassItem != null) {
 						System.out.println("Fields in selected class: " + tempClassItem.fieldItems.keySet());
 						System.out.print("Input name of field you want to remove from "
-								+ tempClassItem.getClassItemName() + "\n> ");
+								+ tempClassItem.getName() + "\n> ");
 						System.out.println(tempClassItem.removeField(scanner.nextLine()));
 					} else {
 						System.out.println("Class Item does not exist.");
@@ -229,7 +231,7 @@ public class Main {
 					if (tempClassItem != null) {
 						System.out.println("Fields in selected class: " + tempClassItem.fieldItems.keySet());
 						System.out.print("Input name of field you want to rename from "
-								+ tempClassItem.getClassItemName() + "\n> ");
+								+ tempClassItem.getName() + "\n> ");
 						String fieldNameOld = scanner.nextLine();
 						System.out.println("Input name to rename " + fieldNameOld + " to: \n>");
 						System.out.println(tempClassItem.renameField(fieldNameOld, scanner.nextLine()));
@@ -239,6 +241,32 @@ public class Main {
 				} else {
 					System.out.println("No classes to rename field of.");
 				}
+				break;
+			case "clear":
+				classItems.clear();
+				relationshipItems.clear();
+				break;
+			case "s":
+			case "save":
+				System.out.println(IO.Save(classItems, relationshipItems));
+				break;
+			case "l":
+			case "load":
+				//load from file into items
+				HashMap<String, Object> items = IO.Load(classItems, relationshipItems);
+
+				//clear both hashmaps
+				classItems.clear();
+				relationshipItems.clear();
+
+				//split up items into classItems and relationshipItems
+				ObjectMapper objectMapper = new ObjectMapper();
+				classItems.putAll(objectMapper.convertValue(items.get("classItems"),
+				 new TypeReference<HashMap<String, ClassItem>>() {}));
+				relationshipItems.putAll(objectMapper.convertValue(items.get("relationshipItems"),
+				 new TypeReference<HashMap<String, RelationshipItem>>() {}));
+				
+				System.out.println("file loaded");
 				break;
 			case "h":
 			case "help":
@@ -260,7 +288,8 @@ public class Main {
 		}
 	}
 
-	private void Menu() {
+	private void Menu() 
+	{
 		System.out.println("\n-=Unhandled Exceptions UML Editor=-");
 		System.out.println("0. List Class Info");
 		System.out.println("1. List Classes");
@@ -278,23 +307,29 @@ public class Main {
 		System.out.println("13. Add a Field");
 		System.out.println("14. Remove a Field");
 		System.out.println("15. Rename a Field");
-		System.out.println("h or help for program assistance");
-		System.out.println("e or exit. Exit the program.");
+		System.out.println("(s)ave: Save");
+		System.out.println("(l)oad: Load");
+		System.out.println("(h)elp: Program assistance");
+		System.out.println("(e)xit: Exit the program");
 	}
 
-	private void tester() {
+	private void tester() 
+	{
 		ClassItem.addClassItem(classItems, "mcdonalds");
-		ClassItem.addClassItem(classItems, "tacobell");
-
+		classItems.get("mcdonalds").addField("location");
+		classItems.get("mcdonalds").addField("owner");
 		classItems.get("mcdonalds").addMethod("cook_fries");
 		classItems.get("mcdonalds").addMethod("cook_burger");
-		classItems.get("tacobell").addMethod("cook_taco");
-		classItems.get("tacobell").addMethod("cook_casadilla");
 		classItems.get("mcdonalds").methodItems.get("cook_fries").addParameter("int", "time");
 		classItems.get("mcdonalds").methodItems.get("cook_fries").addParameter("String", "potatoes");
 		classItems.get("mcdonalds").methodItems.get("cook_burger").addParameter("int", "time");
 		classItems.get("mcdonalds").methodItems.get("cook_burger").addParameter("String", "patty");
 
+		ClassItem.addClassItem(classItems, "tacobell");
+		classItems.get("tacobell").addField("location");
+		classItems.get("tacobell").addField("owner");
+		classItems.get("tacobell").addMethod("cook_taco");
+		classItems.get("tacobell").addMethod("cook_casadilla");
 		classItems.get("tacobell").methodItems.get("cook_taco").addParameter("int", "time");
 		classItems.get("tacobell").methodItems.get("cook_taco").addParameter("String", "meat");
 		classItems.get("tacobell").methodItems.get("cook_casadilla").addParameter("int", "time");
