@@ -112,10 +112,15 @@ public class Main {
 					System.out.println("Method does not exist.");
 					return;
 				}
-				System.out.print("Input name of parameter to add\n>");
-				System.out.println(tempMethodItemAddParameter.addParameter(scanner.nextLine()));
-
-				break;
+				System.out.print("Input parameter to add in the format <data type> <name>\n>");
+				String[] parts = scanner.nextLine().split(" ", 2);
+				if (parts.length == 2) {
+					System.out.println(tempMethodItemAddParameter.addParameter(parts[0], parts[1]));
+					break;
+				} else {
+					System.out.println("Invalid input, please enter in the format <data type> <name>");
+					break;
+				}
 			case "11": // Remove a Parameter
 				System.out.print("Input name of class method belongs to\n>");
 				ClassItem tempClassItemRemoveParameter = classItems.get(scanner.nextLine());
@@ -135,14 +140,22 @@ public class Main {
 					return;
 				}
 
-				System.out.print("Input name of parameter to remove\n>");
-				System.out.println(tempMethodItemRemoveParameter.removeParameter(scanner.nextLine()));
+				System.out.println("Available Parameters in " + tempMethodItemRemoveParameter.toString());
+				System.out.print("Input parameter to remove in the format <data type> <name>\n>");
+				String[] partsRemove = scanner.nextLine().split(" ", 2);
 
-				break;
+				if (partsRemove.length == 2) {
+					System.out.println(tempMethodItemRemoveParameter.removeParameter(partsRemove[0], partsRemove[1]));
+					break;
+				} else {
+					System.out.println("Invalid input, please enter in the format <data type> <name>");
+					break;
+				}
+
 			case "12": // Change a Parameter
 				System.out.print("Input name of class method belongs to\n>");
 				ClassItem tempClassItemChangeParameter = classItems.get(scanner.nextLine());
-				
+
 				if (tempClassItemChangeParameter == null) {
 					System.out.println("Class does not exist.");
 					return;
@@ -158,22 +171,29 @@ public class Main {
 					return;
 				}
 
-				System.out.print("Input name of parameter to change\n>");
-				String oldParameterNameChange = scanner.nextLine();
-				System.out.println("Input new name for the parameter: " + oldParameterNameChange);
-				String newParameterNameChange = scanner.nextLine();
-				System.out.println(
-						tempMethodItemChangeParameter.changeParameter(oldParameterNameChange, newParameterNameChange));
+				System.out.println("Available Parameters in " + tempMethodItemChangeParameter.toString());
+				System.out.print("Input parameter to change in the format <data type> <name>\n>");
+				String[] oldParts = scanner.nextLine().split(" ", 2);
+				System.out.println("Input new parameter in the format <data type> <name> ");
+				String[] newParts = scanner.nextLine().split(" ", 2);
+				if (oldParts.length == 2 && newParts.length == 2) {
+					System.out.println(tempMethodItemChangeParameter.changeParameter(oldParts[0], oldParts[1],
+							newParts[0], newParts[1]));
+					break;
+				} else {
+					System.out.println("Invalid input.");
+					break;
+				}
 
-				break;
-			case "13":	//Add a Field
+			case "13": // Add a Field
 				ui.ListClasses(classItems);
-				if(!classItems.isEmpty()){
+				if (!classItems.isEmpty()) {
 					System.out.print("Input the name of the class that you want to add a field to:\n>");
 					ClassItem tempClassItem = classItems.get(scanner.nextLine());
 
-					if(tempClassItem != null){
-						System.out.print("Input name of field you want to add to " + tempClassItem.getClassItemName() + "\n> ");	
+					if (tempClassItem != null) {
+						System.out.print(
+								"Input name of field you want to add to " + tempClassItem.getClassItemName() + "\n> ");
 						System.out.println(tempClassItem.addField(scanner.nextLine()));
 					} else {
 						System.out.println("Class Item does not exist.");
@@ -182,15 +202,16 @@ public class Main {
 					System.out.println("No classes to add field too.");
 				}
 				break;
-			case "14":	//Remove a Field
+			case "14": // Remove a Field
 				ui.ListClasses(classItems);
-				if(!classItems.isEmpty()){
+				if (!classItems.isEmpty()) {
 					System.out.print("Input the name of the class that you want to remove a field from:\n>");
 					ClassItem tempClassItem = classItems.get(scanner.nextLine());
 
-					if(tempClassItem != null){
+					if (tempClassItem != null) {
 						System.out.println("Fields in selected class: " + tempClassItem.fieldItems.keySet());
-						System.out.print("Input name of field you want to remove from " + tempClassItem.getClassItemName() + "\n> ");	
+						System.out.print("Input name of field you want to remove from "
+								+ tempClassItem.getClassItemName() + "\n> ");
 						System.out.println(tempClassItem.removeField(scanner.nextLine()));
 					} else {
 						System.out.println("Class Item does not exist.");
@@ -198,16 +219,17 @@ public class Main {
 				} else {
 					System.out.println("No classes to remove field from.");
 				}
-			break;
-			case "15":	//Rename a Field
+				break;
+			case "15": // Rename a Field
 				ui.ListClasses(classItems);
-				if(!classItems.isEmpty()){
+				if (!classItems.isEmpty()) {
 					System.out.print("Input the name of the class that you want to rename a field in:\n>");
 					ClassItem tempClassItem = classItems.get(scanner.nextLine());
 
-					if(tempClassItem != null){
+					if (tempClassItem != null) {
 						System.out.println("Fields in selected class: " + tempClassItem.fieldItems.keySet());
-						System.out.print("Input name of field you want to rename from " + tempClassItem.getClassItemName() + "\n> ");	
+						System.out.print("Input name of field you want to rename from "
+								+ tempClassItem.getClassItemName() + "\n> ");
 						String fieldNameOld = scanner.nextLine();
 						System.out.println("Input name to rename " + fieldNameOld + " to: \n>");
 						System.out.println(tempClassItem.renameField(fieldNameOld, scanner.nextLine()));
@@ -217,29 +239,28 @@ public class Main {
 				} else {
 					System.out.println("No classes to rename field of.");
 				}
-			break;
+				break;
 			case "h":
 			case "help":
 				ui.Help();
 				break;
-			case "e":	//exit
+			case "e": // exit
 			case "exit": // Exit
 				scanner.close();
 				ui.Exit();
 				break;
-			case "m": //menu
+			case "m": // menu
 				Menu();
 				break;
-			case "69": //shhh
+			case "69": // shhh
 				tester();
 				break;
 			default:
 				System.out.println("Unknown command.");
 		}
 	}
-	
-	private void Menu()
-	{
+
+	private void Menu() {
 		System.out.println("\n-=Unhandled Exceptions UML Editor=-");
 		System.out.println("0. List Class Info");
 		System.out.println("1. List Classes");
@@ -260,31 +281,30 @@ public class Main {
 		System.out.println("h or help for program assistance");
 		System.out.println("e or exit. Exit the program.");
 	}
-	
-	private void tester()
-	{
+
+	private void tester() {
 		ClassItem.addClassItem(classItems, "mcdonalds");
 		ClassItem.addClassItem(classItems, "tacobell");
-		
+
 		classItems.get("mcdonalds").addMethod("cook_fries");
 		classItems.get("mcdonalds").addMethod("cook_burger");
 		classItems.get("tacobell").addMethod("cook_taco");
 		classItems.get("tacobell").addMethod("cook_casadilla");
-		classItems.get("mcdonalds").methodItems.get("cook_fries").addParameter("time");
-		classItems.get("mcdonalds").methodItems.get("cook_fries").addParameter("potatoes");
-		classItems.get("mcdonalds").methodItems.get("cook_burger").addParameter("time");
-		classItems.get("mcdonalds").methodItems.get("cook_burger").addParameter("patty");
-		
-		classItems.get("tacobell").methodItems.get("cook_taco").addParameter("time");
-		classItems.get("tacobell").methodItems.get("cook_taco").addParameter("meat");
-		classItems.get("tacobell").methodItems.get("cook_casadilla").addParameter("time");
-		classItems.get("tacobell").methodItems.get("cook_casadilla").addParameter("chicken");
-		
-		RelationshipItem relationship = new RelationshipItem(
-			classItems.get("mcdonalds"), classItems.get("tacobell"));
+		classItems.get("mcdonalds").methodItems.get("cook_fries").addParameter("int", "time");
+		classItems.get("mcdonalds").methodItems.get("cook_fries").addParameter("String", "potatoes");
+		classItems.get("mcdonalds").methodItems.get("cook_burger").addParameter("int", "time");
+		classItems.get("mcdonalds").methodItems.get("cook_burger").addParameter("String", "patty");
 
-        // adding the relationship to the map
+		classItems.get("tacobell").methodItems.get("cook_taco").addParameter("int", "time");
+		classItems.get("tacobell").methodItems.get("cook_taco").addParameter("String", "meat");
+		classItems.get("tacobell").methodItems.get("cook_casadilla").addParameter("int", "time");
+		classItems.get("tacobell").methodItems.get("cook_casadilla").addParameter("String", "chicken");
+
+		RelationshipItem relationship = new RelationshipItem(
+				classItems.get("mcdonalds"), classItems.get("tacobell"));
+
+		// adding the relationship to the map
 		String key = "mcdonalds_tacobell";
-        relationshipItems.put(key, relationship);
+		relationshipItems.put(key, relationship);
 	}
 };
