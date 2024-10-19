@@ -280,7 +280,7 @@ public class ClassItem {
 
     }
 
-    public String addField(String fieldName) {
+    public String addField(String fieldName, String type) {
         // preconditions
         if (fieldName == null || fieldName.isBlank()) {
             return "Field name cannot be null or blank";
@@ -293,7 +293,7 @@ public class ClassItem {
         }
 
         // create new field item object
-        FieldItem newField = new FieldItem(fieldName);
+        FieldItem newField = new FieldItem(fieldName, type);
 
         // add new field item to map
         fieldItems.put(fieldName, newField);

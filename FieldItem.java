@@ -1,11 +1,11 @@
 public class FieldItem
 {
 	private String fieldName;
-	private Object type;
+	private String type;
 	
 	public FieldItem() {} //blank constructor for IO serialization
 
-	public FieldItem(String fieldName, Object type)
+	public FieldItem(String fieldName, String type)
   {
     this.fieldName = fieldName;
 		this.type = type;
@@ -16,7 +16,7 @@ public class FieldItem
 		return this.fieldName;
 	}
 
-	public Object getType()
+	public String getType()
 	{
 		return this.type;
 	}
@@ -26,7 +26,7 @@ public class FieldItem
 		this.fieldName = fieldName;
 	}
 
-	public void setType(Object type)
+	public void setType(String type)
 	{
 		this.type = type;
 	}
