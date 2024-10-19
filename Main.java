@@ -49,9 +49,7 @@ public class Main {
 				System.out.println(RelationshipItem.removeRelationship(relationshipItems));
 				break;
 			case "5": // Add a Class
-				System.out.print("Input name of class you would like to create:\n>");
-				input = scanner.nextLine();
-				System.out.println(ClassItem.addClassItem(classItems, input));
+				ClassItem.addClassItem(classItems, scanner);
 				break;
 			case "6": // Delete a Class
 				ui.ListClasses(classItems);
