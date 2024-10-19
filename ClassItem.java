@@ -86,7 +86,7 @@ public class ClassItem {
         if(!newClass.fieldItems.isEmpty()) {
             StringBuilder methods = new StringBuilder();
             for (HashMap.Entry<String, MethodItem> entry : newClass.methodItems.entrySet())
-                methods.append("\nField: " + entry.getValue().toString());
+                methods.append("\nField(s): " + entry.getValue().toString());
             System.out.println(methods.toString());
         }
 
