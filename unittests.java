@@ -99,7 +99,7 @@ public class unittests {
     relationships.put("class2_class3", relationship2);
 
     // expected output
-    String expected = "\nClass: class1\nFields: not yet\nMethods:\n\tMethod: method1 Parameters: \n\tMethod: method2 Parameters: \nRelationships: \n\t" + relationships.get("class2_class1").toString() + "\n\t" + relationships.get("class2_class3").toString() + "\n";
+    String expected = "\nClass: class2\nFields: not yet\nMethods:\n\tMethod: method1 Parameters: \n\tMethod: method2 Parameters: \nRelationships: \n\t" + relationships.get("class2_class1").toString() + "\n\t" + relationships.get("class2_class3").toString() + "\n";
 
     // I have to create a new UI using the default constructor because the ListClass method is not static, this is just to test.
     UI ui = new UI();

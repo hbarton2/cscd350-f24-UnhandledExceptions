@@ -42,13 +42,15 @@ public class UI
 		
 		//methods
 		StringBuilder sb = new StringBuilder();
-		for (HashMap.Entry<String, MethodItem> entry : classItem.methodItems.entrySet()) 
-			sb.append("\t").append(entry.getValue().toString()); //adding a tab to the beginning of each method
+		for (HashMap.Entry<String, MethodItem> entry : classItem.methodItems.entrySet()) {
+			//adding a tab to the beginning of each method
+			sb.append("\t").append(entry.getValue().toString()).append("\n"); 
+		}
 		
 		result.append(sb.toString());
 
 		//relationships
-		result.append("\nRelationships: \n");
+		result.append("Relationships: \n");
 		for (HashMap.Entry<String, RelationshipItem> entry : relationships.entrySet()) 
 		{
 			if (entry.getKey().contains(classItem.getName()))
