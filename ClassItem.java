@@ -21,19 +21,20 @@ public class ClassItem {
     // returns a class object, to be added to the map in Main.java
     // need to add precondition checking
     public static String addClassItem(final Map<String, ClassItem> classItems, final String classItemName) {
-        String name = classItemName.toLowerCase().trim();// forces all classes to be in lower case and trims all leading
-                                                         // and trailing "space" (refernce .trim() Java API for space
-                                                         // definition).
-        // if the classItemList does not already have a class named classItemName, we
-        // create a new class
-        if (!(classItems.containsKey(name))) {
-            ClassItem createdClass = new ClassItem(name);
-            classItems.put(createdClass.getClassItemName(), createdClass);
-            return "Class \"" + createdClass.getClassItemName() + "\" created.";
-        } else {
-            // if classItemName is already in use in the classItemList that's passed in.
-            return "Class name must be unique.";
-        }
+//        String name = classItemName.toLowerCase().trim();// forces all classes to be in lower case and trims all leading
+//                                                         // and trailing "space" (refernce .trim() Java API for space
+//                                                         // definition).
+//        // if the classItemList does not already have a class named classItemName, we
+//        // create a new class
+//        if (!(classItems.containsKey(name))) {
+//            ClassItem createdClass = new ClassItem(name);
+//            classItems.put(createdClass.getClassItemName(), createdClass);
+//            return "Class \"" + createdClass.getClassItemName() + "\" created.";
+//        } else {
+//            // if classItemName is already in use in the classItemList that's passed in.
+//            return "Class name must be unique.";
+//        }
+        return null;
     }
 
     public String getClassItemName() {
