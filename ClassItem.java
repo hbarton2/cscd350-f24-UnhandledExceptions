@@ -18,25 +18,59 @@ public class ClassItem {
         this.methodItems = new HashMap<String, MethodItem>();
     }
 
+    /*FIRST ITERATION OF ADD CLASS*/
     // returns a class object, to be added to the map in Main.java
     // need to add precondition checking
     public static String addClassItem(final Map<String, ClassItem> classItems, final String classItemName) {
-//        String name = classItemName.toLowerCase().trim();// forces all classes to be in lower case and trims all leading
-//                                                         // and trailing "space" (refernce .trim() Java API for space
-//                                                         // definition).
-//        // if the classItemList does not already have a class named classItemName, we
-//        // create a new class
-//        if (!(classItems.containsKey(name))) {
-//            ClassItem createdClass = new ClassItem(name);
-//            classItems.put(createdClass.getClassItemName(), createdClass);
-//            return "Class \"" + createdClass.getClassItemName() + "\" created.";
-//        } else {
-//            // if classItemName is already in use in the classItemList that's passed in.
-//            return "Class name must be unique.";
-//        }
-        return null;
+        String name = classItemName.toLowerCase().trim();// forces all classes to be in lower case and trims all leading
+                                                         // and trailing "space" (refernce .trim() Java API for space
+                                                         // definition).
+        // if the classItemList does not already have a class named classItemName, we
+        // create a new class
+        if (!(classItems.containsKey(name))) {
+            ClassItem createdClass = new ClassItem(name);
+            classItems.put(createdClass.getClassItemName(), createdClass);
+            return "Class \"" + createdClass.getClassItemName() + "\" created.";
+        } else {
+            // if classItemName is already in use in the classItemList that's passed in.
+            return "Class name must be unique.";
+        }
+    }
+    public static void addClassItem(final Map<String, ClassItem> classItems, Scanner scanner){
+        /*when add class option is selected, we call addClassItem function*/
+        boolean validName = false;
+        String userInput = null;    //initialized to null
+        while(!validName) {//gets user input for name until valid input, checks for null and blank input. returns when input is a name not in classItems already.
+            System.out.println("Enter class name you would like to add: ");
+            userInput = scanner.nextLine().toLowerCase().trim();
+            validName = checkValidNewName(classItems, userInput);
+        }
+        String className = userInput;   //sets className variable to userInput that was valid.
+
+        boolean addClassFin = false;
+        while(!addClassFin){
+            System.out.println("Add more information? (Y/N)");
+            userInput = scanner.nextLine();
+
+            //switch case for adding more info
+            switch (userInput) {
+                case "n": case "N": //Creating class with no fields or methods
+                    ClassItem newClass = new ClassItem(className);
+                    classItems.put(name, newClass);
+                    addClassFin = true;
+                    break;
+                case "y": case "Y": //Adding fields and/or methods to class
+                    System.out.println("Input what you would like to add");
+                    break;
+            }
+            addClassFin = true;
+        }
+        //finished adding class
     }
 
+    public void addToClassMenu(){
+        System.out.println();
+    }
     public String getClassItemName() {
         return this.name;
     }
@@ -155,25 +189,29 @@ public class ClassItem {
 
     // Check if the new name to be used is available (not a duplicate name), if
     // duplicate, display message.
-    // private static boolean checkValidNewName(final Map<String, ClassItem>
-    // classItemList, final String newClassItemName){
-    // if(!(classItemList.containsKey(newClassItemName))){ //if the name is not
-    // return true;
-    // }
-    // System.out.println("\"" + newClassItemName + "\" is already in use." );
-    // return false;
-    // }
+     private static boolean checkValidNewName(final Map<String, ClassItem>
+     classItemList, final String newClassItemName) {
+         if (newClassItemName == null || newClassItemName.isBlank()){
+             System.out.println("Name cannot be blank.");
+            return false;
+        }
 
-    // checks if the oldClassItem is a class already contained in the Map passed in.
-    // displays error message when false.
-    // private static boolean checkValidOldName(final Map<String, ClassItem>
-    // classItemList, final String oldClassItemName){
-    // if(!(classItemList.containsKey(oldClassItemName))){
-    // return true;
-    // }
-    // System.out.println("\"" + oldClassItemName + "\" class does not exist");
-    // return false;
-    // }
+     if(!(classItemList.containsKey(newClassItemName))) //if the name is not
+        return true;
+     System.out.println("\"" + newClassItemName + "\" is already in use." );
+        return false;
+     }
+
+//     checks if the oldClassItem is a class already contained in the Map passed in.
+//     displays error message when false.
+     private static boolean checkValidOldName(final Map<String, ClassItem>
+     classItemList, final String oldClassItemName){
+     if(!(classItemList.containsKey(oldClassItemName))){
+     return true;
+     }
+     System.out.println("\"" + oldClassItemName + "\" class does not exist");
+     return false;
+     }
 
     // method to add a new method to the map for this class item
     public String addMethod(String methodName) {
