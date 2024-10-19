@@ -1,11 +1,10 @@
-import java.util.Map;
-import java.util.Scanner;
+import java.util.HashMap;
 public class UI
 {
 	/*
 		ListClasses takes a list of ClassItem, and displays them
 	*/
-	public void ListClasses(Map<String, ClassItem> classItems)
+	public void ListClasses(HashMap<String, ClassItem> classItems)
 	{
 		if (classItems.isEmpty())
 		{
@@ -16,7 +15,7 @@ public class UI
 		System.out.println("\nCurrent available classes...");
 		
 		StringBuilder sb = new StringBuilder();
-		for (Map.Entry<String, ClassItem> entry : classItems.entrySet()) 
+		for (HashMap.Entry<String, ClassItem> entry : classItems.entrySet()) 
 			sb.append(entry.getValue().toString() + ", ");
 		sb.delete(sb.length() - 2, sb.length());
 		
@@ -42,7 +41,7 @@ public class UI
 		
 		//methods
 		StringBuilder sb = new StringBuilder();
-		for (Map.Entry<String, MethodItem> entry : classItem.methodItems.entrySet()) 
+		for (HashMap.Entry<String, MethodItem> entry : classItem.methodItems.entrySet()) 
 			sb.append("\nMethod: " + entry.getValue().toString());
 		
 		System.out.println(sb.toString());
@@ -51,7 +50,7 @@ public class UI
 	/*
 		ListRelationships takes a list of RelationshipItems, and displays them
 	*/
-	public void ListRelationships(Map<String, RelationshipItem> relationshipItems)
+	public void ListRelationships(HashMap<String, RelationshipItem> relationshipItems)
 	{
 		if (relationshipItems.isEmpty())
 		{
@@ -61,7 +60,7 @@ public class UI
 		
 		System.out.println("\nCurrent class relationships...");
 		
-		for (Map.Entry<String, RelationshipItem> entry : relationshipItems.entrySet()) 
+		for (HashMap.Entry<String, RelationshipItem> entry : relationshipItems.entrySet()) 
 		{
 			System.out.println(entry.getValue().toString());
 		}

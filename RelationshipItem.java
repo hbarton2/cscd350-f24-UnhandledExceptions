@@ -7,6 +7,8 @@ public class RelationshipItem
     private ClassItem source;
     private ClassItem destination;
     
+    public RelationshipItem() {} //blank constructor for IO serialization
+
     public RelationshipItem(final ClassItem source, final ClassItem destination){
 
         // checking for null values and throwing an exception if the source or destination are null
@@ -63,7 +65,7 @@ public class RelationshipItem
 
         // adding the relationship to the map
         relationships.put(key, relationship);
-        
+
         return "Relationship created successfully";
     }
     /*
@@ -122,9 +124,19 @@ public class RelationshipItem
         return source;
     }
 
+    //sets the destination
+    public void setSource(ClassItem source) {
+        this.source = source;
+    }
+
     //returns the destination ClassItem object
     public ClassItem getDestination() {
         return destination;
+    }
+
+    //sets the destination
+    public void setDestination(ClassItem destination) {
+        this.destination = destination;
     }
 
     // overrides the toString method to return a string representation of the relationship
@@ -132,7 +144,7 @@ public class RelationshipItem
     public String toString(){
 
         //the ClassItem objects have a getName() method that returns the name of the class
-        return this.source.getClassItemName() + " has a relationship with " + this.destination.getClassItemName();
+        return this.source.getName() + " has a relationship with " + this.destination.getName();
     }
 
 
