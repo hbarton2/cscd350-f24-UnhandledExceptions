@@ -1,5 +1,5 @@
-import java.util.Map;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Scanner;
 
 public class ClassItem {
@@ -7,8 +7,10 @@ public class ClassItem {
     String name;
 
     // Names of FieldItem/MethodItem are keys to Map<k,v>
-    Map<String, FieldItem> fieldItems;
-    Map<String, MethodItem> methodItems;
+    HashMap<String, FieldItem> fieldItems;
+    HashMap<String, MethodItem> methodItems;
+
+    public ClassItem() {} //blank constructor for IO serialization
 
     private ClassItem(final String classItemName) {
         this.name = classItemName;
@@ -21,7 +23,7 @@ public class ClassItem {
     /*FIRST ITERATION OF ADD CLASS*/
     // returns a class object, to be added to the map in Main.java
     // need to add precondition checking
-    public static String addClassItem(final Map<String, ClassItem> classItems, final String classItemName) {
+    public static String addClassItem(final HashMap<String, ClassItem> classItems, final String classItemName) {
         String name = classItemName.toLowerCase().trim();// forces all classes to be in lower case and trims all leading
                                                          // and trailing "space" (refernce .trim() Java API for space
                                                          // definition).
@@ -29,8 +31,8 @@ public class ClassItem {
         // create a new class
         if (!(classItems.containsKey(name))) {
             ClassItem createdClass = new ClassItem(name);
-            classItems.put(createdClass.getClassItemName(), createdClass);
-            return "Class \"" + createdClass.getClassItemName() + "\" created.";
+            classItems.put(createdClass.getName(), createdClass);
+            return "Class \"" + createdClass.getName() + "\" created.";
         } else {
             // if classItemName is already in use in the classItemList that's passed in.
             return "Class name must be unique.";
@@ -41,50 +43,117 @@ public class ClassItem {
         boolean validName = false;
         String userInput = null;    //initialized to null
         while(!validName) {//gets user input for name until valid input, checks for null and blank input. returns when input is a name not in classItems already.
-            System.out.println("Enter class name you would like to add: ");
+            System.out.print("Enter class name you would like to add: \n>");
             userInput = scanner.nextLine().toLowerCase().trim();
             validName = checkValidNewName(classItems, userInput);
         }
         String className = userInput;   //sets className variable to userInput that was valid.
+        ClassItem newClass = new ClassItem(className);  //creates a new class.
 
         boolean addClassFin = false;
         while(!addClassFin){
-            System.out.println("Add more information? (Y/N)");
-            userInput = scanner.nextLine();
+            System.out.print("Add more information? (Y/N) \n>");
+            userInput = scanner.nextLine().toLowerCase().trim();
 
             //switch case for adding more info
             switch (userInput) {
-                case "n": case "N": //Creating class with no fields or methods
-                    ClassItem newClass = new ClassItem(className);
-                    classItems.put(name, newClass);
+                case "n": case "no": //Creating class with no fields or methods
+                    classItems.put(newClass.getName(), newClass);   //adds class with no fields/methods to classItems map
                     addClassFin = true;
                     break;
-                case "y": case "Y": //Adding fields and/or methods to class
-                    System.out.println("Input what you would like to add");
+                case "y": case "yes": //Adding fields and/or methods to class
+                    addToClassMenu(newClass, scanner);
                     break;
+                default:
+                    System.out.println("Input valid option.");
             }
             addClassFin = true;
         }
         //finished adding class
     }
 
-    public void addToClassMenu(){
-        System.out.println();
+    private static void addToClassMenu(ClassItem classItem, Scanner scanner){
+        System.out.println("\"Add Fields\"");
+        System.out.println("\"Add Methods\"");
+        String userInput = scanner.nextLine().toLowerCase().trim();
+        switch (userInput){
+            case "add fields": case "add field":
+
+                break;
+            case "add methods": case "add method":
+
+                break;
+        }
+
     }
-    public String getClassItemName() {
+    private void addFieldMenu(Scanner scanner, HashMap<String, FieldItem> fieldItems){
+        boolean addingFields = true;
+
+        while(addingFields){
+            System.out.println("Current fields:");
+            if(!fieldItems.isEmpty()) { //fieldItems can't be null, constructor initializes them to empty HashMaps
+                for (Map.Entry<String, FieldItem> entry : fieldItems.entrySet()) {
+                    String key = entry.getKey();
+                    FieldItem value = entry.getValue();
+                    System.out.println(" -" + key);
+                }
+            } else {
+                System.out.println("No Fields added yet.");
+            }
+
+            boolean validInput = false;
+            while(!validInput) {
+                System.out.println("Input name and type of field you would like to add (or type 'exit' to quit):");
+                String userInput = scanner.nextLine().toLowerCase().trim();
+                try {
+                    if(userInput.equals("exit")){
+                        addingFields = false;
+                        continue;
+                    }
+                    if (!fieldItems.containsKey(userInput)) {  //ensures field name is not a duplicate
+                        validInput = true;
+                    }
+
+                } catch (NullPointerException e) {
+                    System.out.println("Name cannot be a duplicate.");
+                }
+            }
+        }
+
+    }
+
+    // public getters and setters for fields required by IO serialization
+    public String getName() {
         return this.name;
     }
 
     // private setter method to force condition checking through renameClassItem
-    private void setClassItemName(String newClassItemName) {
-        this.name = newClassItemName;
+    // made public for IO serialization
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public HashMap<String, FieldItem> getFieldItems() {
+        return this.fieldItems;
+    }
+
+    public void setFieldItems(HashMap<String, FieldItem> fieldItems) {
+        this.fieldItems = fieldItems;
+    }
+
+    public HashMap<String, MethodItem> getMethodItems() {
+        return this.methodItems;
+    }
+
+    public void setMethodItems(HashMap<String, MethodItem> methodItems) {
+        this.methodItems = methodItems;
     }
 
     // check that the oldClassItemName exists in the classItemList
     // check that the newClassItemName is available to use
 
-    public static String renameClassItem(final Map<String, ClassItem> classItemList, final String newClassItemName,
-            final String oldClassItemName, Map<String, RelationshipItem> relationships) {
+    public static String renameClassItem(final HashMap<String, ClassItem> classItemList, final String newClassItemName,
+            final String oldClassItemName, HashMap<String, RelationshipItem> relationships) {
         if (classItemList == null) {
             throw new IllegalArgumentException("classItemList cannot be null");
         }
@@ -105,16 +174,16 @@ public class ClassItem {
                 // sets the classItem Object that is stored in the value associated with the Map
                 // for the key oldClassItemName to be newClassItemName
                 // gets the old class name from map
-                String oldName = ((ClassItem) classItemList.get(oldClassItemName)).getClassItemName();
+                String oldName = ((ClassItem) classItemList.get(oldClassItemName)).getName();
                 // sets the new class name without updating the key in the map
-                ((ClassItem) classItemList.get(oldClassItemName)).setClassItemName(newClassItemName);
+                ((ClassItem) classItemList.get(oldClassItemName)).setName(newClassItemName);
                 // ClassItem temp = new ClassItem(newClassItemName);
                 classItemList.put(newClassItemName.toLowerCase().trim(), classItemList.remove(oldClassItemName));
 
                 // need to update relationships to reflect the new class name in the keys
                 // go through all relationships and update the keys that contain the old class name
                 // the keys are source_destination
-                for (Map.Entry<String, RelationshipItem> entry : relationships.entrySet()) {
+                for (HashMap.Entry<String, RelationshipItem> entry : relationships.entrySet()) {
                     String key = entry.getKey();
                     if (key.contains(oldClassItemName)) {
                         // split the key into source and destination
@@ -159,8 +228,8 @@ public class ClassItem {
      * and the map of relationships from main to remove the relationships
      * corresponding to the deleted class
      */
-    public static String removeClassItem(final Map<String, ClassItem> classItems, final String classItemName,
-            Map<String, RelationshipItem> relationships) {
+    public static String removeClassItem(final HashMap<String, ClassItem> classItems, final String classItemName,
+        HashMap<String, RelationshipItem> relationships) {
         // precondition checking
 
         if (classItems == null) {
@@ -204,14 +273,14 @@ public class ClassItem {
 
 //     checks if the oldClassItem is a class already contained in the Map passed in.
 //     displays error message when false.
-     private static boolean checkValidOldName(final Map<String, ClassItem>
-     classItemList, final String oldClassItemName){
-     if(!(classItemList.containsKey(oldClassItemName))){
-     return true;
-     }
-     System.out.println("\"" + oldClassItemName + "\" class does not exist");
-     return false;
-     }
+//     private static boolean checkValidOldName(final Map<String, ClassItem>
+//     classItemList, final String oldClassItemName){
+//     if(!(classItemList.containsKey(oldClassItemName))){
+//     return true;
+//     }
+//     System.out.println("\"" + oldClassItemName + "\" class does not exist");
+//     return false;
+//     }
 
     // method to add a new method to the map for this class item
     public String addMethod(String methodName) {
