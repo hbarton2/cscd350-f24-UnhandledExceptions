@@ -70,56 +70,110 @@ public class ClassItem {
             addClassFin = true;
         }
         //finished adding class
-    }
+        classItems.put(newClass.getName(), newClass);
 
-    private static void addToClassMenu(ClassItem classItem, Scanner scanner){
-        System.out.println("\"Add Fields\"");
-        System.out.println("\"Add Methods\"");
-        String userInput = scanner.nextLine().toLowerCase().trim();
-        switch (userInput){
-            case "add fields": case "add field":
+        /*
+        Created testClass
+        Fields:
+         */
+        System.out.print("Created " + newClass.getName());
 
-                break;
-            case "add methods": case "add method":
+        if(!newClass.fieldItems.isEmpty()) {
+            StringBuilder fields = new StringBuilder();
+            for (HashMap.Entry<String, FieldItem> entry : newClass.fieldItems.entrySet())
+                fields.append("\nField: " + entry.getValue().toString());
+            System.out.print(fields.toString());
+        }
 
-                break;
+        if(!newClass.fieldItems.isEmpty()) {
+            StringBuilder methods = new StringBuilder();
+            for (HashMap.Entry<String, MethodItem> entry : newClass.methodItems.entrySet())
+                methods.append("\nField: " + entry.getValue().toString());
+            System.out.println(methods.toString());
         }
 
     }
-    private void addFieldMenu(Scanner scanner, HashMap<String, FieldItem> fieldItems){
+
+    private static void addToClassMenu(ClassItem classItem, Scanner scanner){
+
+        boolean adding = true;
+
+        while(adding) {
+            System.out.println("\"Add Fields\"");
+            //add delete field/method functionality here?
+            System.out.print("\"Add Methods\"\n('exit' to quit)>");
+            String userInput = scanner.nextLine().toLowerCase().trim();
+            switch (userInput) {
+                case "add fields":
+                case "add field":
+                    addFieldMenu(scanner, classItem.fieldItems);
+                    break;
+                case "add methods":
+                case "add method":
+                    break;
+                case "exit":    //done adding to class, return to main menu
+                    adding = false;
+                    break;
+                default:
+                    System.out.println("Input valid option (or type 'exit' to quit) \n>");
+            }
+        }
+    }
+
+    private static void addFieldMenu(Scanner scanner, HashMap<String, FieldItem> fieldItems){
         boolean addingFields = true;
 
         while(addingFields){
             System.out.println("Current fields:");
             if(!fieldItems.isEmpty()) { //fieldItems can't be null, constructor initializes them to empty HashMaps
                 for (Map.Entry<String, FieldItem> entry : fieldItems.entrySet()) {
-                    String key = entry.getKey();
+                    //String key = entry.getKey();
                     FieldItem value = entry.getValue();
-                    System.out.println(" -" + key);
+                    System.out.println(" - " + value);
                 }
+                //add function to delete in this menu
             } else {
                 System.out.println("No Fields added yet.");
             }
 
             boolean validInput = false;
             while(!validInput) {
-                System.out.println("Input name and type of field you would like to add (or type 'exit' to quit):");
-                String userInput = scanner.nextLine().toLowerCase().trim();
-                try {
-                    if(userInput.equals("exit")){
-                        addingFields = false;
+                System.out.print("Input type and name pairs of Fields you would ike to add (Example: 'type1 name1, type2 name2,...')\n('exit' to quit)>");
+                String userInput = scanner.nextLine();
+                if(userInput.equals("exit")){
+                    addingFields = false;
+                    validInput = true;
+                    continue;
+                }
+                //splits user input by ","
+                String[] fieldPairs = userInput.split(",");
+
+                for (String pair : fieldPairs){
+                    String[] parts = pair.trim().split(" ");    //triming leading and trailing spaces
+
+                    //checks that type and name are in the fieldPair, if not, it prompts, and skips to next pair the user gave.
+                    if(parts.length != 2) {
+                        System.out.println("Invalid input " + pair + " requires a type and name.");
                         continue;
                     }
-                    if (!fieldItems.containsKey(userInput)) {  //ensures field name is not a duplicate
-                        validInput = true;
+
+                    String type = parts[0];
+                    String name = parts[1];
+
+                    if(fieldItems.containsKey(name)){   //if the pair's name is already a field, skip it.
+                        System.out.println("Duplicate field name: " + name + " is already defined.");
+                        continue;
                     }
 
-                } catch (NullPointerException e) {
-                    System.out.println("Name cannot be a duplicate.");
+                    //adds field to field, didn't call add field method because it returns string
+                    FieldItem newField = new FieldItem(name, type);
+                    fieldItems.put(name, newField);
+                    System.out.println("Added " + type + " " + name);
                 }
-            }
-        }
 
+            }
+            //exited loop, returning to add field/methods menu
+        }
     }
 
     // public getters and setters for fields required by IO serialization
