@@ -25,7 +25,7 @@ public class UI
 	/*
 		ListClass takes a ClassItem reference, and returns its info as a String
 	*/
-	public String ListClass(ClassItem classItem)
+	public String ListClass(ClassItem classItem, HashMap<String, RelationshipItem> relationships)
 	{
 		if (classItem == null)
 		{
@@ -36,14 +36,25 @@ public class UI
 		result.append("\nClass: ").append(classItem.toString()).append("\nFields: ");
 		
 		//fields
-		result.append("not yet");
+		result.append("not yet\n");
+
+		result.append("Methods:\n");
 		
 		//methods
 		StringBuilder sb = new StringBuilder();
 		for (HashMap.Entry<String, MethodItem> entry : classItem.methodItems.entrySet()) 
-			sb.append("\nMethod: ").append(entry.getValue().toString());
+			sb.append("\t").append(entry.getValue().toString()); //adding a tab to the beginning of each method
 		
 		result.append(sb.toString());
+
+		//relationships
+		result.append("\nRelationships: \n");
+		for (HashMap.Entry<String, RelationshipItem> entry : relationships.entrySet()) 
+		{
+			if (entry.getKey().contains(classItem.getName()))
+				result.append("\t" + entry.getValue().toString()).append("\n");
+		}
+
 		return result.toString();
 	}
 	

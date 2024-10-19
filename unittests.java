@@ -69,11 +69,11 @@ public class unittests {
     relationships.put("class2_class1", relationship);
 
     // expected output
-    String expected = "Class: class1\nFields: not yet\nMethod: method1 Parameters:\nRelationships:\n" + relationships.get("class2_class1").toString() + "\n";
+    String expected = "\nClass: class1\nFields: not yet\nMethods:\n\tMethod: method1 Parameters: \nRelationships: \n\t" + relationships.get("class2_class1").toString() + "\n";
 
     // I have to create a new UI using the default constructor because the ListClass method is not static, this is just to test.
     UI ui = new UI();
-    assertEquals(expected, ui.ListClass(classes.get("class1")));
+    assertEquals(expected, ui.ListClass(classes.get("class1"), relationships));
   }
 
 }
