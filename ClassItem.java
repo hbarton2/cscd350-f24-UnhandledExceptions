@@ -280,20 +280,22 @@ public class ClassItem {
 
     }
 
-    public String addField(String fieldName) {
+    public String addField(String fieldName, String type) {
         // preconditions
-        if (fieldName == null || fieldName.isBlank()) {
-            return "Field name cannot be null or blank";
+        if (fieldName == null || fieldName.isBlank() || type == null || type.isBlank()) {
+            return "Field name or type cannot be null or blank";
         }
 
         fieldName = fieldName.toLowerCase().trim();
+        type = type.toLowerCase().trim();
+
         // check if field already exists
         if (fieldItems.containsKey(fieldName)) {
             return "Field name: " + fieldName + " already in use.";
         }
 
         // create new field item object
-        FieldItem newField = new FieldItem(fieldName);
+        FieldItem newField = new FieldItem(fieldName, type);
 
         // add new field item to map
         fieldItems.put(fieldName, newField);

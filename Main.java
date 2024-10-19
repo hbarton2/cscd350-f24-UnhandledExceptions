@@ -194,9 +194,11 @@ public class Main {
 					ClassItem tempClassItem = classItems.get(scanner.nextLine());
 
 					if (tempClassItem != null) {
-						System.out.print(
-								"Input name of field you want to add to " + tempClassItem.getName() + "\n> ");
-						System.out.println(tempClassItem.addField(scanner.nextLine()));
+						System.out.print("Input name of field you want to add to " + tempClassItem.getName() + "\n> ");
+						String fieldName = scanner.nextLine();
+						System.out.println("Input type of field you want to add to " + tempClassItem.getName() + "\n> ");
+						String type = scanner.nextLine();
+						System.out.println(tempClassItem.addField(fieldName, type));
 					} else {
 						System.out.println("Class Item does not exist.");
 					}
@@ -316,8 +318,8 @@ public class Main {
 	private void tester() 
 	{
 		ClassItem.addClassItem(classItems, "mcdonalds");
-		classItems.get("mcdonalds").addField("location");
-		classItems.get("mcdonalds").addField("owner");
+		classItems.get("mcdonalds").addField("location", "String");
+		classItems.get("mcdonalds").addField("owner", "person");
 		classItems.get("mcdonalds").addMethod("cook_fries");
 		classItems.get("mcdonalds").addMethod("cook_burger");
 		classItems.get("mcdonalds").methodItems.get("cook_fries").addParameter("int", "time");
@@ -326,8 +328,8 @@ public class Main {
 		classItems.get("mcdonalds").methodItems.get("cook_burger").addParameter("String", "patty");
 
 		ClassItem.addClassItem(classItems, "tacobell");
-		classItems.get("tacobell").addField("location");
-		classItems.get("tacobell").addField("owner");
+		classItems.get("tacobell").addField("location", "String");
+		classItems.get("tacobell").addField("owner", "Person");
 		classItems.get("tacobell").addMethod("cook_taco");
 		classItems.get("tacobell").addMethod("cook_casadilla");
 		classItems.get("tacobell").methodItems.get("cook_taco").addParameter("int", "time");
