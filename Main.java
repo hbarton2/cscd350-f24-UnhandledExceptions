@@ -26,7 +26,8 @@ public class Main {
 			case "0": // list class
 				System.out.print("Input name of class you would like details about:\n>");
 				input = scanner.nextLine();
-				ui.ListClass(classItems.get(input));
+				String result = ui.ListClass(classItems.get(input));
+				System.out.println(result);
 				break;
 			case "1": // List Classes
 				ui.ListClasses(classItems);

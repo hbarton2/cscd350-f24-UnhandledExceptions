@@ -23,28 +23,28 @@ public class UI
 	}
 		
 	/*
-		ListClass takes a ClassItem reference, and displays its info
+		ListClass takes a ClassItem reference, and returns its info as a String
 	*/
-	public void ListClass(ClassItem classItem)
+	public String ListClass(ClassItem classItem)
 	{
 		if (classItem == null)
 		{
-			System.out.println("Invalid class name.");
-			return;
+			return "Invalid class name.";
 		}
 		
-		System.out.println();
-		System.out.print("Class: " + classItem.toString() + "\nFields: ");
+		StringBuilder result = new StringBuilder();
+		result.append("\nClass: ").append(classItem.toString()).append("\nFields: ");
 		
 		//fields
-		System.out.print("not yet");
+		result.append("not yet");
 		
 		//methods
 		StringBuilder sb = new StringBuilder();
 		for (HashMap.Entry<String, MethodItem> entry : classItem.methodItems.entrySet()) 
-			sb.append("\nMethod: " + entry.getValue().toString());
+			sb.append("\nMethod: ").append(entry.getValue().toString());
 		
-		System.out.println(sb.toString());
+		result.append(sb.toString());
+		return result.toString();
 	}
 	
 	/*
