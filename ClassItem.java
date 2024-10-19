@@ -3,7 +3,6 @@ import java.util.Map;
 import java.util.Scanner;
 
 public class ClassItem {
-    Scanner kb = new Scanner(System.in);
     String name;
 
     // Names of FieldItem/MethodItem are keys to Map<k,v>
@@ -59,7 +58,6 @@ public class ClassItem {
             switch (userInput) {
                 case "n": case "no": //Creating class with no fields or methods
                     classItems.put(newClass.getName(), newClass);   //adds class with no fields/methods to classItems map
-                    addClassFin = true;
                     break;
                 case "y": case "yes": //Adding fields and/or methods to class
                     addToClassMenu(newClass, scanner);
@@ -76,7 +74,7 @@ public class ClassItem {
         Created testClass
         Fields:
          */
-        System.out.print("Created " + newClass.getName());
+        System.out.println("Created " + newClass.getName());
 
         if(!newClass.fieldItems.isEmpty()) {
             StringBuilder fields = new StringBuilder();
