@@ -48,7 +48,6 @@ public class RelationshipItem
         destination.toLowerCase();
         // at this point the key is created with everything being lowercase
         String key = source + "_" + destination;
-        kb.close(); // close the scanner
 
         // at this point we need to create a relationship to add to the map
         // we need to check if the classes exist
@@ -105,13 +104,11 @@ public class RelationshipItem
 
             // if the user types exit we exit the method
             if(key.equalsIgnoreCase("exit")){
-                kb.close(); // close the scanner
                 return "exiting delete menu...";
             }
             
             // if the relationship exists, we remove it and return a message that the relationship has been removed
             if(relationshipMap.containsKey(key)){
-                kb.close(); // close the scanner
                 relationshipMap.remove(key);
                 return "Relationship has been removed";
             }
