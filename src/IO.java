@@ -12,7 +12,8 @@ public class IO
 {
 	public static String Save(
 		HashMap<String, ClassItem> classItems,
-		HashMap<String, RelationshipItem> relationshipItems)
+		HashMap<String, RelationshipItem> relationshipItems,
+		String filepath)
 	{		
 
 		//combind both hashmaps into 1 hashmap
@@ -35,9 +36,7 @@ public class IO
 		return "saved";
 	}
 	
-	public static HashMap<String, Object> Load(
-		HashMap<String, ClassItem> classItems,
-		HashMap<String, RelationshipItem> relationshipItems)
+	public static HashMap<String, Object> Load(String filepath)
 	{		
 		HashMap<String, Object> items =  new HashMap<>();
 
