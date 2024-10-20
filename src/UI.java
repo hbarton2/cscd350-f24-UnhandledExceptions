@@ -1,6 +1,32 @@
 import java.util.HashMap;
 public class UI
 {
+	private static final HashMap<String, String> commandSyntax = new HashMap<>();
+
+	static {
+		commandSyntax.put("addclass", "addclass classname");
+		commandSyntax.put("removeclass", "removeclass classname");
+		commandSyntax.put("renameclass", "renameclass classname newclassname");
+		commandSyntax.put("addrelation", "addrelation (currently relationship handles the input with the user.)");
+		commandSyntax.put("removerelation", "removerelation (currently relationship handles the input with the user.)");
+		commandSyntax.put("addfield", "addfield classname fieldname");
+		commandSyntax.put("removefield", "removefield classname fieldname");
+		commandSyntax.put("renamefield", "renamefield classname fieldname newfieldname");
+		commandSyntax.put("addmethod", "addmethod classname methodname");
+		commandSyntax.put("removemethod", "removemethod classname methodname");
+		commandSyntax.put("renamemethod", "renamemethod classname methodname newmethodname");
+		commandSyntax.put("addparameter", "addparameter classname methodname parametertype parametername");
+		commandSyntax.put("removeparameter", "removeparameter classname methodname parametertype parametername");
+		commandSyntax.put("changeparameter", "changeparameter classname methodname parametertype parametername "
+						+ "newparametertype newparametername");
+	}
+
+	// nicer way to get syntax strings
+	public static String CommandSyntax(String command)
+	{
+		return commandSyntax.get(command);
+	}
+
 	/*
 		ListClasses takes a list of ClassItem, and displays them
 	*/
@@ -71,21 +97,21 @@ public class UI
 	*/
 	public static void Help()
 	{
-		System.out.println("\naddclass classname");
-		System.out.println("removeclass classname");
-		System.out.println("renameclass classname newclassname");
-		System.out.println("addrelation (currently relationship handles the input with the user.)");
-		System.out.println("removerelation (currently relationship handles the input with the user.)");
-		System.out.println("addfield classname fieldname");
-		System.out.println("removefield classname fieldname");
-		System.out.println("renamefield classname fieldname newfieldname");
-		System.out.println("addmethod classname methodname");
-		System.out.println("removemethod classname methodname");
-		System.out.println("renamemethod classname methodname newmethodname");
-		System.out.println("addparameter classname methodname parametertype parametername");
-		System.out.println("removeparameter classname methodname parametertype parametername");
-		System.out.println("changeparameter classname methodname parametertype parametername " 
-			+ "newparametertype newparametername");
+		System.out.println("\n" + UI.CommandSyntax("addclass"));
+		System.out.println(UI.CommandSyntax("removeclass"));
+		System.out.println(UI.CommandSyntax("renameclass"));
+		System.out.println(UI.CommandSyntax("addrelation"));
+		System.out.println(UI.CommandSyntax("removerelation"));
+		System.out.println(UI.CommandSyntax("addfield"));
+		System.out.println(UI.CommandSyntax("removefield"));
+		System.out.println(UI.CommandSyntax("renamefield"));
+		System.out.println(UI.CommandSyntax("addmethod"));
+		System.out.println(UI.CommandSyntax("removemethod"));
+		System.out.println(UI.CommandSyntax("renamemethod"));
+		System.out.println(UI.CommandSyntax("addparameter"));
+		System.out.println(UI.CommandSyntax("removeparameter"));
+		System.out.println(UI.CommandSyntax("changeparameter"));
+
 		/*
 		System.out.println("UML Editor basics: \n");
 		System.out.println("Main UI: Type in the corresponding number to each feature\n");

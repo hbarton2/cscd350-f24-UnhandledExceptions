@@ -90,80 +90,108 @@ public class Main {
 				break;
 
 			case "addclass":
-				if (input.length < 2) System.out.println(badinput);
+				if (input.length < 2)
+					{ System.out.println("Syntax: " + UI.CommandSyntax(input[0]));
+					return; }
 				System.out.println(ClassItem.addClassItem(classItems, input[1]));
 				UI.ListClasses(classItems);
 				break;
 			case "removeclass":
-				if (input.length < 2) System.out.println(badinput);
+				if (input.length < 2)
+					{ System.out.println("Syntax: " + UI.CommandSyntax(input[0]));
+					return; }
 				System.out.println(ClassItem.removeClassItem(
 					classItems, input[1], relationshipItems));
 				UI.ListClasses(classItems);
 				break;
 			case "renameclass":
-				if (input.length < 3) System.out.println(badinput);
+				if (input.length < 3)
+					{ System.out.println("Syntax: " + UI.CommandSyntax(input[0]));
+					return; }
 				System.out.println(ClassItem.renameClassItem(
 					classItems, input[1], input[2], relationshipItems));
 				UI.ListClasses(classItems);
 				break;
 
 			case "addrelation":
-				if (input.length < 1) System.out.println(badinput);
+				if (input.length < 1)
+					{ System.out.println("Syntax: " + UI.CommandSyntax(input[0]));
+					return; }
 				System.out.println(RelationshipItem.addRelationship(relationshipItems, classItems));
 				UI.ListRelationships(relationshipItems);
 				break;
 			case "removerelation":
-				if (input.length < 1) System.out.println(badinput);
+				if (input.length < 1)
+					{ System.out.println("Syntax: " + UI.CommandSyntax(input[0]));
+					return; }
 				System.out.println(RelationshipItem.removeRelationship(relationshipItems));
 				UI.ListRelationships(relationshipItems);
 				break;
 
 			case "addfield":
-				if (input.length < 4) System.out.println(badinput);
+				if (input.length < 4)
+					{ System.out.println("Syntax: " + UI.CommandSyntax(input[0]));
+					return; }
 				System.out.println(classItems.get(input[1]).addField(input[2], input[3]));
 				UI.ListClass(classItems.get(input[1]));
 				break;
 			case "removefield":
-				if (input.length < 3) System.out.println(badinput);
+				if (input.length < 3)
+					{ System.out.println("Syntax: " + UI.CommandSyntax(input[0]));
+					return; }
 				System.out.println(classItems.get(input[1]).removeField(input[2]));
 				UI.ListClass(classItems.get(input[1]));
 				break;
 			case "renamefield":
-				if (input.length < 4) System.out.println(badinput);
+				if (input.length < 4)
+					{ System.out.println("Syntax: " + UI.CommandSyntax(input[0]));
+					return; }
 				System.out.println(classItems.get(input[1]).renameField(input[2], input[3]));
 				UI.ListClass(classItems.get(input[1]));
 				break;
 				
 			case "addmethod":
-				if (input.length < 3) System.out.println(badinput);
+				if (input.length < 3)
+					{ System.out.println("Syntax: " + UI.CommandSyntax(input[0]));
+					return; }
 				System.out.println(classItems.get(input[1]).addMethod(input[2]));
 				UI.ListClass(classItems.get(input[1]));
 				break;
 			case "removemethod":
-				if (input.length < 3) System.out.println(badinput);
+				if (input.length < 3)
+					{ System.out.println("Syntax: " + UI.CommandSyntax(input[0]));
+					return; }
 				System.out.println(classItems.get(input[1]).removeMethod(input[2]));
 				UI.ListClass(classItems.get(input[1]));
 				break;
 			case "renamemethod":
-				if (input.length < 4) System.out.println(badinput);
+				if (input.length < 4)
+					{ System.out.println("Syntax: " + UI.CommandSyntax(input[0]));
+					return; }
 				System.out.println(classItems.get(input[1]).renameMethod(input[2], input[3]));
 				UI.ListClass(classItems.get(input[1]));
 				break;
 
 			case "addparameter":
-				if (input.length < 5) System.out.println(badinput);
+				if (input.length < 5)
+					{ System.out.println("Syntax: " + UI.CommandSyntax(input[0]));
+					return; }
 				System.out.println(classItems.get(input[1]).methodItems.get(input[2])
 					.addParameter(input[3], input[4]));
 				UI.ListClass(classItems.get(input[1]));
 				break;
 			case "removeparameter":
-				if (input.length < 5) System.out.println(badinput);
+				if (input.length < 5)
+					{ System.out.println("Syntax: " + UI.CommandSyntax(input[0]));
+					return; }
 				System.out.println(classItems.get(input[1]).methodItems.get(input[2])
 					.removeParameter(input[3], input[4]));
 				UI.ListClass(classItems.get(input[1]));
 				break;
 			case "changeparameter":
-				if (input.length < 7) System.out.println(badinput);
+				if (input.length < 7)
+					{ System.out.println("Syntax: " + UI.CommandSyntax(input[0]));
+					return; }
 				System.out.println(classItems.get(input[1]).methodItems.get(input[2])
 					.changeParameter(input[3], input[4], input[5], input[6]));
 				UI.ListClass(classItems.get(input[1]));
