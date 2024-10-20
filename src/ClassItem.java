@@ -42,7 +42,7 @@ public class ClassItem {
     public static void addClassItem(final Map<String, ClassItem> classItems, Scanner scanner, String inputName){
         /*when add class option is selected, we call addClassItem function*/
         boolean validName = false;
-        String userInput = inputName;    //initialized to null
+        String userInput = inputName.toLowerCase().trim();    //initialized to null
         while(!validName) {//gets user input for name until valid input, checks for null and blank input. returns when input is a name not in classItems already.
             //System.out.print("Enter class name you would like to add: \n>");
             //userInput = scanner.nextLine().toLowerCase().trim();
@@ -94,7 +94,7 @@ public class ClassItem {
 
     }
 
-    private static void addToClassMenu(ClassItem classItem, Scanner scanner){
+    public static void addToClassMenu(ClassItem classItem, Scanner scanner){
 
         boolean adding = true;
 
@@ -118,6 +118,7 @@ public class ClassItem {
                     System.out.println("Input valid option (or type 'exit' to quit) \n>");
             }
         }
+        //return to main menu
     }
 
     private static void addFieldMenu(Scanner scanner, HashMap<String, FieldItem> fieldItems){

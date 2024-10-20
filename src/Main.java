@@ -20,6 +20,7 @@ public class Main {
 
 	public void Run()
 	{
+		UI.ListClasses(classItems);
 		System.out.print("\nueUML (m for menu): ");
 		CommandParsing(scanner.nextLine().split(" "));
 	}
@@ -90,7 +91,18 @@ public class Main {
 			case "69": // shhh
 				tester();
 				break;
-
+/*SELECT CLASS TO EDIT */
+			case "edit":
+				//FOR TESTING
+				System.out.println(ClassItem.addClassItem(classItems, input[1]));
+				//
+				if (input.length < 2)
+				{ System.out.println("Syntax: " + UI.CommandSyntax(input[0]));
+					return; }
+				if(classItems.containsKey(input[1])){
+					ClassItem.addToClassMenu(classItems.get(input[0]),scanner);
+				}
+				break;
 			case "addclass":
 				if (input.length < 2)
 					{ System.out.println("Syntax: " + UI.CommandSyntax(input[0]));
