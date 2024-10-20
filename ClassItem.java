@@ -173,6 +173,9 @@ public class ClassItem {
             //exited loop, returning to add field/methods menu
         }
     }
+    private static void addMethodMenu(){
+
+    }
 
     // public getters and setters for fields required by IO serialization
     public String getName() {
