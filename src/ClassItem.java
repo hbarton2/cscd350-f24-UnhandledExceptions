@@ -1,3 +1,5 @@
+package src;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
@@ -37,13 +39,13 @@ public class ClassItem {
             return "Class name must be unique.";
         }
     }
-    public static void addClassItem(final Map<String, ClassItem> classItems, Scanner scanner){
+    public static void addClassItem(final Map<String, ClassItem> classItems, Scanner scanner, String inputName){
         /*when add class option is selected, we call addClassItem function*/
         boolean validName = false;
-        String userInput = null;    //initialized to null
+        String userInput = inputName;    //initialized to null
         while(!validName) {//gets user input for name until valid input, checks for null and blank input. returns when input is a name not in classItems already.
-            System.out.print("Enter class name you would like to add: \n>");
-            userInput = scanner.nextLine().toLowerCase().trim();
+            //System.out.print("Enter class name you would like to add: \n>");
+            //userInput = scanner.nextLine().toLowerCase().trim();
             validName = checkValidNewName(classItems, userInput);
         }
         String className = userInput;   //sets className variable to userInput that was valid.
