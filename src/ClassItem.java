@@ -287,7 +287,9 @@ public class ClassItem {
         }
 
         fieldName = fieldName.toLowerCase().trim();
-        type = type.toLowerCase().trim();
+        // types can be uppercase for example: String name
+        //type = type.toLowerCase().trim();
+        type = type.trim();
 
         // check if field already exists
         if (fieldItems.containsKey(fieldName)) {
@@ -307,9 +309,10 @@ public class ClassItem {
         // preconditions
         if (fieldName == null || fieldName.isBlank()) {
             return "Field name cannot be null or blank";
-        }
+        }   
 
-        fieldName = fieldName.toLowerCase().trim();
+        // trim leading and trailing whitespace
+        fieldName = fieldName.trim();
 
         // check if field exists
         if (!fieldItems.containsKey(fieldName)) {
@@ -331,8 +334,8 @@ public class ClassItem {
         }
 
         // trim to remove any leading or trailing whitespace
-        oldName = oldName.toLowerCase().trim();
-        newName = newName.toLowerCase().trim();
+        oldName = oldName.trim();
+        newName = newName.trim();
 
         // check if new name is already in use
         if (fieldItems.containsKey(newName)) {
