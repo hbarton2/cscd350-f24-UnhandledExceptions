@@ -24,7 +24,7 @@ public class ClassItem {
     /*FIRST ITERATION OF ADD CLASS*/
     // returns a class object, to be added to the map in Main.java
     // need to add precondition checking
-    public static String addClassItem(final HashMap<String, ClassItem> classItems, final String classItemName) {
+    public static void addClassItem(final HashMap<String, ClassItem> classItems, final String classItemName) {
         String name = classItemName.toLowerCase().trim();// forces all classes to be in lower case and trims all leading
                                                          // and trailing "space" (refernce .trim() Java API for space
                                                          // definition).
@@ -33,10 +33,10 @@ public class ClassItem {
         if (!(classItems.containsKey(name))) {
             ClassItem createdClass = new ClassItem(name);
             classItems.put(createdClass.getName(), createdClass);
-            return "Class \"" + createdClass.getName() + "\" created.";
+            System.out.println("Class \"" + createdClass.getName() + "\" created.");
         } else {
             // if classItemName is already in use in the classItemList that's passed in.
-            return "Class name must be unique.";
+            System.out.println("Class name must be unique.");;
         }
     }
     public static void addClassItem(final Map<String, ClassItem> classItems, Scanner scanner, String inputName){
@@ -53,7 +53,7 @@ public class ClassItem {
 
         boolean addClassFin = false;
         while(!addClassFin){
-            System.out.print("Add more information? (Y/N) \n>");
+            System.out.print("Add Field/Methods? (Y/N) \n>");
             userInput = scanner.nextLine().toLowerCase().trim();
 
             //switch case for adding more info
@@ -110,7 +110,6 @@ public class ClassItem {
             }else{
                 System.out.println("Field(s): No Fields added yet.");
             }
-            System.out.println("+==================================+");
             //prints methods
             if(!(classItem.methodItems.isEmpty())){
                 StringBuilder method_sb = new StringBuilder();
@@ -118,8 +117,9 @@ public class ClassItem {
                     method_sb.append("\nMethod(s): " + entry.getValue().toString());
                 System.out.println(method_sb.toString());
             }else{
-                System.out.println("Fields(s): No Fields added yet.");
+                System.out.println("Method(s): No Methods added yet.");
             }
+            System.out.println("+==================================+");
             System.out.println("\"Add Fields\"");
             //add delete field/method functionality here?
             System.out.print("\"Add Methods\"\n('exit' to quit)>");
@@ -160,7 +160,7 @@ public class ClassItem {
 
             boolean validInput = false;
             while(!validInput) {
-                System.out.print("Input type and name pairs of Fields you would ike to add (Example: 'type1 name1, type2 name2,...')\n('exit' to quit)>");
+                System.out.print("\nInput type and name pairs of Fields you would ike to add (Example: 'type1 name1, type2 name2,...')\n('exit' to quit)>");
                 String userInput = scanner.nextLine();
                 if(userInput.equals("exit")){
                     addingFields = false;
@@ -180,7 +180,7 @@ public class ClassItem {
                     }
 
                     String type = parts[0];
-                    String name = parts[1];
+                    String name =   parts[1];
 
                     if(fieldItems.containsKey(name)){   //if the pair's name is already a field, skip it.
                         System.out.println("Duplicate field name: " + name + " is already defined.");

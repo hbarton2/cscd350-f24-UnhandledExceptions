@@ -66,14 +66,16 @@ public class UI
 		System.out.print("Class: " + classItem.toString() + "\nFields: ");
 		
 		//fields
-		System.out.print("not yet");
-		
+		StringBuilder field_sb = new StringBuilder();
+		for (HashMap.Entry<String, FieldItem> entry : classItem.fieldItems.entrySet())
+			field_sb.append("\nField: " + entry.getValue().toString());
 		//methods
-		StringBuilder sb = new StringBuilder();
+		StringBuilder method_sb = new StringBuilder();
 		for (HashMap.Entry<String, MethodItem> entry : classItem.methodItems.entrySet()) 
-			sb.append("\nMethod: " + entry.getValue().toString());
-		
-		System.out.println(sb.toString());
+			method_sb.append("\nMethod: " + entry.getValue().toString());
+
+		System.out.println(field_sb.toString());
+		System.out.println(method_sb.toString());
 	}
 	
 	/*
