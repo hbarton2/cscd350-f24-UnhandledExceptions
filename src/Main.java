@@ -132,7 +132,7 @@ public class Main {
 				if (input.length < 4)
 					{ System.out.println("Syntax: " + UI.CommandSyntax(input[0]));
 					return; }
-				System.out.println(classItems.get(input[1]).addField(input[2], input[3]));
+				System.out.println(classItems.get(input[1]).addField(input[3], input[2]));
 				System.out.println(UI.ListClass(classItems.get(input[1]), relationshipItems));
 				break;
 			case "removefield":
