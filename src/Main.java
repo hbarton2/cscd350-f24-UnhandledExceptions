@@ -50,7 +50,7 @@ public class Main {
 			case "v":
 			case "view":
 				if (input.length < 2) System.out.println(badinput);
-				UI.ListClass(classItems.get(input[1]));
+				System.out.println(UI.ListClass(classItems.get(input[1]), relationshipItems));
 				break;
 			case "h":
 			case "help":
@@ -133,21 +133,21 @@ public class Main {
 					{ System.out.println("Syntax: " + UI.CommandSyntax(input[0]));
 					return; }
 				System.out.println(classItems.get(input[1]).addField(input[2], input[3]));
-				UI.ListClass(classItems.get(input[1]));
+				System.out.println(UI.ListClass(classItems.get(input[1]), relationshipItems));
 				break;
 			case "removefield":
 				if (input.length < 3)
 					{ System.out.println("Syntax: " + UI.CommandSyntax(input[0]));
 					return; }
 				System.out.println(classItems.get(input[1]).removeField(input[2]));
-				UI.ListClass(classItems.get(input[1]));
+				System.out.println(UI.ListClass(classItems.get(input[1]), relationshipItems));
 				break;
 			case "renamefield":
 				if (input.length < 4)
 					{ System.out.println("Syntax: " + UI.CommandSyntax(input[0]));
 					return; }
 				System.out.println(classItems.get(input[1]).renameField(input[2], input[3]));
-				UI.ListClass(classItems.get(input[1]));
+				System.out.println(UI.ListClass(classItems.get(input[1]), relationshipItems));
 				break;
 				
 			case "addmethod":
@@ -155,21 +155,21 @@ public class Main {
 					{ System.out.println("Syntax: " + UI.CommandSyntax(input[0]));
 					return; }
 				System.out.println(classItems.get(input[1]).addMethod(input[2]));
-				UI.ListClass(classItems.get(input[1]));
+				System.out.println(UI.ListClass(classItems.get(input[1]), relationshipItems));
 				break;
 			case "removemethod":
 				if (input.length < 3)
 					{ System.out.println("Syntax: " + UI.CommandSyntax(input[0]));
 					return; }
 				System.out.println(classItems.get(input[1]).removeMethod(input[2]));
-				UI.ListClass(classItems.get(input[1]));
+				System.out.println(UI.ListClass(classItems.get(input[1]), relationshipItems));
 				break;
 			case "renamemethod":
 				if (input.length < 4)
 					{ System.out.println("Syntax: " + UI.CommandSyntax(input[0]));
 					return; }
 				System.out.println(classItems.get(input[1]).renameMethod(input[2], input[3]));
-				UI.ListClass(classItems.get(input[1]));
+				System.out.println(UI.ListClass(classItems.get(input[1]), relationshipItems));
 				break;
 
 			case "addparameter":
@@ -178,7 +178,7 @@ public class Main {
 					return; }
 				System.out.println(classItems.get(input[1]).methodItems.get(input[2])
 					.addParameter(input[3], input[4]));
-				UI.ListClass(classItems.get(input[1]));
+				System.out.println(UI.ListClass(classItems.get(input[1]), relationshipItems));
 				break;
 			case "removeparameter":
 				if (input.length < 5)
@@ -186,7 +186,7 @@ public class Main {
 					return; }
 				System.out.println(classItems.get(input[1]).methodItems.get(input[2])
 					.removeParameter(input[3], input[4]));
-				UI.ListClass(classItems.get(input[1]));
+				System.out.println(UI.ListClass(classItems.get(input[1]), relationshipItems));
 				break;
 			case "changeparameter":
 				if (input.length < 7)
@@ -194,7 +194,7 @@ public class Main {
 					return; }
 				System.out.println(classItems.get(input[1]).methodItems.get(input[2])
 					.changeParameter(input[3], input[4], input[5], input[6]));
-				UI.ListClass(classItems.get(input[1]));
+				System.out.println(UI.ListClass(classItems.get(input[1]), relationshipItems));
 				break;
 
 			default:
