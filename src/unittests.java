@@ -64,12 +64,15 @@ public class unittests {
     // add a method to class1
     classes.get("class1").addMethod("method1");
 
+    //add a field to class1
+    classes.get("class1").addField("name", "String");
+
     // create a relationship between the two classes
     RelationshipItem relationship = new RelationshipItem(classes.get("class2"), classes.get("class1"));
     relationships.put("class2_class1", relationship);
 
     // expected output
-    String expected = "\nClass: class1\nFields: not yet\nMethods:\n\tMethod: method1 Parameters: \nRelationships: \n\t" + relationships.get("class2_class1").toString() + "\n";
+    String expected = "\nClass: class1\nFields:\n\tString name\nMethods:\n\tMethod: method1 Parameters: \nRelationships: \n\t" + relationships.get("class2_class1").toString() + "\n";
 
     // I have to create a new UI using the default constructor because the ListClass method is not static, this is just to test.
     // UI ui = new UI();
@@ -92,6 +95,9 @@ public class unittests {
     classes.get("class2").addMethod("method1");
     classes.get("class2").addMethod("method2");
 
+    //add a field to class2
+    classes.get("class2").addField("name", "String");
+
     // create a relationship between the two classes
     RelationshipItem relationship = new RelationshipItem(classes.get("class2"), classes.get("class1"));
     RelationshipItem relationship2 = new RelationshipItem(classes.get("class2"), classes.get("class3"));
@@ -99,7 +105,7 @@ public class unittests {
     relationships.put("class2_class3", relationship2);
 
     // expected output
-    String expected = "\nClass: class2\nFields: not yet\nMethods:\n\tMethod: method1 Parameters: \n\tMethod: method2 Parameters: \nRelationships: \n\t" + relationships.get("class2_class1").toString() + "\n\t" + relationships.get("class2_class3").toString() + "\n";
+    String expected = "\nClass: class2\nFields:\n\tString name\nMethods:\n\tMethod: method1 Parameters: \n\tMethod: method2 Parameters: \nRelationships: \n\t" + relationships.get("class2_class1").toString() + "\n\t" + relationships.get("class2_class3").toString() + "\n";
 
     // I have to create a new UI using the default constructor because the ListClass method is not static, this is just to test.
     // UI ui = new UI();
@@ -126,7 +132,7 @@ public class unittests {
     relationships.put("class2_class3", relationship);
 
     // expected output
-    String expected = "\nClass: class1\nFields: not yet\nMethods:\n\tMethod: method1 Parameters: \nRelationships: \n";
+    String expected = "\nClass: class1\nFields:\nMethods:\n\tMethod: method1 Parameters: \nRelationships: \n";
 
     // I have to create a new UI using the default constructor because the ListClass method is not static, this is just to test.
     // UI ui = new UI();
