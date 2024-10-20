@@ -1,4 +1,5 @@
 import java.util.HashMap;
+import java.util.List;
 public class UI
 {
 	private static final HashMap<String, String> commandSyntax = new HashMap<>();
@@ -68,7 +69,7 @@ public class UI
 		
 		//methods
 		StringBuilder sb = new StringBuilder();
-		for (HashMap.Entry<String, MethodItem> entry : classItem.methodItems.entrySet()) {
+		for (HashMap.Entry<String, List<MethodItem>> entry : classItem.methodItems.entrySet()) {
 			//adding a tab to the beginning of each method
 			sb.append("\t").append(entry.getValue().toString()).append("\n"); 
 		}

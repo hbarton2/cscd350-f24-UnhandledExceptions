@@ -1,4 +1,5 @@
 import java.util.HashMap;
+import java.util.List;
 import java.util.Scanner;
 
 public class ClassItem {
@@ -7,7 +8,7 @@ public class ClassItem {
 
     // Names of FieldItem/MethodItem are keys to Map<k,v>
     HashMap<String, FieldItem> fieldItems;
-    HashMap<String, MethodItem> methodItems;
+    HashMap<String, List<MethodItem>> methodItems;
 
     public ClassItem() {} //blank constructor for IO serialization
 
@@ -16,7 +17,7 @@ public class ClassItem {
 
         // initializes Maps
         this.fieldItems = new HashMap<String, FieldItem>();
-        this.methodItems = new HashMap<String, MethodItem>();
+        this.methodItems = new HashMap<String, List<MethodItem>>();
     }
 
     // returns a class object, to be added to the map in Main.java
@@ -56,11 +57,11 @@ public class ClassItem {
         this.fieldItems = fieldItems;
     }
 
-    public HashMap<String, MethodItem> getMethodItems() {
+    public HashMap<String, List<MethodItem>> getMethodItems() {
         return this.methodItems;
     }
 
-    public void setMethodItems(HashMap<String, MethodItem> methodItems) {
+    public void setMethodItems(HashMap<String, List<MethodItem>> methodItems) {
         this.methodItems = methodItems;
     }
 
@@ -195,6 +196,10 @@ public class ClassItem {
 
     // method to add a new method to the map for this class item
     public String addMethod(String methodName) {
+
+        return MethodItem.addMethod(this,methodName,kb);
+
+        /*
         // preconditions
         if (methodName == null || methodName.isBlank()) {
             throw new IllegalArgumentException("Method name cannot be null or blank");
@@ -217,10 +222,15 @@ public class ClassItem {
 
         // return successful add of method
         return "Method name: " + methodName + " successfully added.";
+        */
     }
 
     // method to remove a method from class
     public String removeMethod(String methodName) {
+
+        return MethodItem.removeMethod(this, methodName, kb);
+
+        /* 
         // preconditions
         if (methodName == null || methodName.isBlank()) {
             throw new IllegalArgumentException("Method name cannot be null or blank");
@@ -240,9 +250,13 @@ public class ClassItem {
 
         // return successful removal of method
         return "Method name: " + methodName + " successfully removed";
+        */
     }
 
     public String renameMethod(String oldName, String newName) {
+
+        return MethodItem.renameMethod(this, oldName, newName);
+        /*
         // preconditions
         if (oldName == null || oldName.isBlank() || newName == null || newName.isBlank()) {
             return "Method names cannot be null or blank.";
@@ -277,7 +291,7 @@ public class ClassItem {
             // invalid method name, return failure
             return "Method name: " + oldName + " does not exist.";
         }
-
+        */
     }
 
     public String addField(String fieldName, String type) {

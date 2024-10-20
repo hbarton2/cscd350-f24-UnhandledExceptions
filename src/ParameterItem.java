@@ -4,6 +4,8 @@
     - ParameterItems will be stored into a map in the MethodItem class
 */
 
+import java.util.Scanner;
+
 public class ParameterItem {
     // enum to check if the data type is valid
     public enum DataType {
@@ -61,6 +63,37 @@ public class ParameterItem {
         }
 
         this.parameterName = parameterName;
+    }
+
+    public static String addParameter(MethodItem methodItem, String type, String parameterName, Scanner kb)
+    {
+       // preconditions
+		if (parameterName == null || parameterName.isBlank()) {
+			throw new IllegalArgumentException("Parameter name cannot be null or blank");
+		}
+
+		// strip input to remove any leading or trailing whitespace
+		parameterName = parameterName.trim();
+
+		// check if the parameter already exists
+		if (methodItem.getParameters().containsKey(parameterName)) {
+			// return failure message
+			return "Parameter name: " + parameterName + " already in use.";
+		}
+
+		try {
+
+			// create parameter object
+			ParameterItem parameter = new ParameterItem(type, parameterName);
+			// insert new parameter item into map
+			methodItem.getParameters().put(parameterName, parameter);
+
+		} catch (IllegalArgumentException e) {
+			return e.getMessage();
+		}
+
+		// return successful add of parameter
+		return "Parameter: " + type + " " + parameterName + " successfully added.";
     }
 
     /*
