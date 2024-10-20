@@ -197,8 +197,56 @@ public class ClassItem {
             //exited loop, returning to add field/methods menu
         }
     }
-    private static void addMethodMenu(){
+    private static void addMethodMenu(Scanner scanner, HashMap<String, MethodItem> methodItems){
+        boolean addingMethods = true;
 
+        while(addingMethods){
+            System.out.println("Current Field(s):");
+            if(!methodItems.isEmpty()) { //fieldItems can't be null, constructor initializes them to empty HashMaps
+                for (Map.Entry<String, MethodItem> entry : methodItems.entrySet()) {
+                    //String key = entry.getKey();
+                    MethodItem value = entry.getValue();
+                    System.out.println(" - " + value);
+                }
+                //add function to delete in this menu
+            } else {
+                System.out.println("No Methods added yet.");
+            }
+
+            boolean validInput = false;
+            while(!validInput) {
+                System.out.println("\nInput Name of Method, followed my parameter type and name you would like to add (Example: 'Method1: type1 name1, type2 name2')\n('exit' to quit)>");
+                String userInput = scanner.nextLine();
+                if(userInput.equals("exit")){
+                    addingMethods = false;
+                    validInput = true;
+                    continue;
+                }
+                //
+                String[] nameAndParams = userInput.split(":");
+                MethodItem tempMethodItem = new MethodItem(nameAndParams[0]);   //creates MethodItem with name as name user wanted.
+
+                //splits parameters given into pairs by ","
+                String[] paramPairs = nameAndParams[1].split(",");
+
+                for (String pair : paramPairs){
+                    String[] parts = pair.trim().split(" ");    //triming leading and trailing spaces
+
+                    //checks that type and name are in the fieldPair, if not, it prompts, and skips to next pair the user gave.
+                    if(parts.length != 2) {
+                        System.out.println("Invalid input " + pair + " requires a type and name.");
+                        continue;
+                    }
+
+                    String type = parts[0];
+                    String name =   parts[1];
+
+                    //add type and name to methodItems parameter
+                }
+
+            }
+            //exited loop, returning to add field/methods menu
+        }
     }
 
     // public getters and setters for fields required by IO serialization
