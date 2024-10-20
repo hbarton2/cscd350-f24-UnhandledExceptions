@@ -226,7 +226,7 @@ public class MethodItem {
 	}
 
 	// function to add a new parameter to the hash map
-	public String addParameter(List<MethodItem> methodList, Scanner kb) {
+	public static String addParameter(List<MethodItem> methodList, Scanner kb, String type, String name) {
 
 		if(methodList.size() == 1)
 		{
@@ -236,13 +236,8 @@ public class MethodItem {
 				return "Method does not exist.";
 			}
 					
-			System.out.print("Input parameter to add in the format <data type> <name>\n>");
-			String[] parts = kb.nextLine().split(" ", 2);
-			if (parts.length == 2) {
-				return ParameterItem.addParameter(tempMethodItemAddParameter, parts[0], parts[1], kb);
-			} else {
-				return "Invalid input, please enter in the format <data type> <name>";
-			}
+			return ParameterItem.addParameter(tempMethodItemAddParameter, type, name, kb);
+			
 		}
 		else
 		{
@@ -253,17 +248,13 @@ public class MethodItem {
 
 				System.out.println(addParamMethod.toString());
 
-				System.out.println("Would you like to add a parameter to this method? (y/n)");
+				System.out.println("Would you like to add the parameter to this method? (y/n)");
+
 				if(kb.nextLine().trim().toLowerCase().equals("y"))
 				{
-					System.out.print("Input parameter to add in the format <data type> <name>\n>");
-					String[] parts = kb.nextLine().split(" ", 2);
-					if (parts.length == 2) {
-						return ParameterItem.addParameter(addParamMethod, parts[0], parts[1], kb);
-					} else {
-						return "Invalid input, please enter in the format <data type> <name>";
-					}
+					return ParameterItem.addParameter(addParamMethod, type, name, kb);
 				}
+				
 			}
 		}
 		return "error add param";

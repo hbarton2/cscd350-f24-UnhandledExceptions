@@ -1,4 +1,5 @@
 import java.util.HashMap;
+import java.util.List;
 import java.util.Scanner;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -176,24 +177,31 @@ public class Main {
 				if (input.length < 5)
 					{ System.out.println("Syntax: " + UI.CommandSyntax(input[0]));
 					return; }
+
+				List<MethodItem> methodList = classItems.get(input[1]).methodItems.get(input[2]);
+
+				System.out.println(MethodItem.addParameter(methodList, scanner, input[3], input[4]));
+
+				/* 
 				System.out.println(classItems.get(input[1]).methodItems.get(input[2])
 					.addParameter(input[3], input[4]));
+				*/
 				System.out.println(UI.ListClass(classItems.get(input[1]), relationshipItems));
 				break;
 			case "removeparameter":
 				if (input.length < 5)
 					{ System.out.println("Syntax: " + UI.CommandSyntax(input[0]));
 					return; }
-				System.out.println(classItems.get(input[1]).methodItems.get(input[2])
-					.removeParameter(input[3], input[4]));
+				//System.out.println(classItems.get(input[1]).methodItems.get(input[2])
+					//.removeParameter(input[3], input[4]));
 				System.out.println(UI.ListClass(classItems.get(input[1]), relationshipItems));
 				break;
 			case "changeparameter":
 				if (input.length < 7)
 					{ System.out.println("Syntax: " + UI.CommandSyntax(input[0]));
 					return; }
-				System.out.println(classItems.get(input[1]).methodItems.get(input[2])
-					.changeParameter(input[3], input[4], input[5], input[6]));
+				//System.out.println(classItems.get(input[1]).methodItems.get(input[2])
+					//.changeParameter(input[3], input[4], input[5], input[6]));
 				System.out.println(UI.ListClass(classItems.get(input[1]), relationshipItems));
 				break;
 
@@ -209,20 +217,20 @@ public class Main {
 		classItems.get("mcdonalds").addField("owner", "person");
 		classItems.get("mcdonalds").addMethod("cook_fries");
 		classItems.get("mcdonalds").addMethod("cook_burger");
-		classItems.get("mcdonalds").methodItems.get("cook_fries").addParameter("int", "time");
-		classItems.get("mcdonalds").methodItems.get("cook_fries").addParameter("String", "potatoes");
-		classItems.get("mcdonalds").methodItems.get("cook_burger").addParameter("int", "time");
-		classItems.get("mcdonalds").methodItems.get("cook_burger").addParameter("String", "patty");
+		//classItems.get("mcdonalds").methodItems.get("cook_fries").addParameter("int", "time");
+		//classItems.get("mcdonalds").methodItems.get("cook_fries").addParameter("String", "potatoes");
+		//classItems.get("mcdonalds").methodItems.get("cook_burger").addParameter("int", "time");
+		//classItems.get("mcdonalds").methodItems.get("cook_burger").addParameter("String", "patty");
 
 		ClassItem.addClassItem(classItems, "tacobell");
 		classItems.get("tacobell").addField("location", "String");
 		classItems.get("tacobell").addField("owner", "Person");
 		classItems.get("tacobell").addMethod("cook_taco");
 		classItems.get("tacobell").addMethod("cook_casadilla");
-		classItems.get("tacobell").methodItems.get("cook_taco").addParameter("int", "time");
-		classItems.get("tacobell").methodItems.get("cook_taco").addParameter("String", "meat");
-		classItems.get("tacobell").methodItems.get("cook_casadilla").addParameter("int", "time");
-		classItems.get("tacobell").methodItems.get("cook_casadilla").addParameter("String", "chicken");
+		//classItems.get("tacobell").methodItems.get("cook_taco").addParameter("int", "time");
+		//classItems.get("tacobell").methodItems.get("cook_taco").addParameter("String", "meat");
+		//classItems.get("tacobell").methodItems.get("cook_casadilla").addParameter("int", "time");
+		//classItems.get("tacobell").methodItems.get("cook_casadilla").addParameter("String", "chicken");
 
 		RelationshipItem relationship = new RelationshipItem(
 				classItems.get("mcdonalds"), classItems.get("tacobell"));
