@@ -99,6 +99,27 @@ public class ClassItem {
         boolean adding = true;
 
         while(adding) {
+            System.out.println("+==================================+");
+            System.out.println("Class: " + classItem.getName());
+            //prints fields
+            if(!(classItem.fieldItems.size() == 0)) {
+                StringBuilder field_sb = new StringBuilder();
+                for (HashMap.Entry<String, FieldItem> entry : classItem.fieldItems.entrySet())
+                    field_sb.append("\nField(s): " + entry.getValue().toString());
+                System.out.println(field_sb.toString());
+            }else{
+                System.out.println("Field(s): No Fields added yet.");
+            }
+            System.out.println("+==================================+");
+            //prints methods
+            if(!(classItem.methodItems.isEmpty())){
+                StringBuilder method_sb = new StringBuilder();
+                for (HashMap.Entry<String, MethodItem> entry : classItem.methodItems.entrySet())
+                    method_sb.append("\nMethod(s): " + entry.getValue().toString());
+                System.out.println(method_sb.toString());
+            }else{
+                System.out.println("Fields(s): No Fields added yet.");
+            }
             System.out.println("\"Add Fields\"");
             //add delete field/method functionality here?
             System.out.print("\"Add Methods\"\n('exit' to quit)>");
@@ -125,7 +146,7 @@ public class ClassItem {
         boolean addingFields = true;
 
         while(addingFields){
-            System.out.println("Current fields:");
+            System.out.println("Current Field(s):");
             if(!fieldItems.isEmpty()) { //fieldItems can't be null, constructor initializes them to empty HashMaps
                 for (Map.Entry<String, FieldItem> entry : fieldItems.entrySet()) {
                     //String key = entry.getKey();
