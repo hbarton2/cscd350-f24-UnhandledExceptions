@@ -51,26 +51,39 @@ public class UI
 	/*
 		ListClass takes a ClassItem reference, and displays its info
 	*/
-	public static void ListClass(ClassItem classItem)
+	public static String ListClass(ClassItem classItem, HashMap<String, RelationshipItem> relationships)
 	{
 		if (classItem == null)
 		{
-			System.out.println("Invalid class name.");
-			return;
+			return "Invalid class name.";
 		}
 		
-		System.out.println();
-		System.out.print("Class: " + classItem.toString() + "\nFields: ");
+		StringBuilder result = new StringBuilder();
+		result.append("\nClass: ").append(classItem.toString()).append("\nFields: ");
 		
 		//fields
-		System.out.print("not yet");
+		result.append("not yet\n");
+
+		result.append("Methods:\n");
 		
 		//methods
 		StringBuilder sb = new StringBuilder();
-		for (HashMap.Entry<String, MethodItem> entry : classItem.methodItems.entrySet()) 
-			sb.append("\nMethod: " + entry.getValue().toString());
+		for (HashMap.Entry<String, MethodItem> entry : classItem.methodItems.entrySet()) {
+			//adding a tab to the beginning of each method
+			sb.append("\t").append(entry.getValue().toString()).append("\n"); 
+		}
 		
-		System.out.println(sb.toString());
+		result.append(sb.toString());
+
+		//relationships
+		result.append("Relationships: \n");
+		for (HashMap.Entry<String, RelationshipItem> entry : relationships.entrySet()) 
+		{
+			if (entry.getKey().contains(classItem.getName()))
+				result.append("\t" + entry.getValue().toString()).append("\n");
+		}
+
+		return result.toString();
 	}
 	
 	/*
