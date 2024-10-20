@@ -59,10 +59,13 @@ public class UI
 		}
 		
 		StringBuilder result = new StringBuilder();
-		result.append("\nClass: ").append(classItem.toString()).append("\nFields: ");
+		result.append("\nClass: ").append(classItem.toString()).append("\nFields:\n");
 		
-		//fields
-		result.append("not yet\n");
+		//prints list of fields indented to read easier
+		for (HashMap.Entry<String, FieldItem> entry : classItem.fieldItems.entrySet()) 
+		{
+			result.append("\t" + entry.getValue().toString()).append("\n");
+		}
 
 		result.append("Methods:\n");
 		
