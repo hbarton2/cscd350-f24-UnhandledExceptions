@@ -1,5 +1,5 @@
-import java.util.Map;
-import java.util.Scanner;
+import java.util.HashMap;
+//import java.util.Scanner;
 
 public class RelationshipItem
 {
@@ -25,8 +25,11 @@ public class RelationshipItem
     /* addRelationship takes a Map of relationships we currently have created from the main.java, a ClassItem source and a ClassItem destination.
      * The goal is to create a relationship object between the source and destination and store it in the map.
      * If the relationship already exists, we return a message that the relationship already exists.
-     */
-    public static String addRelationship(Map<String, RelationshipItem> relationships, Map<String, ClassItem> classes){
+     
+    * subject for deletion if we end up not needing this version
+
+    public static String addRelationship(
+        HashMap<String, RelationshipItem> relationships, HashMap<String, ClassItem> classes){
         // checks for null values and throws an exception if relationships or classes are null
         if(relationships == null || classes == null){
             throw new IllegalArgumentException("relationships and classes must not be null");
@@ -46,6 +49,16 @@ public class RelationshipItem
         System.out.println("Enter the name of the second class:");
         String destination = kb.nextLine();
         destination.toLowerCase();
+
+        return addRelationship(relationships, classes, source, destination);
+    }
+
+    */
+
+    public static String addRelationship(
+        HashMap<String, RelationshipItem> relationships, 
+        HashMap<String, ClassItem> classes, String source, String destination)
+    {
         // at this point the key is created with everything being lowercase
         String key = source + "_" + destination;
 
@@ -74,8 +87,10 @@ public class RelationshipItem
      * If the relationship exists, it will be removed from the map and a message will be returned that the relationship has been removed.
      * If the relationship is typed incorrectly, a message will be returned that the relationship does not exist. The user will be prompted again.
      * If the user types "exit", the method will return a message that the user has exited the method, and the method ends.
-     */
-    public static String removeRelationship(Map<String, RelationshipItem> relationshipMap){
+
+     * subject for deletion if we end up not needing this version
+
+    public static String removeRelationship(HashMap<String, RelationshipItem> relationshipMap){
         // can't have a null relationshipMap
         if(relationshipMap == null) {
             throw new IllegalArgumentException("relationshipMap must not be null");
@@ -88,7 +103,7 @@ public class RelationshipItem
         // printing the relationships
         System.out.println("Relationships:");
         // for each loop with entry being the key and value of the map given by relationshipMap.entryset()
-        for(Map.Entry<String, RelationshipItem> entry : relationshipMap.entrySet()){
+        for(HashMap.Entry<String, RelationshipItem> entry : relationshipMap.entrySet()){
             System.out.println("Key: " + entry.getKey() + " Value: " + entry.getValue().toString());
         }
 
@@ -117,6 +132,20 @@ public class RelationshipItem
                 System.out.println("Please enter a valid option...");
             }
         }
+    }
+    */
+
+    public static String removeRelationship(
+        HashMap<String, RelationshipItem> relationshipMap, String source, String destination)
+    {
+        String key = source + "_" + destination;
+
+        if(relationshipMap.containsKey(key)){
+            relationshipMap.remove(key);
+            return "Relationship has been removed";
+        }
+        else
+            return "Relationship not found.";
     }
 
     //returns the source ClassItem object

@@ -4,11 +4,15 @@ public class UI
 	private static final HashMap<String, String> commandSyntax = new HashMap<>();
 
 	static {
+		commandSyntax.put("v", "v classname");
+		commandSyntax.put("view", "view classname");
+		commandSyntax.put("save", "save filename");
+		commandSyntax.put("load", "load filename");
 		commandSyntax.put("addclass", "addclass classname");
 		commandSyntax.put("removeclass", "removeclass classname");
 		commandSyntax.put("renameclass", "renameclass classname newclassname");
-		commandSyntax.put("addrelation", "addrelation (currently relationship handles the input with the user.)");
-		commandSyntax.put("removerelation", "removerelation (currently relationship handles the input with the user.)");
+		commandSyntax.put("addrelation", "addrelation sourceclassname destinationclassname");
+		commandSyntax.put("removerelation", "removerelation sourceclassname destinationclassname");
 		commandSyntax.put("addfield", "addfield classname type fieldname");
 		commandSyntax.put("removefield", "removefield classname fieldname");
 		commandSyntax.put("renamefield", "renamefield classname fieldname newfieldname");

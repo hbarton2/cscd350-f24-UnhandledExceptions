@@ -24,19 +24,17 @@ public class Main {
 
 	public void MainMenu()
 	{
-		System.out.println("\nList Current Classes:\t\tc or classes");
-		System.out.println("List Current Relationships:\tr or relationships");
-		System.out.println("View Class Details:\t\tv [classname] or view [classname]");
-		System.out.println("Display help/command list:\th or help");
-		System.out.println("Save:\t\t\t\tsave or save [filename]");
-		System.out.println("Load:\t\t\t\tload or load [filename]");
-		System.out.println("Exit:\t\t\t\te or exit");
+		System.out.println("\nList Current Classes: c or classes");
+		System.out.println("List Current Relationships: r or relationships");
+		System.out.println("View Class Details: v [classname] or view [classname]");
+		System.out.println("Display help/command list: h or help");
+		System.out.println("Save: save or save [filename]");
+		System.out.println("Load: load or load [filename]");
+		System.out.println("Exit: e or exit");
 	}
 
 	public void CommandParsing(String[] input)
 	{
-		String badinput = "Invalid command. (h for help)";
-
 		switch (input[0])
 		{
 			case "c":
@@ -49,10 +47,9 @@ public class Main {
 				break;
 			case "v":
 			case "view":
-				if (input.length != 2) {
-					System.out.println(badinput);
-					break;
-				}
+				if (input.length != 2)
+					{ System.out.println("Syntax: " + UI.CommandSyntax(input[0]));
+					return; }
 				System.out.println(UI.ListClass(classItems.get(input[1]), relationshipItems));
 				break;
 			case "h":
@@ -60,11 +57,15 @@ public class Main {
 				UI.Help();
 				break;
 			case "save":
-				if (input.length < 2) System.out.println(badinput);
+				if (input.length != 2)
+					{ System.out.println("Syntax: " + UI.CommandSyntax(input[0]));
+					return; }
 				System.out.println(IO.Save(classItems, relationshipItems, input[1]));
 				break;
 			case "load":
-				if (input.length < 2) System.out.println(badinput);
+				if (input.length != 2)
+					{ System.out.println("Syntax: " + UI.CommandSyntax(input[0]));
+					return; }
 				//load from file into items
 				HashMap<String, Object> items = IO.Load(input[1]);
 
@@ -124,17 +125,19 @@ public class Main {
 				break;
 
 			case "addrelation":
-				if (input.length < 1)
+				if (input.length != 3)
 					{ System.out.println("Syntax: " + UI.CommandSyntax(input[0]));
 					return; }
-				System.out.println(RelationshipItem.addRelationship(relationshipItems, classItems));
+				System.out.println(RelationshipItem.addRelationship(
+					relationshipItems, classItems, input[1], input[2]));
 				UI.ListRelationships(relationshipItems);
 				break;
 			case "removerelation":
-				if (input.length < 1)
+				if (input.length != 3)
 					{ System.out.println("Syntax: " + UI.CommandSyntax(input[0]));
 					return; }
-				System.out.println(RelationshipItem.removeRelationship(relationshipItems));
+				System.out.println(RelationshipItem.removeRelationship(
+					relationshipItems, input[1], input[2]));
 				UI.ListRelationships(relationshipItems);
 				break;
 
