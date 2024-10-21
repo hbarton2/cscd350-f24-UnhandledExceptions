@@ -9,6 +9,7 @@ public class Main {
 	Scanner scanner = new Scanner(System.in);
 	String input;
 
+	// prints the program name and then starts looping run.
 	public static void main(String[] args) {
 		Main main = new Main();
 		System.out.println("\n-=Unhandled Exceptions UML Editor=-");
@@ -16,12 +17,19 @@ public class Main {
 			main.Run();
 	}
 
+	// main program loop. displays the prompt then starts checking for input
 	public void Run()
 	{
 		System.out.print("\nueUML (m for menu): ");
 		CommandParsing(scanner.nextLine().split(" "));
 	}
 
+	/*	takes the input split by space.
+		switch catches the first word and proceeds from there
+		each command first checks if the proper number of parameters are present in the input line
+		if not, it prints the proper syntax for that command from UI.CommandSyntax.
+		if so, it runs the command.
+	*/
 	public void CommandParsing(String[] input)
 	{
 		switch (input[0].toLowerCase())
@@ -204,6 +212,7 @@ public class Main {
 		}
 	}
 
+	// simple test method for us (shhh!)
 	private void tester() 
 	{
 		ClassItem.addClassItem(classItems, "mcdonalds");

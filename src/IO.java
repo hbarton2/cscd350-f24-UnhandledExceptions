@@ -10,6 +10,11 @@ import java.io.IOException;
 
 public class IO
 {
+	/*
+	 * uses jackson api for serialization
+	 * combinds both classitems and relationshipitems into 1 hashmap,
+	 * maps it to a json string, then saves that to the specified file.
+	 */
 	public static String Save(
 		HashMap<String, ClassItem> classItems,
 		HashMap<String, RelationshipItem> relationshipItems,
@@ -36,6 +41,13 @@ public class IO
 		return "saved to " + filepath;
 	}
 	
+	/*
+	* uses jackson api for serialization
+	* makes a new hashmap to store both classitems and relationshipitems
+	* maps the json string from the specified file to the items hashmap and sends
+	* it back to main to be split up and deployed.
+	* with more time, will figure out how to split it up and deploy it from here.
+	*/
 	public static HashMap<String, Object> Load(String filepath)
 	{		
 		HashMap<String, Object> items =  new HashMap<>();

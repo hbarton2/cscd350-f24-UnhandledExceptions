@@ -19,12 +19,14 @@ public class ClassItem {
         this.methodItems = new HashMap<String, MethodItem>();
     }
 
+
+    //Used for tester methods and unit tests currently.
     public static void addClassItem(final HashMap<String, ClassItem> classItems, final String classItemName) {
         String name = classItemName.toLowerCase().trim();// forces all classes to be in lower case and trims all leading
                                                          // and trailing "space" (refernce .trim() Java API for space
                                                          // definition).
-        // if the classItemList does not already have a class named classItemName, we
-        // create a new class
+        /*if the classItemList does not already have a class named classItemName, we
+         create a new ClassItem and add it to the HashMap*/
         if (!(classItems.containsKey(name))) {
             ClassItem createdClass = new ClassItem(name);
             classItems.put(createdClass.getName(), createdClass);
@@ -34,19 +36,25 @@ public class ClassItem {
             System.out.println("Class name must be unique.");;
         }
     }
+
+    /*
+     * Bulk add Class method.
+     * Initial Call passed in the HashMap of current ClassItems, scanner, and the name the user wants to create a class of.
+     * First it makes sure the class name is available (not a duplicate), if so we create a class Item.
+     * We then prompt the user asking if they want to add more information to the class.
+     * If no, we add the class to the HashMap of ClassItems, where the key is the name of the class, and the value is the ClassItem object,we then return to the main menu.
+     * If yes, we move to the addToClassMenu method, passing in the new ClassItem object we created and scanner for user input.
+     */
     public static void addClassItem(final HashMap<String, ClassItem> classItems, Scanner scanner, String inputName){
-        /*when add class option is selected, we call addClassItem function*/
         boolean validName = false;
-        String userInput = inputName.toLowerCase().trim();    //initialized to null
+        String userInput = inputName.toLowerCase().trim();
         while(!validName) {//gets user input for name until valid input, checks for null and blank input. returns when input is a name not in classItems already.
-            //System.out.print("Enter class name you would like to add: \n>");
-            //userInput = scanner.nextLine().toLowerCase().trim();
             validName = checkValidNewName(classItems, userInput);
         }
         String className = userInput;   //sets className variable to userInput that was valid.
         ClassItem newClass = new ClassItem(className);  //creates a new class.
 
-        boolean addClassFin = false;
+        boolean addClassFin = false; //set to true when they do not want to add a class, forces only 2 options to be input, (y)es or (n)o.
         while(!addClassFin){
             System.out.print("Add Field/Methods? (Y/N) \n>");
             userInput = scanner.nextLine().toLowerCase().trim();
@@ -89,11 +97,19 @@ public class ClassItem {
 
     }
 
+
+    /*
+     * addToClassMenu is called after a ClassItem is originally created, as well as when a user selects to "edit" a class from the main menu.
+     * It allows the user to enter an "edit mode" for a class, prompting them with options of what they want to edit.
+     * Currently we are prompting to add fields and add methods.
+     * When an option is selected it moves to its own add___Menu method.
+     */
     public static void addToClassMenu(ClassItem classItem, Scanner scanner){
 
-        boolean adding = true;
+        boolean adding = true;  //set to false when the user inputs 'exit' saying they are finished adding/editing the class.
 
         while(adding) {
+            //prints the name so the user knows what class they are in.
             System.out.println("+==================================+");
             System.out.println("Class: " + classItem.getName());
             //prints fields
@@ -115,14 +131,14 @@ public class ClassItem {
                 System.out.println("Method(s): No Methods added yet.");
             }
             System.out.println("+==================================+");
+            //displays options for user to choose from
             System.out.println("\"Add Fields\"");
-            //add delete field/method functionality here?
             System.out.print("\"Add Methods\"\n('exit' to quit)>");
             String userInput = scanner.nextLine().toLowerCase().trim();
             switch (userInput) {
                 case "add fields":
                 case "add field":
-                    addFieldMenu(scanner, classItem.fieldItems);
+                    addFieldMenu(scanner, classItem.fieldItems); 
                     break;
                 case "add methods":
                 case "add method":
@@ -138,6 +154,14 @@ public class ClassItem {
         //return to main menu
     }
 
+    /*
+     * addFieldMenu is used to add fields to a class.
+     * Gets a scanner and the HashMap of fieldItems for the class we are wanting to add classes to.
+     * The user is continuously prompted to add fields, they can input a single "type name" pair or append them to each other "type name, type name,..."
+     * Each pair of type/name is attempted to be added to the HashMap of fieldItems, if the names are not a duplicate name to a field already existing, it is added
+     * if it is a duplicate the user is prompted it was not added.
+     * Once the user inputs 'exit' they are returne to the addToClassMenu method where they are again prompted with optons to add to the class they are working in.
+     */
     private static void addFieldMenu(Scanner scanner, HashMap<String, FieldItem> fieldItems){
         boolean addingFields = true;
 
@@ -193,6 +217,15 @@ public class ClassItem {
             //exited loop, returning to add field/methods menu
         }
     }
+    /*
+     * addMethodMenu is used to add methods to a class.
+     * Gets a scanner and the classItem object that the user is working in.
+     * The user is continuously prompted to add methods with the following syntax "methodName: parameterType parameterName".
+     * The function parses the users input splitting it into the name and the parameter types and names.
+     * The function calls the addMethod function with the users input for name, if they only input a name we create an empty method and they are prompted again to add another method.
+     * If parameters are adder we then parse the parameter type and names and call the addParameter method on the methodItem object
+     * that we created and inserted into the HashMap for each pair, the user is prompted with the associated message, whether it was created, or what was wrong if not.
+     */
     private static void addMethodMenu(Scanner scanner, ClassItem classItem){
         boolean addingMethods = true;
 
