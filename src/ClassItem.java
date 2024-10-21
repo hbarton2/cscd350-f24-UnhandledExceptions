@@ -19,9 +19,7 @@ public class ClassItem {
         this.methodItems = new HashMap<String, MethodItem>();
     }
 
-    // returns a class object, to be added to the map in Main.java
-    // need to add precondition checking
-    public static String addClassItem(final HashMap<String, ClassItem> classItems, final String classItemName) {
+    public static void addClassItem(final HashMap<String, ClassItem> classItems, final String classItemName) {
         String name = classItemName.toLowerCase().trim();// forces all classes to be in lower case and trims all leading
                                                          // and trailing "space" (refernce .trim() Java API for space
                                                          // definition).
@@ -30,14 +28,273 @@ public class ClassItem {
         if (!(classItems.containsKey(name))) {
             ClassItem createdClass = new ClassItem(name);
             classItems.put(createdClass.getName(), createdClass);
-            return "Class \"" + createdClass.getName() + "\" created.";
+            System.out.println("Class \"" + createdClass.getName() + "\" created.");
         } else {
             // if classItemName is already in use in the classItemList that's passed in.
-            return "Class name must be unique.";
+            System.out.println("Class name must be unique.");;
         }
     }
+    public static void addClassItem(final HashMap<String, ClassItem> classItems, Scanner scanner, String inputName){
+        /*when add class option is selected, we call addClassItem function*/
+        boolean validName = false;
+        String userInput = inputName.toLowerCase().trim();    //initialized to null
+        while(!validName) {//gets user input for name until valid input, checks for null and blank input. returns when input is a name not in classItems already.
+            //System.out.print("Enter class name you would like to add: \n>");
+            //userInput = scanner.nextLine().toLowerCase().trim();
+            validName = checkValidNewName(classItems, userInput);
+        }
+        String className = userInput;   //sets className variable to userInput that was valid.
+        ClassItem newClass = new ClassItem(className);  //creates a new class.
 
+        boolean addClassFin = false;
+        while(!addClassFin){
+            System.out.print("Add Field/Methods? (Y/N) \n>");
+            userInput = scanner.nextLine().toLowerCase().trim();
+
+            //switch case for adding more info
+            switch (userInput) {
+                case "n": case "no": //Creating class with no fields or methods
+                    classItems.put(newClass.getName(), newClass);   //adds class with no fields/methods to classItems map
+                    break;
+                case "y": case "yes": //Adding fields and/or methods to class
+                    addToClassMenu(newClass, scanner);
+                    break;
+                default:
+                    System.out.println("Input valid option.");
+            }
+            addClassFin = true;
+        }
+        //finished adding class
+        classItems.put(newClass.getName(), newClass);
+
+        /*
+        Created testClass
+        Fields:
+         */
+        System.out.println("Created " + newClass.getName());
+
+        if(!newClass.fieldItems.isEmpty()) {
+            StringBuilder fields = new StringBuilder();
+            for (HashMap.Entry<String, FieldItem> entry : newClass.fieldItems.entrySet())
+                fields.append("\nField: " + entry.getValue().toString());
+            System.out.print(fields.toString());
+        }
+
+        if(!newClass.fieldItems.isEmpty()) {
+            StringBuilder methods = new StringBuilder();
+            for (HashMap.Entry<String, MethodItem> entry : newClass.methodItems.entrySet())
+                methods.append("\nField(s): " + entry.getValue().toString());
+            System.out.println(methods.toString());
+        }
+
+    }
+
+    public static void addToClassMenu(ClassItem classItem, Scanner scanner){
+
+        boolean adding = true;
+
+        while(adding) {
+            System.out.println("+==================================+");
+            System.out.println("Class: " + classItem.getName());
+            //prints fields
+            if(!(classItem.fieldItems.size() == 0)) {
+                StringBuilder field_sb = new StringBuilder();
+                for (HashMap.Entry<String, FieldItem> entry : classItem.fieldItems.entrySet())
+                    field_sb.append("\nField(s): " + entry.getValue().toString());
+                System.out.println(field_sb.toString());
+            }else{
+                System.out.println("Field(s): No Fields added yet.");
+            }
+            //prints methods
+            if(!(classItem.methodItems.isEmpty())){
+                StringBuilder method_sb = new StringBuilder();
+                for (HashMap.Entry<String, MethodItem> entry : classItem.methodItems.entrySet())
+                    method_sb.append("\nMethod(s): " + entry.getValue().toString());
+                System.out.println(method_sb.toString());
+            }else{
+                System.out.println("Method(s): No Methods added yet.");
+            }
+            System.out.println("+==================================+");
+            System.out.println("\"Add Fields\"");
+            //add delete field/method functionality here?
+            System.out.print("\"Add Methods\"\n('exit' to quit)>");
+            String userInput = scanner.nextLine().toLowerCase().trim();
+            switch (userInput) {
+                case "add fields":
+                case "add field":
+                    addFieldMenu(scanner, classItem.fieldItems);
+                    break;
+                case "add methods":
+                case "add method":
+                    addMethodMenu(scanner, classItem);
+                    break;
+                case "exit":    //done adding to class, return to main menu
+                    adding = false;
+                    break;
+                default:
+                    System.out.println("Input valid option (or type 'exit' to quit) \n>");
+            }
+        }
+        //return to main menu
+    }
+
+    private static void addFieldMenu(Scanner scanner, HashMap<String, FieldItem> fieldItems){
+        boolean addingFields = true;
+
+        while(addingFields){
+            System.out.println("Current Field(s):");
+            if(!fieldItems.isEmpty()) { //fieldItems can't be null, constructor initializes them to empty HashMaps
+                for (HashMap.Entry<String, FieldItem> entry : fieldItems.entrySet()) {
+                    //String key = entry.getKey();
+                    FieldItem value = entry.getValue();
+                    System.out.println(" - " + value);
+                }
+                //add function to delete in this menu
+            } else {
+                System.out.println("No Fields added yet.");
+            }
+
+            boolean validInput = false;
+            while(!validInput) {
+                System.out.print("\nInput type and name pairs of Fields you would ike to add (Example: 'type1 name1, type2 name2,...')\n('exit' to quit)>");
+                String userInput = scanner.nextLine();
+                if(userInput.equals("exit")){
+                    addingFields = false;
+                    validInput = true;
+                    continue;
+                }
+                //splits user input by ","
+                String[] fieldPairs = userInput.split(",");
+
+                for (String pair : fieldPairs){
+                    String[] parts = pair.trim().split(" ");    //triming leading and trailing spaces
+
+                    //checks that type and name are in the fieldPair, if not, it prompts, and skips to next pair the user gave.
+                    if(parts.length != 2) {
+                        System.out.println("Invalid input " + pair + " requires a type and name.");
+                        continue;
+                    }
+
+                    String type = parts[0];
+                    String name =   parts[1];
+
+                    if(fieldItems.containsKey(name)){   //if the pair's name is already a field, skip it.
+                        System.out.println("Duplicate field name: " + name + " is already defined.");
+                        continue;
+                    }
+
+                    //adds field to field, didn't call add field method because it returns string
+                    FieldItem newField = new FieldItem(name, type);
+                    fieldItems.put(name, newField);
+                    System.out.println("Added " + type + " " + name);
+                }
+
+            }
+            //exited loop, returning to add field/methods menu
+        }
+    }
+    private static void addMethodMenu(Scanner scanner, ClassItem classItem){
+        boolean addingMethods = true;
+
+        while(addingMethods){
+            boolean exitMenu = false;
+            while(!exitMenu) {
+                displayMethods(classItem);
+                System.out.print("\nInput Name of Method, followed by parameter type and name you would like to add:\n('h' for help, 'exit' to quit)\n>");
+                String userInput = scanner.nextLine();
+                if(userInput.equals("exit")){
+                    addingMethods = false;
+                    exitMenu = true;
+                    continue;
+                }
+                if(userInput.equals("h")){
+                    System.out.println("Example: 'Method1: type1 name1, type2 name2'");
+                    System.out.println("Valid Parameter Types: int, float, double, string, boolean, char, long, byte, short");
+                    continue;
+                }
+
+                String[] nameAndParams = userInput.split(":");
+
+                //FOR OVERLOADING
+                //MethodItem tempMethodItem = new MethodItem(nameAndParams[0]);   //creates MethodItem with name as name user wanted.
+                classItem.addMethod(nameAndParams[0]);
+                if(nameAndParams.length < 2){
+                    System.out.println(nameAndParams[0] + " added to " + classItem.getName());
+                    exitMenu = true;
+                    continue;
+                }
+                //splits parameters given into pairs by ","
+                String[] paramPairs = nameAndParams[1].split(",");
+
+                for (String pair : paramPairs){
+                    //Split parameterType and parameterName into it's own array
+                    String[] parts = pair.trim().split(" ");
+
+                    //checks that type and name are in the fieldPair, if not, it prompts, and skips to next pair the user gave.
+                    if(parts.length != 2) {
+                        System.out.println("Invalid input '" + pair + "' requires a pair with a single type and a single name.");
+                        continue;
+                    }
+
+                    //sets type and name to be used in addParameter()
+                    String type = parts[0];
+                    String name =   parts[1];
+
+                    //prints so that we show error message from .addParameter() (if datatype is invalid)
+                    System.out.println(classItem.methodItems.get(nameAndParams[0]).addParameter(type, name));
+                    //FOR OVERLOADING
+                    //add type and name to methodItems parameter
+                    //MethodItem.addParameter(tempMethodItem, type, name);
+
+                }
+                //FOR OVERLOADING
+                //MethodItem.addMethod(classItem,tempMethodItem);
+
+            }
+            //exited loop
+        }
+    }
     // public getters and setters for fields required by IO serialization
+    private static void displayMethods(ClassItem classItem){
+        System.out.println("Current Methods:");
+        if(classItem.methodItems.isEmpty()){
+            System.out.println("No Method's added yet.");
+        }else {
+            // Iterate through the methodItems HashMap
+            for (HashMap.Entry<String, MethodItem> methodEntry : classItem.methodItems.entrySet()) {
+                // Get the method name (key in the methodItems HashMap)
+                String methodName = methodEntry.getKey();
+                // Get the corresponding MethodItem (value in the methodItems HashMap)
+                MethodItem methodItem = methodEntry.getValue();
+
+                // Print the method name
+                System.out.println("\tName: " + methodName);
+
+                // Now iterate through the parameters of this method
+                System.out.print("\tParameters: ");
+                if (methodItem.getParameters().isEmpty()) {
+                    System.out.println("None\n");
+                } else {
+                    // Iterate through the parameters HashMap inside MethodItem, seperated by commas
+                    int paramCount = methodItem.getParameters().size();
+                    int index = 0;
+                    for (HashMap.Entry<String, ParameterItem> paramEntry : methodItem.getParameters().entrySet()) {
+                        // Get the ParameterItem
+                        ParameterItem paramItem = paramEntry.getValue();
+
+                        // Use toString method from ParameterItem
+                        System.out.print(paramItem.toString());
+
+                        //Avoids , at end of parameter list
+                        index++;
+                        if(index < paramCount){
+                            System.out.println(", ");
+                        }
+                    }
+                }
+            }
+        }
+    }
     public String getName() {
         return this.name;
     }
@@ -174,13 +431,17 @@ public class ClassItem {
     // Check if the new name to be used is available (not a duplicate name), if
     // duplicate, display message.
     // private static boolean checkValidNewName(final Map<String, ClassItem>
-    // classItemList, final String newClassItemName){
-    // if(!(classItemList.containsKey(newClassItemName))){ //if the name is not
-    // return true;
-    // }
-    // System.out.println("\"" + newClassItemName + "\" is already in use." );
-    // return false;
-    // }
+    private static boolean checkValidNewName(final HashMap<String, ClassItem> classItemList, final String newClassItemName) {
+        if (newClassItemName == null || newClassItemName.isBlank()){
+            System.out.println("Name cannot be blank.");
+           return false;
+       }
+
+    if(!(classItemList.containsKey(newClassItemName))) //if the name is not
+       return true;
+    System.out.println("\"" + newClassItemName + "\" is already in use." );
+       return false;
+    }
 
     // checks if the oldClassItem is a class already contained in the Map passed in.
     // displays error message when false.
