@@ -50,7 +50,10 @@ public class Main {
 				break;
 			case "v":
 			case "view":
-				if (input.length < 2) System.out.println(badinput);
+				if (input.length != 2) {
+					System.out.println(badinput);
+					break;
+				}
 				System.out.println(UI.ListClass(classItems.get(input[1]), relationshipItems));
 				break;
 			case "h":
@@ -89,16 +92,23 @@ public class Main {
 			case "69": // shhh
 				tester();
 				break;
-
+			case "edit":
+				if (input.length != 2)
+				{ System.out.println("Syntax: " + UI.CommandSyntax(input[0]));
+					return; }
+				if(classItems.containsKey(input[1])){
+					ClassItem.addToClassMenu(classItems.get(input[1]),scanner);
+				}
+				break;
 			case "addclass":
-				if (input.length < 2)
+				if (input.length != 2)
 					{ System.out.println("Syntax: " + UI.CommandSyntax(input[0]));
 					return; }
-				System.out.println(ClassItem.addClassItem(classItems, input[1]));
+				ClassItem.addClassItem(classItems, scanner, input[1]);
 				UI.ListClasses(classItems);
 				break;
 			case "removeclass":
-				if (input.length < 2)
+				if (input.length != 2)
 					{ System.out.println("Syntax: " + UI.CommandSyntax(input[0]));
 					return; }
 				System.out.println(ClassItem.removeClassItem(
@@ -106,7 +116,7 @@ public class Main {
 				UI.ListClasses(classItems);
 				break;
 			case "renameclass":
-				if (input.length < 3)
+				if (input.length != 3)
 					{ System.out.println("Syntax: " + UI.CommandSyntax(input[0]));
 					return; }
 				System.out.println(ClassItem.renameClassItem(
