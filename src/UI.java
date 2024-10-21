@@ -4,26 +4,26 @@ public class UI
 	private static final HashMap<String, String> commandSyntax = new HashMap<>();
 
 	static {
-		commandSyntax.put("v", "v classname");
-		commandSyntax.put("view", "view classname");
-		commandSyntax.put("save", "save filename");
-		commandSyntax.put("load", "load filename");
-		commandSyntax.put("addclass", "addclass classname");
-		commandSyntax.put("removeclass", "removeclass classname");
-		commandSyntax.put("renameclass", "renameclass classname newclassname");
-		commandSyntax.put("addrelation", "addrelation sourceclassname destinationclassname");
-		commandSyntax.put("removerelation", "removerelation sourceclassname destinationclassname");
-		commandSyntax.put("addfield", "addfield classname type fieldname");
-		commandSyntax.put("removefield", "removefield classname fieldname");
-		commandSyntax.put("renamefield", "renamefield classname fieldname newfieldname");
-		commandSyntax.put("addmethod", "addmethod classname methodname");
-		commandSyntax.put("removemethod", "removemethod classname methodname");
-		commandSyntax.put("renamemethod", "renamemethod classname methodname newmethodname");
-		commandSyntax.put("addparameter", "addparameter classname methodname parametertype parametername");
-		commandSyntax.put("removeparameter", "removeparameter classname methodname parametertype parametername");
-		commandSyntax.put("changeparameter", "changeparameter classname methodname parametertype parametername "
-						+ "newparametertype newparametername");
-		commandSyntax.put("edit", "edit classname");
+		commandSyntax.put("v", "v [classname]");
+		commandSyntax.put("view", "view [classname]");
+		commandSyntax.put("save", "save [filename]");
+		commandSyntax.put("load", "load [filename]");
+		commandSyntax.put("addclass", "addclass [classname]");
+		commandSyntax.put("removeclass", "removeclass [classname]");
+		commandSyntax.put("renameclass", "renameclass [classname] [newclassname]");
+		commandSyntax.put("addrelation", "addrelation [sourceclassname] [destinationclassname]");
+		commandSyntax.put("removerelation", "removerelation [sourceclassname] [destinationclassname]");
+		commandSyntax.put("addfield", "addfield [classname] [type] [fieldname]");
+		commandSyntax.put("removefield", "removefield [classname] [fieldname]");
+		commandSyntax.put("renamefield", "renamefield [classname] [fieldname] [newfieldname]");
+		commandSyntax.put("addmethod", "addmethod [classname] [methodname]");
+		commandSyntax.put("removemethod", "removemethod [classname] [methodname]");
+		commandSyntax.put("renamemethod", "renamemethod [classname] [methodname] [newmethodname]");
+		commandSyntax.put("addparameter", "addparameter [classname] [methodname] [parametertype] [parametername]");
+		commandSyntax.put("removeparameter", "removeparameter [classname] [methodname] [parametertype] [parametername]");
+		commandSyntax.put("changeparameter", "changeparameter [classname] [methodname] [parametertype] [parametername] "
+						+ "[newparametertype] [newparametername]");
+		commandSyntax.put("edit", "edit [classname]");
 	}
 
 	// nicer way to get syntax strings
