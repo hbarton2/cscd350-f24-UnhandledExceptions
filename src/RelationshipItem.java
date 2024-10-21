@@ -1,5 +1,5 @@
 import java.util.HashMap;
-import java.util.Scanner;
+//import java.util.Scanner;
 
 public class RelationshipItem
 {
@@ -25,7 +25,9 @@ public class RelationshipItem
     /* addRelationship takes a Map of relationships we currently have created from the main.java, a ClassItem source and a ClassItem destination.
      * The goal is to create a relationship object between the source and destination and store it in the map.
      * If the relationship already exists, we return a message that the relationship already exists.
-     */
+     
+    * subject for deletion if we end up not needing this version
+
     public static String addRelationship(
         HashMap<String, RelationshipItem> relationships, HashMap<String, ClassItem> classes){
         // checks for null values and throws an exception if relationships or classes are null
@@ -50,6 +52,8 @@ public class RelationshipItem
 
         return addRelationship(relationships, classes, source, destination);
     }
+
+    */
 
     public static String addRelationship(
         HashMap<String, RelationshipItem> relationships, 
@@ -83,7 +87,9 @@ public class RelationshipItem
      * If the relationship exists, it will be removed from the map and a message will be returned that the relationship has been removed.
      * If the relationship is typed incorrectly, a message will be returned that the relationship does not exist. The user will be prompted again.
      * If the user types "exit", the method will return a message that the user has exited the method, and the method ends.
-     */
+
+     * subject for deletion if we end up not needing this version
+
     public static String removeRelationship(HashMap<String, RelationshipItem> relationshipMap){
         // can't have a null relationshipMap
         if(relationshipMap == null) {
@@ -126,6 +132,20 @@ public class RelationshipItem
                 System.out.println("Please enter a valid option...");
             }
         }
+    }
+    */
+
+    public static String removeRelationship(
+        HashMap<String, RelationshipItem> relationshipMap, String source, String destination)
+    {
+        String key = source + "_" + destination;
+
+        if(relationshipMap.containsKey(key)){
+            relationshipMap.remove(key);
+            return "Relationship has been removed";
+        }
+        else
+            return "Relationship not found.";
     }
 
     //returns the source ClassItem object

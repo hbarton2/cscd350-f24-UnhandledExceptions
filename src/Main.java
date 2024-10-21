@@ -133,10 +133,11 @@ public class Main {
 				UI.ListRelationships(relationshipItems);
 				break;
 			case "removerelation":
-				if (input.length != 1)
+				if (input.length != 3)
 					{ System.out.println("Syntax: " + UI.CommandSyntax(input[0]));
 					return; }
-				System.out.println(RelationshipItem.removeRelationship(relationshipItems));
+				System.out.println(RelationshipItem.removeRelationship(
+					relationshipItems, input[1], input[2]));
 				UI.ListRelationships(relationshipItems);
 				break;
 
