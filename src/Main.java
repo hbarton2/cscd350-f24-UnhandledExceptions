@@ -104,7 +104,6 @@ public class Main {
 					{ System.out.println("Syntax: " + UI.CommandSyntax(input[0]));
 					return; }
 				ClassItem.addClassItem(classItems, scanner, input[1]);
-				//System.out.println(ClassItem.addClassItem(classItems, input[1]));
 				UI.ListClasses(classItems);
 				break;
 			case "removeclass":
