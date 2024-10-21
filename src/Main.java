@@ -22,20 +22,9 @@ public class Main {
 		CommandParsing(scanner.nextLine().split(" "));
 	}
 
-	public void MainMenu()
-	{
-		System.out.println("\nList Current Classes: c or classes");
-		System.out.println("List Current Relationships: r or relationships");
-		System.out.println("View Class Details: v [classname] or view [classname]");
-		System.out.println("Display help/command list: h or help");
-		System.out.println("Save: save or save [filename]");
-		System.out.println("Load: load or load [filename]");
-		System.out.println("Exit: e or exit");
-	}
-
 	public void CommandParsing(String[] input)
 	{
-		switch (input[0])
+		switch (input[0].toLowerCase())
 		{
 			case "c":
 			case "classes":
@@ -87,7 +76,7 @@ public class Main {
 				UI.Exit();
 				break;
 			case "m":
-				MainMenu();
+				UI.Menu(false);
 				break;
 			case "69": // shhh
 				tester();
