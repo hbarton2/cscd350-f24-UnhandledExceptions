@@ -4,6 +4,7 @@ public class UI
 	private static final HashMap<String, String> commandSyntax = new HashMap<>();
 
 	static {
+		commandSyntax.put("v", "v classname");
 		commandSyntax.put("view", "view classname");
 		commandSyntax.put("save", "save filename");
 		commandSyntax.put("load", "load filename");
