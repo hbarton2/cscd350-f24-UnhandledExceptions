@@ -114,24 +114,74 @@ public class UI
 	}
 	
 	/*
+	 * Menu displays basic navigational commands and file IO
+	 * boolean verbose changes its appearance for normal use vs help display.
+	*/
+	public static void Menu(boolean verbose)
+	{
+		if (!verbose) System.out.print("List Current Classes: ");
+		System.out.print("c or classes\n");
+		if (verbose) System.out.println("\t- List currently available classes.");
+		if (!verbose) System.out.print("List Current Relationships: ");
+		System.out.print("r or relationships\n");
+		if (verbose) System.out.println("\t- Lists current relationships between classes.");
+		if (!verbose) System.out.print("View Class Details: ");
+		System.out.print("v [classname] or view [classname]\n");
+		if (verbose) System.out.println("\t- View details about a specific class.");
+		if (!verbose) System.out.print("Display help/command list: ");
+		System.out.print("h or help\n");
+		if (verbose) System.out.println("\t- Get help with the program.");
+		if (!verbose) System.out.print("Save: ");
+		System.out.print("save [filename]\n");
+		if (verbose) System.out.println("\t- Saves current project to a json file.");
+		if (!verbose) System.out.print("Load: ");
+		System.out.print("load [filename]\n");
+		if (verbose) System.out.println("\t- Loads a previously saved project.");
+		if (!verbose) System.out.print("Exit: ");
+		System.out.print("e or exit\n");
+		if (verbose) System.out.println("\t- Enough work for now.");
+	}
+
+	/*
 		Help displays our help menu and or list of commands
 	*/
 	public static void Help()
 	{
+		System.out.println("\nHelp Menu:\n");
+		UI.Menu(true);
+
 		System.out.println("\n" + UI.CommandSyntax("addclass"));
+		System.out.println("\t- Adds a class to the UML.");
 		System.out.println(UI.CommandSyntax("removeclass"));
+		System.out.println("\t- Removes a class from the UML.");
 		System.out.println(UI.CommandSyntax("renameclass"));
+		System.out.println("\t- Renames a class in the UML.\n");
+
 		System.out.println(UI.CommandSyntax("addrelation"));
+		System.out.println("\t- Adds a relationship between two classes.");
 		System.out.println(UI.CommandSyntax("removerelation"));
+		System.out.println("\t- Removes a relationship between two classes.\n");
+
 		System.out.println(UI.CommandSyntax("addfield"));
+		System.out.println("\t- Adds a field to a class.");
 		System.out.println(UI.CommandSyntax("removefield"));
+		System.out.println("\t- Removes a field from a class.");
 		System.out.println(UI.CommandSyntax("renamefield"));
+		System.out.println("\t- Renames a field.\n");
+
 		System.out.println(UI.CommandSyntax("addmethod"));
+		System.out.println("\t- Adds a method to a class.");
 		System.out.println(UI.CommandSyntax("removemethod"));
+		System.out.println("\t- Removes a method from a class.");
 		System.out.println(UI.CommandSyntax("renamemethod"));
+		System.out.println("\t- Renames a method.\n");
+
 		System.out.println(UI.CommandSyntax("addparameter"));
+		System.out.println("\t- Adds a parameter to a method.");
 		System.out.println(UI.CommandSyntax("removeparameter"));
+		System.out.println("\t- Removes a parameter from a method.");
 		System.out.println(UI.CommandSyntax("changeparameter"));
+		System.out.println("\t- Renames a parameter.\n");
 
 		/*
 		System.out.println("UML Editor basics: \n");
