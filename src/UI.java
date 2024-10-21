@@ -1,6 +1,7 @@
 import java.util.HashMap;
 public class UI
 {
+	// hashmap of commands and usages for the help and for displaying usage to user if input is wrong
 	private static final HashMap<String, String> commandSyntax = new HashMap<>();
 
 	static {
@@ -54,7 +55,7 @@ public class UI
 	}
 		
 	/*
-		ListClass takes a ClassItem reference, and displays its info
+		ListClass takes a ClassItem reference, and displays its info such as fields, methods, and parameters for its methods
 	*/
 	public static String ListClass(ClassItem classItem, HashMap<String, RelationshipItem> relationships)
 	{
@@ -116,6 +117,8 @@ public class UI
 	/*
 	 * Menu displays basic navigational commands and file IO
 	 * boolean verbose changes its appearance for normal use vs help display.
+	 * if verbose is false, prints normal menu
+	 * if verbose is true, prints help menu
 	*/
 	public static void Menu(boolean verbose)
 	{
@@ -143,13 +146,13 @@ public class UI
 	}
 
 	/*
-		Help displays our help menu and or list of commands
+		Help displays our list of commands and how they work and usage
 	*/
 	public static void Help()
 	{
 		System.out.println("\nHelp Menu:\n");
 		UI.Menu(true);
-
+		// UI.CommandSyntax(command) lists value from hashmap at top of the file
 		System.out.println("\n" + UI.CommandSyntax("addclass"));
 		System.out.println("\t- Adds a class to the UML.");
 		System.out.println(UI.CommandSyntax("removeclass"));
