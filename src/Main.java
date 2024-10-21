@@ -57,7 +57,6 @@ public class Main {
 				UI.Help();
 				break;
 			case "save":
-			case "s":
 				if (input.length != 2)
 					{ System.out.println("Syntax: " + UI.CommandSyntax(input[0]));
 					return; }
