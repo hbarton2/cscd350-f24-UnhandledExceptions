@@ -77,14 +77,14 @@ public class ClassItem {
         if(!newClass.fieldItems.isEmpty()) {
             StringBuilder fields = new StringBuilder();
             for (HashMap.Entry<String, FieldItem> entry : newClass.fieldItems.entrySet())
-                fields.append("\nField: " + entry.getValue().toString());
+                fields.append("\nField(s): " + entry.getValue().toString());
             System.out.print(fields.toString());
         }
 
         if(!newClass.fieldItems.isEmpty()) {
             StringBuilder methods = new StringBuilder();
-            for (HashMap.Entry<String, MethodItem> entry : newClass.methodItems.entrySet())
-                methods.append("\nField(s): " + entry.getValue().toString());
+            for (HashMap.Entry<String, List<MethodItem>> entry : newClass.methodItems.entrySet())
+                methods.append("\nMethod(s): " + entry.getValue().toString());
             System.out.println(methods.toString());
         }
 
@@ -109,7 +109,7 @@ public class ClassItem {
             //prints methods
             if(!(classItem.methodItems.isEmpty())){
                 StringBuilder method_sb = new StringBuilder();
-                for (HashMap.Entry<String, MethodItem> entry : classItem.methodItems.entrySet())
+                for (HashMap.Entry<String, List<MethodItem>> entry : classItem.methodItems.entrySet())
                     method_sb.append("\nMethod(s): " + entry.getValue().toString());
                 System.out.println(method_sb.toString());
             }else{
@@ -157,7 +157,7 @@ public class ClassItem {
 
             boolean validInput = false;
             while(!validInput) {
-                System.out.print("\nInput type and name pairs of Fields you would ike to add (Example: 'type1 name1, type2 name2,...')\n('exit' to quit)>");
+                System.out.print("\nInput type and name pairs of Fields you would like to add (Example: 'type1 name1, type2 name2,...')\n('exit' to quit)>");
                 String userInput = scanner.nextLine();
                 if(userInput.equals("exit")){
                     addingFields = false;
@@ -201,7 +201,7 @@ public class ClassItem {
             boolean exitMenu = false;
             while(!exitMenu) {
                 displayMethods(classItem);
-                System.out.print("\nInput Name of Method, followed by parameter type and name you would like to add:\n('h' for help, 'exit' to quit)\n>");
+                System.out.print("\nInput Name of Method, followed by parameter type and name you would like to add (Example: 'Method1: type1 name1, type2 name2):\n('h' for help, 'exit' to quit)\n>");
                 String userInput = scanner.nextLine();
                 if(userInput.equals("exit")){
                     addingMethods = false;
@@ -216,14 +216,18 @@ public class ClassItem {
 
                 String[] nameAndParams = userInput.split(":");
 
-                //FOR OVERLOADING
-                //MethodItem tempMethodItem = new MethodItem(nameAndParams[0]);   //creates MethodItem with name as name user wanted.
-                classItem.addMethod(nameAndParams[0]);
+                //create a method item
+                MethodItem tempMethodItem = new MethodItem(nameAndParams[0]);
+
                 if(nameAndParams.length < 2){
-                    System.out.println(nameAndParams[0] + " added to " + classItem.getName());
+                    //if no parameters entered, attempt to add new method item to map (checks overload)
+                    System.out.println(classItem.addMethod(classItem,tempMethodItem));
+
                     exitMenu = true;
+
                     continue;
                 }
+
                 //splits parameters given into pairs by ","
                 String[] paramPairs = nameAndParams[1].split(",");
 
@@ -241,15 +245,15 @@ public class ClassItem {
                     String type = parts[0];
                     String name =   parts[1];
 
+                    //add parameters to method item
                     //prints so that we show error message from .addParameter() (if datatype is invalid)
-                    System.out.println(classItem.methodItems.get(nameAndParams[0]).addParameter(type, name));
-                    //FOR OVERLOADING
-                    //add type and name to methodItems parameter
-                    //MethodItem.addParameter(tempMethodItem, type, name);
+                    MethodItem.addParameter(tempMethodItem, type, name);
+
 
                 }
-                //FOR OVERLOADING
-                //MethodItem.addMethod(classItem,tempMethodItem);
+
+                //after parameters added, attempt to add to new method item to map (checks overload)
+                System.out.println(classItem.addMethod(classItem,tempMethodItem));
 
             }
             //exited loop
@@ -262,40 +266,49 @@ public class ClassItem {
             System.out.println("No Method's added yet.");
         }else {
             // Iterate through the methodItems HashMap
-            for (HashMap.Entry<String, MethodItem> methodEntry : classItem.methodItems.entrySet()) {
+            for (HashMap.Entry<String, List<MethodItem>> methodEntry : classItem.methodItems.entrySet()) {
                 // Get the method name (key in the methodItems HashMap)
                 String methodName = methodEntry.getKey();
                 // Get the corresponding MethodItem (value in the methodItems HashMap)
-                MethodItem methodItem = methodEntry.getValue();
 
-                // Print the method name
-                System.out.println("\tName: " + methodName);
+                //get list of method items
+                List<MethodItem> methodList = methodEntry.getValue();
 
-                // Now iterate through the parameters of this method
-                System.out.print("\tParameters: ");
-                if (methodItem.getParameters().isEmpty()) {
-                    System.out.println("None\n");
-                } else {
-                    // Iterate through the parameters HashMap inside MethodItem, seperated by commas
-                    int paramCount = methodItem.getParameters().size();
-                    int index = 0;
-                    for (HashMap.Entry<String, ParameterItem> paramEntry : methodItem.getParameters().entrySet()) {
-                        // Get the ParameterItem
-                        ParameterItem paramItem = paramEntry.getValue();
+                //iterate through list of methodItems
+                for(MethodItem methodItem : methodList)
+                {
+                    // Print the method name
+                    System.out.println("\tName: " + methodName);
 
-                        // Use toString method from ParameterItem
-                        System.out.print(paramItem.toString());
+                    // Now iterate through the parameters of this method
+                    System.out.print("\tParameters: ");
+                    if (methodItem.getParameters().isEmpty()) {
+                        System.out.println("None\n");
+                    } else {
+                        // Iterate through the parameters HashMap inside MethodItem, seperated by commas
+                        int paramCount = methodItem.getParameters().size();
+                        int index = 0;
+                        for (HashMap.Entry<String, ParameterItem> paramEntry : methodItem.getParameters().entrySet()) {
+                            // Get the ParameterItem
+                            ParameterItem paramItem = paramEntry.getValue();
 
-                        //Avoids , at end of parameter list
-                        index++;
-                        if(index < paramCount){
-                            System.out.println(", ");
+                            // Use toString method from ParameterItem
+                            System.out.print(paramItem.toString());
+
+                            //Avoids , at end of parameter list
+                            index++;
+                            if(index < paramCount){
+                                System.out.print(", ");
+                            }
                         }
+                        System.out.println();
                     }
                 }
+
             }
         }
     }
+
     public String getName() {
         return this.name;
     }
@@ -456,103 +469,30 @@ public class ClassItem {
     // }
 
     // method to add a new method to the map for this class item
-    public String addMethod(String methodName) {
-
+    public String addMethod(String methodName) 
+    {
+        //passes class item, method name, and scanner to addMethod function
         return MethodItem.addMethod(this,methodName,kb);
+    }
 
-        /*
-        // preconditions
-        if (methodName == null || methodName.isBlank()) {
-            throw new IllegalArgumentException("Method name cannot be null or blank");
-        }
-
-        // trim any leading or trailing whitespace to ensure valid input
-        methodName = methodName.trim();
-
-        // check if the method name already exists in the class
-        if (methodItems.containsKey(methodName)) {
-            // return failure message
-            return "Method name: " + methodName + " already in use.";
-        }
-
-        // create a new method object with the method name
-        MethodItem newMethod = new MethodItem(methodName);
-
-        // insert new method item into map
-        methodItems.put(methodName, newMethod);
-
-        // return successful add of method
-        return "Method name: " + methodName + " successfully added.";
-        */
+    //overload addMethod function for coninuous menu, accepts an already created method item and attempts to add to class item
+    public String addMethod(ClassItem classItem, MethodItem methodItem)
+    {
+        //passes class item and methoditem to addMethod function
+        return MethodItem.addMethod(classItem, methodItem);
     }
 
     // method to remove a method from class
-    public String removeMethod(String methodName) {
-
+    public String removeMethod(String methodName) 
+    {
+        //passes class item, method name, and scanner to removeMethod function
         return MethodItem.removeMethod(this, methodName, kb);
-
-        /* 
-        // preconditions
-        if (methodName == null || methodName.isBlank()) {
-            throw new IllegalArgumentException("Method name cannot be null or blank");
-        }
-
-        // trim any leading or trailing whitespace to ensure valid input
-        methodName = methodName.trim();
-
-        // check if the method name is a valid key
-        if (!methodItems.containsKey(methodName)) {
-            // return failure message
-            return "Method name: " + methodName + " does not exist";
-        }
-
-        // remove method item from hash map
-        methodItems.remove(methodName);
-
-        // return successful removal of method
-        return "Method name: " + methodName + " successfully removed";
-        */
     }
 
-    public String renameMethod(String oldName, String newName) {
-
+    public String renameMethod(String oldName, String newName) 
+    {
+        //passes class item and new names to addMethod function
         return MethodItem.renameMethod(this, oldName, newName);
-        /*
-        // preconditions
-        if (oldName == null || oldName.isBlank() || newName == null || newName.isBlank()) {
-            return "Method names cannot be null or blank.";
-        }
-
-        // trim any leading or trailing whitespace
-        oldName = oldName.trim();
-        newName = newName.trim();
-
-        // check if the new name is already taken
-        if (methodItems.containsKey(newName)) {
-            return "Method name: " + newName + " already in use.";
-        }
-
-        // check if the old name is a valid key
-        if (methodItems.containsKey(oldName)) {
-            // copy the old method
-            MethodItem newMethod = methodItems.get(oldName);
-
-            // set new method name
-            newMethod.setMethodName(newName);
-
-            // remove old method from map
-            methodItems.remove(oldName);
-
-            // add new method item to class
-            methodItems.put(newName, newMethod);
-
-            // return success
-            return "Method name: " + oldName + " successfully changed to " + newName;
-        } else {
-            // invalid method name, return failure
-            return "Method name: " + oldName + " does not exist.";
-        }
-        */
     }
 
     public String addField(String fieldName, String type) {

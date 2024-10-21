@@ -4,6 +4,7 @@
     - ParameterItems will be stored into a map in the MethodItem class
 */
 
+import java.util.HashMap;
 import java.util.Scanner;
 
 public class ParameterItem {
@@ -65,10 +66,10 @@ public class ParameterItem {
         this.parameterName = parameterName;
     }
 
-    public static String addParameter(MethodItem methodItem, String type, String parameterName, Scanner kb)
+    public static String addParameter(MethodItem methodItem, String type, String parameterName)
     {
        // preconditions
-		if (parameterName == null || parameterName.isBlank()) {
+		if (parameterName == null || parameterName.isBlank() || type == null || type.isBlank()) {
 			throw new IllegalArgumentException("Parameter name cannot be null or blank");
 		}
 
@@ -85,8 +86,10 @@ public class ParameterItem {
 
 			// create parameter object
 			ParameterItem parameter = new ParameterItem(type, parameterName);
+
+            HashMap<String, ParameterItem> parameterList = methodItem.getParameters();
 			// insert new parameter item into map
-			methodItem.getParameters().put(parameterName, parameter);
+			parameterList.put(parameterName, parameter);
 
 		} catch (IllegalArgumentException e) {
 			return e.getMessage();
@@ -95,6 +98,20 @@ public class ParameterItem {
 		// return successful add of parameter
 		return "Parameter: " + type + " " + parameterName + " successfully added.";
     }
+
+    /*
+
+    //Overloaded add parameter for continuos menu
+    public static String addParameter(MethodItem methodItem, String type, String name)
+    {
+        if (name == null || name.isBlank() || type == null || type.isBlank()) {
+			throw new IllegalArgumentException("Parameter type or name cannot be null or blank");
+		}
+
+
+    }
+
+    */
 
     public static String removeParameter(MethodItem methodItem, String type, String parameterName)
     {
