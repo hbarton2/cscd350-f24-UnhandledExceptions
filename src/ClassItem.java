@@ -126,6 +126,7 @@ public class ClassItem {
                     break;
                 case "add methods":
                 case "add method":
+                    addMethodMenu(scanner, classItem);
                     break;
                 case "exit":    //done adding to class, return to main menu
                     adding = false;
@@ -192,58 +193,108 @@ public class ClassItem {
             //exited loop, returning to add field/methods menu
         }
     }
-    private static void addMethodMenu(Scanner scanner, HashMap<String, MethodItem> methodItems){
+    private static void addMethodMenu(Scanner scanner, ClassItem classItem){
         boolean addingMethods = true;
 
         while(addingMethods){
-            System.out.println("Current Field(s):");
-            if(!methodItems.isEmpty()) { //fieldItems can't be null, constructor initializes them to empty HashMaps
-                for (HashMap.Entry<String, MethodItem> entry : methodItems.entrySet()) {
-                    //String key = entry.getKey();
-                    MethodItem value = entry.getValue();
-                    System.out.println(" - " + value);
-                }
-                //add function to delete in this menu
-            } else {
-                System.out.println("No Methods added yet.");
-            }
-
-            boolean validInput = false;
-            while(!validInput) {
-                System.out.println("\nInput Name of Method, followed my parameter type and name you would like to add (Example: 'Method1: type1 name1, type2 name2')\n('exit' to quit)>");
+            boolean exitMenu = false;
+            while(!exitMenu) {
+                displayMethods(classItem);
+                System.out.print("\nInput Name of Method, followed by parameter type and name you would like to add:\n('h' for help, 'exit' to quit)\n>");
                 String userInput = scanner.nextLine();
                 if(userInput.equals("exit")){
                     addingMethods = false;
-                    validInput = true;
+                    exitMenu = true;
                     continue;
                 }
-                //
-                String[] nameAndParams = userInput.split(":");
-                MethodItem tempMethodItem = new MethodItem(nameAndParams[0]);   //creates MethodItem with name as name user wanted.
+                if(userInput.equals("h")){
+                    System.out.println("Example: 'Method1: type1 name1, type2 name2'");
+                    System.out.println("Valid Parameter Types: int, float, double, string, boolean, char, long, byte, short");
+                    continue;
+                }
 
+                String[] nameAndParams = userInput.split(":");
+
+                //FOR OVERLOADING
+                //MethodItem tempMethodItem = new MethodItem(nameAndParams[0]);   //creates MethodItem with name as name user wanted.
+                classItem.addMethod(nameAndParams[0]);
+                if(nameAndParams.length < 2){
+                    System.out.println(nameAndParams[0] + " added to " + classItem.getName());
+                    exitMenu = true;
+                    continue;
+                }
                 //splits parameters given into pairs by ","
                 String[] paramPairs = nameAndParams[1].split(",");
 
                 for (String pair : paramPairs){
-                    String[] parts = pair.trim().split(" ");    //triming leading and trailing spaces
+                    //Split parameterType and parameterName into it's own array
+                    String[] parts = pair.trim().split(" ");
 
                     //checks that type and name are in the fieldPair, if not, it prompts, and skips to next pair the user gave.
                     if(parts.length != 2) {
-                        System.out.println("Invalid input " + pair + " requires a type and name.");
+                        System.out.println("Invalid input '" + pair + "' requires a pair with a single type and a single name.");
                         continue;
                     }
 
+                    //sets type and name to be used in addParameter()
                     String type = parts[0];
                     String name =   parts[1];
 
+                    //prints so that we show error message from .addParameter() (if datatype is invalid)
+                    System.out.println(classItem.methodItems.get(nameAndParams[0]).addParameter(type, name));
+                    //FOR OVERLOADING
                     //add type and name to methodItems parameter
+                    //MethodItem.addParameter(tempMethodItem, type, name);
+
                 }
+                //FOR OVERLOADING
+                //MethodItem.addMethod(classItem,tempMethodItem);
 
             }
-            //exited loop, returning to add field/methods menu
+            //exited loop
         }
     }
     // public getters and setters for fields required by IO serialization
+    private static void displayMethods(ClassItem classItem){
+        System.out.println("Current Methods:");
+        if(classItem.methodItems.isEmpty()){
+            System.out.println("No Method's added yet.");
+        }else {
+            // Iterate through the methodItems HashMap
+            for (HashMap.Entry<String, MethodItem> methodEntry : classItem.methodItems.entrySet()) {
+                // Get the method name (key in the methodItems HashMap)
+                String methodName = methodEntry.getKey();
+                // Get the corresponding MethodItem (value in the methodItems HashMap)
+                MethodItem methodItem = methodEntry.getValue();
+
+                // Print the method name
+                System.out.println("\tName: " + methodName);
+
+                // Now iterate through the parameters of this method
+                System.out.print("\tParameters: ");
+                if (methodItem.getParameters().isEmpty()) {
+                    System.out.println("None\n");
+                } else {
+                    // Iterate through the parameters HashMap inside MethodItem, seperated by commas
+                    int paramCount = methodItem.getParameters().size();
+                    int index = 0;
+                    for (HashMap.Entry<String, ParameterItem> paramEntry : methodItem.getParameters().entrySet()) {
+                        // Get the ParameterItem
+                        ParameterItem paramItem = paramEntry.getValue();
+
+                        // Use toString method from ParameterItem
+                        System.out.print(paramItem.toString());
+
+                        //Avoids , at end of parameter list
+                        index++;
+                        if(index < paramCount){
+                            System.out.println(", ");
+                        }
+                    }
+                }
+            }
+        }
+    }
     public String getName() {
         return this.name;
     }
