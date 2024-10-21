@@ -54,12 +54,10 @@ public class Main {
 				break;
 			case "h":
 			case "help":
-			case "H" :
 				UI.Help();
 				break;
 			case "save":
 			case "s":
-			case "S":
 				if (input.length != 2)
 					{ System.out.println("Syntax: " + UI.CommandSyntax(input[0]));
 					return; }
