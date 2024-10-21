@@ -5,12 +5,15 @@ public class FieldItem
 	
 	public FieldItem() {} //blank constructor for IO serialization
 
+	// constructor for fieldItem
+	// fieldItem type is a string for the CLI because at this point that's all it needs to be
 	public FieldItem(String fieldName, String type)
   {
     this.fieldName = fieldName;
 		this.type = type;
   }
 
+	// getter and setter methods
 	public String getFieldName()
 	{
 		return this.fieldName;
@@ -31,6 +34,7 @@ public class FieldItem
 		this.type = type;
 	}
 
+	// toString method returns "type name"
 	@Override
 	public String toString()
 	{
