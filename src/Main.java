@@ -49,7 +49,10 @@ public class Main {
 				break;
 			case "v":
 			case "view":
-				if (input.length < 2) System.out.println(badinput);
+				if (input.length != 2) {
+					System.out.println(badinput);
+					break;
+				}
 				System.out.println(UI.ListClass(classItems.get(input[1]), relationshipItems));
 				break;
 			case "h":
