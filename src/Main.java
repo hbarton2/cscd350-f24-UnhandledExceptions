@@ -28,14 +28,14 @@ public class Main {
 		System.out.println("List Current Relationships: r or relationships");
 		System.out.println("View Class Details: v [classname] or view [classname]");
 		System.out.println("Display help/command list: h or help");
-		System.out.println("Save: save or save [filename]");
-		System.out.println("Load: load or load [filename]");
+		System.out.println("Save: save [filename]");
+		System.out.println("Load: load [filename]");
 		System.out.println("Exit: e or exit");
 	}
 
 	public void CommandParsing(String[] input)
 	{
-		switch (input[0])
+		switch (input[0].toLowerCase())
 		{
 			case "c":
 			case "classes":
@@ -54,9 +54,12 @@ public class Main {
 				break;
 			case "h":
 			case "help":
+			case "H" :
 				UI.Help();
 				break;
 			case "save":
+			case "s":
+			case "S":
 				if (input.length != 2)
 					{ System.out.println("Syntax: " + UI.CommandSyntax(input[0]));
 					return; }
