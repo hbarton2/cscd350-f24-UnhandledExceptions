@@ -24,7 +24,7 @@ public class IO
 		try
 		{
 			ObjectMapper objectMapper = new ObjectMapper();
-			objectMapper.writeValue(new File("output.json"), items);
+			objectMapper.writeValue(new File(filepath), items);
 		} catch (JsonProcessingException e) {
 			e.printStackTrace();
 			return "uh oh!";
@@ -33,7 +33,7 @@ public class IO
 			return "uh oh!";
 		}
 		
-		return "saved";
+		return "saved to " + filepath;
 	}
 	
 	public static HashMap<String, Object> Load(String filepath)
@@ -43,7 +43,7 @@ public class IO
 		try
 		{
 			ObjectMapper objectMapper = new ObjectMapper();
-			items = objectMapper.readValue(new File("output.json"),
+			items = objectMapper.readValue(new File(filepath),
 			 new TypeReference<HashMap<String, Object>>() {});
 		} catch (JsonParseException e) {
         	e.printStackTrace();

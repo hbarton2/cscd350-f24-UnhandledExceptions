@@ -35,8 +35,6 @@ public class Main {
 
 	public void CommandParsing(String[] input)
 	{
-		String badinput = "Invalid command. (h for help)";
-
 		switch (input[0])
 		{
 			case "c":
@@ -49,10 +47,9 @@ public class Main {
 				break;
 			case "v":
 			case "view":
-				if (input.length != 2) {
-					System.out.println(badinput);
-					break;
-				}
+				if (input.length != 2)
+					{ System.out.println("Syntax: " + UI.CommandSyntax(input[0]));
+					return; }
 				System.out.println(UI.ListClass(classItems.get(input[1]), relationshipItems));
 				break;
 			case "h":
@@ -60,11 +57,15 @@ public class Main {
 				UI.Help();
 				break;
 			case "save":
-				if (input.length < 2) System.out.println(badinput);
+				if (input.length != 2)
+					{ System.out.println("Syntax: " + UI.CommandSyntax(input[0]));
+					return; }
 				System.out.println(IO.Save(classItems, relationshipItems, input[1]));
 				break;
 			case "load":
-				if (input.length < 2) System.out.println(badinput);
+				if (input.length != 2)
+					{ System.out.println("Syntax: " + UI.CommandSyntax(input[0]));
+					return; }
 				//load from file into items
 				HashMap<String, Object> items = IO.Load(input[1]);
 
