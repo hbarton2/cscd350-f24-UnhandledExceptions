@@ -19,6 +19,7 @@ public class UI
 		commandSyntax.put("removeparameter", "removeparameter classname methodname parametertype parametername");
 		commandSyntax.put("changeparameter", "changeparameter classname methodname parametertype parametername "
 						+ "newparametertype newparametername");
+		commandSyntax.put("edit", "edit classname");
 	}
 
 	// nicer way to get syntax strings
