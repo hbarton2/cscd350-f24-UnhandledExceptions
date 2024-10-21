@@ -96,6 +96,66 @@ public class ParameterItem {
 		return "Parameter: " + type + " " + parameterName + " successfully added.";
     }
 
+    public static String removeParameter(MethodItem methodItem, String type, String parameterName)
+    {
+        // preconditions
+		if (parameterName == null || parameterName.isBlank()) {
+			throw new IllegalArgumentException("Parameter name cannot be null or blank");
+		}
+
+		// strip input to remove any leading or trailing whitespace
+		parameterName = parameterName.trim();
+
+		// check if the parameter exists in the map
+		if (!methodItem.getParameters().containsKey(parameterName)) {
+			// return failure (parameter not in map)
+			return "Parameter: " + type + " " + parameterName + " does not exist";
+		}
+
+		// remove parameter from map
+		methodItem.getParameters().remove(parameterName);
+
+		// return successful remove message
+		return "Parameter: " + type + " " + parameterName + " removed successfully.";
+    }
+
+    public static String changeParameter(MethodItem methodItem, String oldType, String oldName, String newType, String newName){
+        // preconditions
+		if (oldName == null || newName == null || oldName.isBlank() || newName.isBlank()) {
+			throw new IllegalArgumentException("Parameter name cannot be null or blank");
+		}
+
+		// strip input to remove any leading or traililng whitespace
+		oldName = oldName.trim();
+		newName = newName.trim();
+
+		// check if the new name is valid or is already attached to another
+		// ParameterItem
+		if (methodItem.getParameters().containsKey(newName)) {
+			// return failure message for new name already in use
+			return "New Parameter name: " + newName + " already in use.";
+		}
+
+		// check if the parameter exists in the map
+		if (methodItem.getParameters().containsKey(oldName)) {
+
+			// delete old entry in map
+			methodItem.getParameters().remove(oldName);
+
+			// create new parameter object
+			ParameterItem newParam = new ParameterItem(newType, newName);
+
+			// add new parameter back to map
+			methodItem.getParameters().put(newName, newParam);
+
+			// return successful rename message
+			return "Parameter: " + oldType + " " + oldName + " successfully changed to: " + newType + " " + newName;
+		} else {
+			// old name key does not exist in map
+			return "Parameter: " + oldType + " " + oldName + " does not exist.";
+		}
+    }
+
     /*
         public String getParameterType(ParameterItem parameter) {
             if (parameter == null) {

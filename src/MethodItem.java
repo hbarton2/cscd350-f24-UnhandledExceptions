@@ -256,38 +256,80 @@ public class MethodItem {
 				}
 				
 			}
-		}
-		return "error add param";
 
-		/*
-		// preconditions
-		if (parameterName == null || parameterName.isBlank()) {
-			throw new IllegalArgumentException("Parameter name cannot be null or blank");
+			return "Failed to add parameter.";
 		}
 
-		// strip input to remove any leading or trailing whitespace
-		parameterName = parameterName.trim();
+	}
 
-		// check if the parameter already exists
-		if (parameters.containsKey(parameterName)) {
-			// return failure message
-			return "Parameter name: " + parameterName + " already in use.";
+	public static String removeParameter(List<MethodItem> methodList, Scanner kb, String type, String name) {
+
+		if(methodList == null){
+			return "Method does not exist";
 		}
 
-		try {
+		if(methodList.size() == 1)
+		{
+			MethodItem tempMethodItemRemoveParameter = methodList.get(0);
 
-			// create parameter object
-			ParameterItem parameter = new ParameterItem(type, parameterName);
-			// insert new parameter item into map
-			parameters.put(parameterName, parameter);
+			if (tempMethodItemRemoveParameter == null) {
+				return "Method does not exist.";
+			}
 
-		} catch (IllegalArgumentException e) {
-			return e.getMessage();
+			return ParameterItem.removeParameter(tempMethodItemRemoveParameter, type, name);
+
+		}
+		else
+		{
+			System.out.println("Overloaded methods found, select which method to remove parameter from: ");
+
+			for(MethodItem removeParamMethod : methodList)
+			{
+				System.out.println(removeParamMethod.toString());
+				
+				System.out.println("Would you like to remove a parameter to this method? (y/n)");
+				if(kb.nextLine().trim().toLowerCase().equals("y"))
+				{
+					return ParameterItem.removeParameter(removeParamMethod, type, name);
+				}
+			}
+
+			return "Failed to remove parameter";
 		}
 
-		// return successful add of parameter
-		return "Parameter: " + type + " " + parameterName + " successfully added.";
-		*/
+	}
+
+	public static String changeParameter(List<MethodItem> methodList, String oldType, String oldName, String newType, String newName, Scanner kb) {
+
+		if(methodList == null){
+			return "Method does not exist";
+		}
+
+		if(methodList.size() == 1)
+		{
+			MethodItem methodChangeParam = methodList.get(0);
+
+				return ParameterItem.changeParameter(methodChangeParam, oldType, oldName, newType, newName);
+
+		}
+		else
+		{
+			System.out.println("Overloaded methods found, select which method to change parameter from:");
+
+			for(MethodItem aMethod : methodList)
+			{
+				System.out.println(aMethod.toString());
+				System.out.println("Would you like to change a parameter in this method? (y/n)");
+
+				if(kb.nextLine().trim().toLowerCase().equals("y"))
+				{
+					
+						return ParameterItem.changeParameter(aMethod, oldType, oldName, newType, newName);
+
+				}
+			}
+		}
+		return "error change param";
 	}
 
 	// getter to retrieve a parameter from the map

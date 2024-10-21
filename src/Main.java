@@ -182,24 +182,28 @@ public class Main {
 
 				System.out.println(MethodItem.addParameter(methodList, scanner, input[3], input[4]));
 
-				/* 
-				System.out.println(classItems.get(input[1]).methodItems.get(input[2])
-					.addParameter(input[3], input[4]));
-				*/
 				System.out.println(UI.ListClass(classItems.get(input[1]), relationshipItems));
 				break;
 			case "removeparameter":
 				if (input.length < 5)
 					{ System.out.println("Syntax: " + UI.CommandSyntax(input[0]));
 					return; }
-				//System.out.println(classItems.get(input[1]).methodItems.get(input[2])
-					//.removeParameter(input[3], input[4]));
+
+				List<MethodItem> methodListRemove = classItems.get(input[1]).methodItems.get(input[2]);
+
+				System.out.println(MethodItem.removeParameter(methodListRemove, scanner, input[3], input[4]));
+
 				System.out.println(UI.ListClass(classItems.get(input[1]), relationshipItems));
 				break;
 			case "changeparameter":
 				if (input.length < 7)
 					{ System.out.println("Syntax: " + UI.CommandSyntax(input[0]));
 					return; }
+
+				List<MethodItem> methodListChange = classItems.get(input[1]).methodItems.get(input[2]);
+
+				System.out.println(MethodItem.changeParameter(methodListChange, input[3], input[4], input[5], input[6], scanner));
+				
 				//System.out.println(classItems.get(input[1]).methodItems.get(input[2])
 					//.changeParameter(input[3], input[4], input[5], input[6]));
 				System.out.println(UI.ListClass(classItems.get(input[1]), relationshipItems));
