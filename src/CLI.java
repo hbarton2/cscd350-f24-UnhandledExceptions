@@ -1,6 +1,5 @@
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Scanner;
+import java.util.HashMap;
 
 public class CLI 
 {
@@ -31,18 +30,19 @@ public class CLI
 		{
 			case "c":
 			case "classes":
-				UI.ListClasses(classItems);
+				UI.ListClasses(data.getClassItems());
 				break;
 			case "r":
 			case "relationships":
-				UI.ListRelationships(relationshipItems);
+				UI.ListRelationships(data.getRelationshipItems());
 				break;
 			case "v":
 			case "view":
 				if (input.length != 2)
 					{ System.out.println("Syntax: " + UI.CommandSyntax(input[0]));
 					return; }
-				System.out.println(UI.ListClass(classItems.get(input[1]), relationshipItems));
+				System.out.println(UI.ListClass(
+					data.getClassItems().get(input[1]), data.getRelationshipItems()));
 				break;
 			case "h":
 			case "help":
@@ -74,32 +74,32 @@ public class CLI
 				if (input.length != 2)
 				{ System.out.println("Syntax: " + UI.CommandSyntax(input[0]));
 					return; }
-				if(classItems.containsKey(input[1])){
-					ClassItem.addToClassMenu(classItems.get(input[1]),scanner);
+				if(data.getClassItems().containsKey(input[1])){
+					ClassItem.addToClassMenu(data.getClassItems().get(input[1]),scanner);
 				}
 				break;
 			case "addclass":
 				if (input.length != 2)
 					{ System.out.println("Syntax: " + UI.CommandSyntax(input[0]));
 					return; }
-				ClassItem.addClassItem(classItems, scanner, input[1]);
-				UI.ListClasses(classItems);
+				ClassItem.addClassItem(data.getClassItems(), scanner, input[1]);
+				UI.ListClasses(data.getClassItems());
 				break;
 			case "removeclass":
 				if (input.length != 2)
 					{ System.out.println("Syntax: " + UI.CommandSyntax(input[0]));
 					return; }
 				System.out.println(ClassItem.removeClassItem(
-					classItems, input[1], relationshipItems));
-				UI.ListClasses(classItems);
+					data.getClassItems(), input[1], data.getRelationshipItems()));
+				UI.ListClasses(data.getClassItems());
 				break;
 			case "renameclass":
 				if (input.length != 3)
 					{ System.out.println("Syntax: " + UI.CommandSyntax(input[0]));
 					return; }
 				System.out.println(ClassItem.renameClassItem(
-					classItems, input[1], input[2], relationshipItems));
-				UI.ListClasses(classItems);
+					data.getClassItems(), input[1], input[2], data.getRelationshipItems()));
+				UI.ListClasses(data.getClassItems());
 				break;
 
 			case "addrelation":
@@ -107,85 +107,85 @@ public class CLI
 					{ System.out.println("Syntax: " + UI.CommandSyntax(input[0]));
 					return; }
 				System.out.println(RelationshipItem.addRelationship(
-					relationshipItems, classItems, input[1], input[2]));
-				UI.ListRelationships(relationshipItems);
+					data.getRelationshipItems(), data.getClassItems(), input[1], input[2]));
+				UI.ListRelationships(data.getRelationshipItems());
 				break;
 			case "removerelation":
 				if (input.length != 3)
 					{ System.out.println("Syntax: " + UI.CommandSyntax(input[0]));
 					return; }
 				System.out.println(RelationshipItem.removeRelationship(
-					relationshipItems, input[1], input[2]));
-				UI.ListRelationships(relationshipItems);
+					data.getRelationshipItems(), input[1], input[2]));
+				UI.ListRelationships(data.getRelationshipItems());
 				break;
 
 			case "addfield":
 				if (input.length < 4)
 					{ System.out.println("Syntax: " + UI.CommandSyntax(input[0]));
 					return; }
-				System.out.println(classItems.get(input[1]).addField(input[3], input[2]));
-				System.out.println(UI.ListClass(classItems.get(input[1]), relationshipItems));
+				System.out.println(data.getClassItems().get(input[1]).addField(input[3], input[2]));
+				System.out.println(UI.ListClass(data.getClassItems().get(input[1]), data.getRelationshipItems()));
 				break;
 			case "removefield":
 				if (input.length < 3)
 					{ System.out.println("Syntax: " + UI.CommandSyntax(input[0]));
 					return; }
-				System.out.println(classItems.get(input[1]).removeField(input[2]));
-				System.out.println(UI.ListClass(classItems.get(input[1]), relationshipItems));
+				System.out.println(data.getClassItems().get(input[1]).removeField(input[2]));
+				System.out.println(UI.ListClass(data.getClassItems().get(input[1]), data.getRelationshipItems()));
 				break;
 			case "renamefield":
 				if (input.length < 4)
 					{ System.out.println("Syntax: " + UI.CommandSyntax(input[0]));
 					return; }
-				System.out.println(classItems.get(input[1]).renameField(input[2], input[3]));
-				System.out.println(UI.ListClass(classItems.get(input[1]), relationshipItems));
+				System.out.println(data.getClassItems().get(input[1]).renameField(input[2], input[3]));
+				System.out.println(UI.ListClass(data.getClassItems().get(input[1]), data.getRelationshipItems()));
 				break;
 				
 			case "addmethod":
 				if (input.length < 3)
 					{ System.out.println("Syntax: " + UI.CommandSyntax(input[0]));
 					return; }
-				System.out.println(classItems.get(input[1]).addMethod(input[2]));
-				System.out.println(UI.ListClass(classItems.get(input[1]), relationshipItems));
+				System.out.println(data.getClassItems().get(input[1]).addMethod(input[2]));
+				System.out.println(UI.ListClass(data.getClassItems().get(input[1]), data.getRelationshipItems()));
 				break;
 			case "removemethod":
 				if (input.length < 3)
 					{ System.out.println("Syntax: " + UI.CommandSyntax(input[0]));
 					return; }
-				System.out.println(classItems.get(input[1]).removeMethod(input[2]));
-				System.out.println(UI.ListClass(classItems.get(input[1]), relationshipItems));
+				System.out.println(data.getClassItems().get(input[1]).removeMethod(input[2]));
+				System.out.println(UI.ListClass(data.getClassItems().get(input[1]), data.getRelationshipItems()));
 				break;
 			case "renamemethod":
 				if (input.length < 4)
 					{ System.out.println("Syntax: " + UI.CommandSyntax(input[0]));
 					return; }
-				System.out.println(classItems.get(input[1]).renameMethod(input[2], input[3]));
-				System.out.println(UI.ListClass(classItems.get(input[1]), relationshipItems));
+				System.out.println(data.getClassItems().get(input[1]).renameMethod(input[2], input[3]));
+				System.out.println(UI.ListClass(data.getClassItems().get(input[1]), data.getRelationshipItems()));
 				break;
 
 			case "addparameter":
 				if (input.length < 5)
 					{ System.out.println("Syntax: " + UI.CommandSyntax(input[0]));
 					return; }
-				System.out.println(classItems.get(input[1]).methodItems.get(input[2])
+				System.out.println(data.getClassItems().get(input[1]).methodItems.get(input[2])
 					.addParameter(input[3], input[4]));
-				System.out.println(UI.ListClass(classItems.get(input[1]), relationshipItems));
+				System.out.println(UI.ListClass(data.getClassItems().get(input[1]), data.getRelationshipItems()));
 				break;
 			case "removeparameter":
 				if (input.length < 5)
 					{ System.out.println("Syntax: " + UI.CommandSyntax(input[0]));
 					return; }
-				System.out.println(classItems.get(input[1]).methodItems.get(input[2])
+				System.out.println(data.getClassItems().get(input[1]).methodItems.get(input[2])
 					.removeParameter(input[3], input[4]));
-				System.out.println(UI.ListClass(classItems.get(input[1]), relationshipItems));
+				System.out.println(UI.ListClass(data.getClassItems().get(input[1]), data.getRelationshipItems()));
 				break;
 			case "changeparameter":
 				if (input.length < 7)
 					{ System.out.println("Syntax: " + UI.CommandSyntax(input[0]));
 					return; }
-				System.out.println(classItems.get(input[1]).methodItems.get(input[2])
+				System.out.println(data.getClassItems().get(input[1]).methodItems.get(input[2])
 					.changeParameter(input[3], input[4], input[5], input[6]));
-				System.out.println(UI.ListClass(classItems.get(input[1]), relationshipItems));
+				System.out.println(UI.ListClass(data.getClassItems().get(input[1]), data.getRelationshipItems()));
 				break;
 
 			default:
@@ -196,6 +196,9 @@ public class CLI
 	// simple test method for us (shhh!)
 	private void tester() 
 	{
+		HashMap<String, ClassItem> classItems = data.getClassItems();
+		HashMap<String, RelationshipItem> relationshipItems = data.getRelationshipItems();
+
 		ClassItem.addClassItem(classItems, "mcdonalds");
 		classItems.get("mcdonalds").addField("location", "String");
 		classItems.get("mcdonalds").addField("owner", "person");
