@@ -8,19 +8,43 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import java.io.IOException;
 
-public class IO
+public class Data
 {
+	HashMap<String, ClassItem> classItems = new HashMap<>();
+	HashMap<String, RelationshipItem> relationshipItems = new HashMap<>();
+
+	public Data()
+	{
+		//constructor
+	}
+
+	public HashMap<String, ClassItem> getClassItems()
+	{
+        return this.classItems;
+    }
+
+    public void setClassItems(HashMap<String, ClassItem> classItems)
+	{
+        this.classItems = classItems;
+    }
+
+	public HashMap<String, RelationshipItem> getRelationshipItems()
+	{
+        return this.relationshipItems;
+    }
+
+    public void setRelationshipItems(HashMap<String, RelationshipItem> relationshipItems)
+	{
+        this.relationshipItems = relationshipItems;
+    }
+
 	/*
 	 * uses jackson api for serialization
 	 * combinds both classitems and relationshipitems into 1 hashmap,
 	 * maps it to a json string, then saves that to the specified file.
 	 */
-	public static String Save(
-		HashMap<String, ClassItem> classItems,
-		HashMap<String, RelationshipItem> relationshipItems,
-		String filepath)
+	public String Save(String filepath)
 	{		
-
 		//combind both hashmaps into 1 hashmap
 		HashMap<String, Object> items = new HashMap<>();
 		items.put("classItems", classItems);
@@ -48,7 +72,7 @@ public class IO
 	* it back to main to be split up and deployed.
 	* with more time, will figure out how to split it up and deploy it from here.
 	*/
-	public static HashMap<String, Object> Load(String filepath)
+	public String Load(String filepath)
 	{		
 		HashMap<String, Object> items =  new HashMap<>();
 
@@ -65,6 +89,17 @@ public class IO
 			e.printStackTrace();
 		}
 
-		return items;
+		//clear both hashmaps
+		classItems.clear();
+		relationshipItems.clear();
+
+		//split up items into classItems and relationshipItems
+		ObjectMapper objectMapper = new ObjectMapper();
+		classItems.putAll(objectMapper.convertValue(items.get("classItems"),
+			new TypeReference<HashMap<String, ClassItem>>() {}));
+		relationshipItems.putAll(objectMapper.convertValue(items.get("relationshipItems"),
+			new TypeReference<HashMap<String, RelationshipItem>>() {}));
+
+		return "successfully loaded " + filepath;
 	}
 };
