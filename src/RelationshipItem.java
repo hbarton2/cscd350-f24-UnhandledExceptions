@@ -22,37 +22,9 @@ public class RelationshipItem
         this.destination = destination;
     }
 
-    /* addRelationship takes a Map of relationships we currently have created from the main.java, a ClassItem source and a ClassItem destination.
+    /* addRelationship takes a Map of relationships we currently have created from the main.java, String source and String destination.
      * The goal is to create a relationship object between the source and destination and store it in the map.
      * If the relationship already exists, we return a message that the relationship already exists.
-     
-    * subject for deletion if we end up not needing this version
-
-    public static String addRelationship(
-        HashMap<String, RelationshipItem> relationships, HashMap<String, ClassItem> classes){
-        // checks for null values and throws an exception if relationships or classes are null
-        if(relationships == null || classes == null){
-            throw new IllegalArgumentException("relationships and classes must not be null");
-        }
-
-        // can't make a relationship without at least two classes
-        if(classes.size() < 2){
-            return "Not enough classes to create a relationship with";
-        }
-
-        // creating the key for the relationship
-        // key should be classname1_classname2
-        Scanner kb = new Scanner(System.in);
-        System.out.println("Enter the name of the first class:");
-        String source = kb.nextLine();
-        source.toLowerCase();
-        System.out.println("Enter the name of the second class:");
-        String destination = kb.nextLine();
-        destination.toLowerCase();
-
-        return addRelationship(relationships, classes, source, destination);
-    }
-
     */
 
     public static String addRelationship(
@@ -82,70 +54,23 @@ public class RelationshipItem
         return "Relationship created successfully";
     }
     /*
-     * removeRelationship takes a Map of relationships we currently have created from the main.java.
-     * This method will list the relationships and prompt the user to remove one by typing the "key" or name of the relationship
-     * If the relationship exists, it will be removed from the map and a message will be returned that the relationship has been removed.
-     * If the relationship is typed incorrectly, a message will be returned that the relationship does not exist. The user will be prompted again.
-     * If the user types "exit", the method will return a message that the user has exited the method, and the method ends.
-
-     * subject for deletion if we end up not needing this version
-
-    public static String removeRelationship(HashMap<String, RelationshipItem> relationshipMap){
-        // can't have a null relationshipMap
-        if(relationshipMap == null) {
-            throw new IllegalArgumentException("relationshipMap must not be null");
-        }
-        // can't delete anything if the map is empty
-        if(relationshipMap.isEmpty()){
-            return "No relationships to remove";
-        }
-
-        // printing the relationships
-        System.out.println("Relationships:");
-        // for each loop with entry being the key and value of the map given by relationshipMap.entryset()
-        for(HashMap.Entry<String, RelationshipItem> entry : relationshipMap.entrySet()){
-            System.out.println("Key: " + entry.getKey() + " Value: " + entry.getValue().toString());
-        }
-
-        // prompt the user to type the key of the relationship they want to remove
-        // scanner for scanning keyboard
-        Scanner kb = new Scanner(System.in);
-
-        // loop to keep prompting the user until they type "exit" or a valid key
-        while(true){
-            // getting input
-            System.out.println("Enter the key of the relationship to remove (or type 'exit' to cancel):");
-            String key = kb.nextLine();
-
-            // if the user types exit we exit the method
-            if(key.equalsIgnoreCase("exit")){
-                return "exiting delete menu...";
-            }
-            
-            // if the relationship exists, we remove it and return a message that the relationship has been removed
-            if(relationshipMap.containsKey(key)){
-                relationshipMap.remove(key);
-                return "Relationship has been removed";
-            }
-            // if the relationship does not exist, we return a message that the relationship does not exist
-            else{
-                System.out.println("Please enter a valid option...");
-            }
-        }
-    }
+     * removeRelationship takes a Map of relationships we currently have created from the main.java, a String source and a String destination for the class names.
+     * It removes a relationship from the passed in relationship map if it exists based on the key. \
+     * If the relationship does not exist, we return a message that the relationship was not found.
     */
-
     public static String removeRelationship(
         HashMap<String, RelationshipItem> relationshipMap, String source, String destination)
     {
+        // key is sourceclass_destinationclass
         String key = source + "_" + destination;
-
+        // if the key is in the relationship map, we remove it along with the value which is a relationship object
         if(relationshipMap.containsKey(key)){
             relationshipMap.remove(key);
             return "Relationship has been removed";
         }
-        else
+        else{
             return "Relationship not found.";
+        }
     }
 
     //returns the source ClassItem object
