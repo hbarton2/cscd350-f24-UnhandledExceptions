@@ -19,8 +19,7 @@ public class Main
 		else if (input.equals("2"))
 		{
 			GUI gui = new GUI(new Data());
-			while(true)
-				gui.Run();
+			gui.Run();
 		}
 		else
 		{
