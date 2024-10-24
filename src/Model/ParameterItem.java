@@ -1,3 +1,4 @@
+package Model;
 /*
     - Class to create a ParameterItem object
     - ParameterItems are constructed with a String representing the name

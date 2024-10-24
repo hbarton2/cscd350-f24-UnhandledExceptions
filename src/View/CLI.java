@@ -1,4 +1,10 @@
+package View;
 import java.util.Scanner;
+
+import Model.ClassItem;
+import Model.Data;
+import Model.RelationshipItem;
+
 import java.util.HashMap;
 
 public class CLI 
@@ -167,7 +173,7 @@ public class CLI
 				if (input.length < 5)
 					{ System.out.println("Syntax: " + UI.CommandSyntax(input[0]));
 					return; }
-				System.out.println(data.getClassItems().get(input[1]).methodItems.get(input[2])
+				System.out.println(data.getClassItems().get(input[1]).getMethodItems().get(input[2])
 					.addParameter(input[3], input[4]));
 				System.out.println(UI.ListClass(data.getClassItems().get(input[1]), data.getRelationshipItems()));
 				break;
@@ -175,7 +181,7 @@ public class CLI
 				if (input.length < 5)
 					{ System.out.println("Syntax: " + UI.CommandSyntax(input[0]));
 					return; }
-				System.out.println(data.getClassItems().get(input[1]).methodItems.get(input[2])
+				System.out.println(data.getClassItems().get(input[1]).getMethodItems().get(input[2])
 					.removeParameter(input[3], input[4]));
 				System.out.println(UI.ListClass(data.getClassItems().get(input[1]), data.getRelationshipItems()));
 				break;
@@ -183,7 +189,7 @@ public class CLI
 				if (input.length < 7)
 					{ System.out.println("Syntax: " + UI.CommandSyntax(input[0]));
 					return; }
-				System.out.println(data.getClassItems().get(input[1]).methodItems.get(input[2])
+				System.out.println(data.getClassItems().get(input[1]).getMethodItems().get(input[2])
 					.changeParameter(input[3], input[4], input[5], input[6]));
 				System.out.println(UI.ListClass(data.getClassItems().get(input[1]), data.getRelationshipItems()));
 				break;
@@ -204,20 +210,20 @@ public class CLI
 		classItems.get("mcdonalds").addField("owner", "person");
 		classItems.get("mcdonalds").addMethod("cook_fries");
 		classItems.get("mcdonalds").addMethod("cook_burger");
-		classItems.get("mcdonalds").methodItems.get("cook_fries").addParameter("int", "time");
-		classItems.get("mcdonalds").methodItems.get("cook_fries").addParameter("String", "potatoes");
-		classItems.get("mcdonalds").methodItems.get("cook_burger").addParameter("int", "time");
-		classItems.get("mcdonalds").methodItems.get("cook_burger").addParameter("String", "patty");
+		classItems.get("mcdonalds").getMethodItems().get("cook_fries").addParameter("int", "time");
+		classItems.get("mcdonalds").getMethodItems().get("cook_fries").addParameter("String", "potatoes");
+		classItems.get("mcdonalds").getMethodItems().get("cook_burger").addParameter("int", "time");
+		classItems.get("mcdonalds").getMethodItems().get("cook_burger").addParameter("String", "patty");
 
 		ClassItem.addClassItem(classItems, "tacobell");
 		classItems.get("tacobell").addField("location", "String");
 		classItems.get("tacobell").addField("owner", "Person");
 		classItems.get("tacobell").addMethod("cook_taco");
 		classItems.get("tacobell").addMethod("cook_casadilla");
-		classItems.get("tacobell").methodItems.get("cook_taco").addParameter("int", "time");
-		classItems.get("tacobell").methodItems.get("cook_taco").addParameter("String", "meat");
-		classItems.get("tacobell").methodItems.get("cook_casadilla").addParameter("int", "time");
-		classItems.get("tacobell").methodItems.get("cook_casadilla").addParameter("String", "chicken");
+		classItems.get("tacobell").getMethodItems().get("cook_taco").addParameter("int", "time");
+		classItems.get("tacobell").getMethodItems().get("cook_taco").addParameter("String", "meat");
+		classItems.get("tacobell").getMethodItems().get("cook_casadilla").addParameter("int", "time");
+		classItems.get("tacobell").getMethodItems().get("cook_casadilla").addParameter("String", "chicken");
 
 		RelationshipItem relationship = new RelationshipItem(
 				classItems.get("mcdonalds"), classItems.get("tacobell"));

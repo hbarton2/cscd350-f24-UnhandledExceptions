@@ -1,3 +1,6 @@
+package View;
+import Model.Data;
+
 public class GUI
 {
     Data data = new Data();

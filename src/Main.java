@@ -1,5 +1,9 @@
 import java.util.Scanner;
 
+import Model.Data;
+import View.CLI;
+import View.GUI;
+
 public class Main 
 {
 	// prints the program name and then starts looping run.
@@ -22,5 +26,4 @@ public class Main
 				gui.Run();
 		}
 	}
-
 };

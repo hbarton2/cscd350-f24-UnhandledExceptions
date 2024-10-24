@@ -1,3 +1,4 @@
+package Model;
 import java.util.HashMap;
 import java.util.Scanner;
 
@@ -6,8 +7,8 @@ public class ClassItem {
     String name;
 
     // Names of FieldItem/MethodItem are keys to Map<k,v>
-    HashMap<String, FieldItem> fieldItems;
-    HashMap<String, MethodItem> methodItems;
+    private HashMap<String, FieldItem> fieldItems;
+    private HashMap<String, MethodItem> methodItems;
 
     public ClassItem() {} //blank constructor for IO serialization
 

@@ -1,4 +1,10 @@
+package View;
 import java.util.HashMap;
+
+import Model.ClassItem;
+import Model.FieldItem;
+import Model.MethodItem;
+import Model.RelationshipItem;
 public class UI
 {
 	// hashmap of commands and usages for the help and for displaying usage to user if input is wrong
@@ -68,7 +74,7 @@ public class UI
 		result.append("\nClass: ").append(classItem.toString()).append("\nFields:\n");
 		
 		//prints list of fields indented to read easier
-		for (HashMap.Entry<String, FieldItem> entry : classItem.fieldItems.entrySet()) 
+		for (HashMap.Entry<String, FieldItem> entry : classItem.getFieldItems().entrySet()) 
 		{
 			result.append("\t" + entry.getValue().toString()).append("\n");
 		}
@@ -77,7 +83,7 @@ public class UI
 		
 		//methods
 		StringBuilder sb = new StringBuilder();
-		for (HashMap.Entry<String, MethodItem> entry : classItem.methodItems.entrySet()) {
+		for (HashMap.Entry<String, MethodItem> entry : classItem.getMethodItems().entrySet()) {
 			//adding a tab to the beginning of each method
 			sb.append("\t").append(entry.getValue().toString()).append("\n"); 
 		}

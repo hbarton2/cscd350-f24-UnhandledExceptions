@@ -1,3 +1,4 @@
+package Model;
 import java.util.HashMap;
 
 public class MethodItem {
