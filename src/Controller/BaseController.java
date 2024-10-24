@@ -29,6 +29,10 @@ public class BaseController
         return ClassItem.addClassItem(data.getClassItems(), newName);
     }
 
+    // this handles sending menus to our cli via ClassItemView and manipulating data via methods in ClassItem
+    public void editClassListener() {
+    }
+
     public String RemoveClassListener(String name)
     {
         return ClassItem.removeClassItem(data.getClassItems(), data.getRelationshipItems(), name);
