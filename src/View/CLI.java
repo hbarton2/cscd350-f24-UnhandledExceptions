@@ -93,7 +93,7 @@ public class CLI
 					{ System.out.println("Syntax: " + UI.CommandSyntax(input[0]));
 					return; }
 				// Then we call the controller method for adding a class and since the controller returns a String, we print the result.
-				System.out.println(controller.AddClass(input[1]));
+				System.out.println(controller.AddClassListener(input[1]));
 				// Then we use UI which is another view module of the program to list the classes.
 				UI.ListClasses(data.getClassItems());
 				break;
@@ -101,14 +101,14 @@ public class CLI
 				if (input.length != 2)
 					{ System.out.println("Syntax: " + UI.CommandSyntax(input[0]));
 					return; }
-				System.out.println(controller.RemoveClass(input[1]));
+				System.out.println(controller.RemoveClassListener(input[1]));
 				UI.ListClasses(data.getClassItems());
 				break;
 			case "renameclass":
 				if (input.length != 3)
 					{ System.out.println("Syntax: " + UI.CommandSyntax(input[0]));
 					return; }
-				System.out.println(controller.RenameClass(input[1], input[2]));
+				System.out.println(controller.RenameClassListener(input[1], input[2]));
 				UI.ListClasses(data.getClassItems());
 				break;
 
@@ -116,14 +116,14 @@ public class CLI
 				if (input.length != 3)
 					{ System.out.println("Syntax: " + UI.CommandSyntax(input[0]));
 					return; }
-				System.out.println(controller.AddRelationship(input[1], input[2]));
+				System.out.println(controller.AddRelationshipListener(input[1], input[2]));
 				UI.ListRelationships(data.getRelationshipItems());
 				break;
 			case "removerelation":
 				if (input.length != 3)
 					{ System.out.println("Syntax: " + UI.CommandSyntax(input[0]));
 					return; }
-				System.out.println(controller.RemoveRelationship(input[1], input[2]));
+				System.out.println(controller.RemoveRelationshipListener(input[1], input[2]));
 				UI.ListRelationships(data.getRelationshipItems());
 				break;
 
@@ -131,21 +131,21 @@ public class CLI
 				if (input.length < 4)
 					{ System.out.println("Syntax: " + UI.CommandSyntax(input[0]));
 					return; }
-				System.out.println(controller.AddField(input[1], input[2], input[3]));
+				System.out.println(controller.AddFieldListener(input[1], input[2], input[3]));
 				System.out.println(UI.ListClass(data.getClassItems().get(input[1]), data.getRelationshipItems()));
 				break;
 			case "removefield":
 				if (input.length < 3)
 					{ System.out.println("Syntax: " + UI.CommandSyntax(input[0]));
 					return; }
-				System.out.println(controller.RemoveField(input[1], input[2]));
+				System.out.println(controller.RemoveFieldListener(input[1], input[2]));
 				System.out.println(UI.ListClass(data.getClassItems().get(input[1]), data.getRelationshipItems()));
 				break;
 			case "renamefield":
 				if (input.length < 4)
 					{ System.out.println("Syntax: " + UI.CommandSyntax(input[0]));
 					return; }
-				System.out.println(controller.RenameField(input[1], input[2], input[3]));
+				System.out.println(controller.RenameFieldListener(input[1], input[2], input[3]));
 				System.out.println(UI.ListClass(data.getClassItems().get(input[1]), data.getRelationshipItems()));
 				break;
 				
@@ -153,21 +153,21 @@ public class CLI
 				if (input.length < 3)
 					{ System.out.println("Syntax: " + UI.CommandSyntax(input[0]));
 					return; }
-				System.out.println(controller.AddMethod(input[1], input[2]));
+				System.out.println(controller.AddMethodListener(input[1], input[2]));
 				System.out.println(UI.ListClass(data.getClassItems().get(input[1]), data.getRelationshipItems()));
 				break;
 			case "removemethod":
 				if (input.length < 3)
 					{ System.out.println("Syntax: " + UI.CommandSyntax(input[0]));
 					return; }
-					System.out.println(controller.RemoveMethod(input[1], input[2]));
+					System.out.println(controller.RemoveMethodListener(input[1], input[2]));
 				System.out.println(UI.ListClass(data.getClassItems().get(input[1]), data.getRelationshipItems()));
 				break;
 			case "renamemethod":
 				if (input.length < 4)
 					{ System.out.println("Syntax: " + UI.CommandSyntax(input[0]));
 					return; }
-				System.out.println(controller.RenameMethod(input[1], input[2], input[3]));
+				System.out.println(controller.RenameMethodListener(input[1], input[2], input[3]));
 				System.out.println(UI.ListClass(data.getClassItems().get(input[1]), data.getRelationshipItems()));
 				break;
 
@@ -175,21 +175,21 @@ public class CLI
 				if (input.length < 5)
 					{ System.out.println("Syntax: " + UI.CommandSyntax(input[0]));
 					return; }
-				System.out.println(controller.AddParameter(input[1], input[2], input[3], input[4]));
+				System.out.println(controller.AddParameterListener(input[1], input[2], input[3], input[4]));
 				System.out.println(UI.ListClass(data.getClassItems().get(input[1]), data.getRelationshipItems()));
 				break;
 			case "removeparameter":
 				if (input.length < 5)
 					{ System.out.println("Syntax: " + UI.CommandSyntax(input[0]));
 					return; }
-				System.out.println(controller.RemoveParameter(input[1], input[2], input[3], input[4]));
+				System.out.println(controller.RemoveParameterListener(input[1], input[2], input[3], input[4]));
 				System.out.println(UI.ListClass(data.getClassItems().get(input[1]), data.getRelationshipItems()));
 				break;
 			case "changeparameter":
 				if (input.length < 7)
 					{ System.out.println("Syntax: " + UI.CommandSyntax(input[0]));
 					return; }
-				System.out.println(controller.ChangeParameter(input[1], input[2], input[3], input[4], input[5], input[6]));
+				System.out.println(controller.ChangeParameterListener(input[1], input[2], input[3], input[4], input[5], input[6]));
 				System.out.println(UI.ListClass(data.getClassItems().get(input[1]), data.getRelationshipItems()));
 				break;
 
