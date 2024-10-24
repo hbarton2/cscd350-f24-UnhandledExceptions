@@ -11,8 +11,8 @@ import java.io.IOException;
 
 public class Data
 {
-	HashMap<String, ClassItem> classItems = new HashMap<>();
-	HashMap<String, RelationshipItem> relationshipItems = new HashMap<>();
+	private HashMap<String, ClassItem> classItems = new HashMap<>();
+	private HashMap<String, RelationshipItem> relationshipItems = new HashMap<>();
 
 	public Data()
 	{

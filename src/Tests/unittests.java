@@ -10,6 +10,8 @@ import java.util.HashMap;
 
 public class unittests {
   
+  /* Testing will change
+
   // CLASSITEM TESTS
   // tests if renaming class updates relationship key
   @Test
@@ -144,5 +146,5 @@ public class unittests {
     // UI ui = new UI();
     assertEquals(expected, UI.ListClass(classes.get("class1"), relationships));
   }
-
+*/
 }

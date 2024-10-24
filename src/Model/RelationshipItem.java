@@ -29,8 +29,8 @@ public class RelationshipItem
     */
 
     public static String addRelationship(
-        HashMap<String, RelationshipItem> relationships, 
-        HashMap<String, ClassItem> classes, String source, String destination)
+        HashMap<String, ClassItem> classes, 
+        HashMap<String, RelationshipItem> relationships, String source, String destination)
     {
         // at this point the key is created with everything being lowercase
         String key = source + "_" + destination;

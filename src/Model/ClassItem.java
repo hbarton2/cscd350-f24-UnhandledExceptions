@@ -22,7 +22,7 @@ public class ClassItem {
 
 
     //Used for tester methods and unit tests currently.
-    public static void addClassItem(final HashMap<String, ClassItem> classItems, final String classItemName) {
+    public static String addClassItem(final HashMap<String, ClassItem> classItems, final String classItemName) {
         String name = classItemName.toLowerCase().trim();// forces all classes to be in lower case and trims all leading
                                                          // and trailing "space" (refernce .trim() Java API for space
                                                          // definition).
@@ -31,10 +31,10 @@ public class ClassItem {
         if (!(classItems.containsKey(name))) {
             ClassItem createdClass = new ClassItem(name);
             classItems.put(createdClass.getName(), createdClass);
-            System.out.println("Class \"" + createdClass.getName() + "\" created.");
+            return "Class \"" + createdClass.getName() + "\" created.";
         } else {
             // if classItemName is already in use in the classItemList that's passed in.
-            System.out.println("Class name must be unique.");;
+            return "Class name must be unique.";
         }
     }
 
@@ -45,7 +45,7 @@ public class ClassItem {
      * We then prompt the user asking if they want to add more information to the class.
      * If no, we add the class to the HashMap of ClassItems, where the key is the name of the class, and the value is the ClassItem object,we then return to the main menu.
      * If yes, we move to the addToClassMenu method, passing in the new ClassItem object we created and scanner for user input.
-     */
+     * 
     public static void addClassItem(final HashMap<String, ClassItem> classItems, Scanner scanner, String inputName){
         boolean validName = false;
         String userInput = inputName.toLowerCase().trim();
@@ -79,7 +79,7 @@ public class ClassItem {
         /*
         Created testClass
         Fields:
-         */
+         *
         System.out.println("Created " + newClass.getName());
 
         if(!newClass.fieldItems.isEmpty()) {
@@ -98,13 +98,12 @@ public class ClassItem {
 
     }
 
-
     /*
      * addToClassMenu is called after a ClassItem is originally created, as well as when a user selects to "edit" a class from the main menu.
      * It allows the user to enter an "edit mode" for a class, prompting them with options of what they want to edit.
      * Currently we are prompting to add fields and add methods.
      * When an option is selected it moves to its own add___Menu method.
-     */
+     *
     public static void addToClassMenu(ClassItem classItem, Scanner scanner){
 
         boolean adding = true;  //set to false when the user inputs 'exit' saying they are finished adding/editing the class.
@@ -162,7 +161,7 @@ public class ClassItem {
      * Each pair of type/name is attempted to be added to the HashMap of fieldItems, if the names are not a duplicate name to a field already existing, it is added
      * if it is a duplicate the user is prompted it was not added.
      * Once the user inputs 'exit' they are returne to the addToClassMenu method where they are again prompted with optons to add to the class they are working in.
-     */
+     *
     private static void addFieldMenu(Scanner scanner, HashMap<String, FieldItem> fieldItems){
         boolean addingFields = true;
 
@@ -226,7 +225,7 @@ public class ClassItem {
      * The function calls the addMethod function with the users input for name, if they only input a name we create an empty method and they are prompted again to add another method.
      * If parameters are adder we then parse the parameter type and names and call the addParameter method on the methodItem object
      * that we created and inserted into the HashMap for each pair, the user is prompted with the associated message, whether it was created, or what was wrong if not.
-     */
+     *
     private static void addMethodMenu(Scanner scanner, ClassItem classItem){
         boolean addingMethods = true;
 
@@ -288,7 +287,8 @@ public class ClassItem {
             //exited loop
         }
     }
-    // public getters and setters for fields required by IO serialization
+    
+
     private static void displayMethods(ClassItem classItem){
         System.out.println("Current Methods:");
         if(classItem.methodItems.isEmpty()){
@@ -329,6 +329,8 @@ public class ClassItem {
             }
         }
     }
+    */
+
     public String getName() {
         return this.name;
     }
@@ -358,8 +360,9 @@ public class ClassItem {
     // check that the oldClassItemName exists in the classItemList
     // check that the newClassItemName is available to use
 
-    public static String renameClassItem(final HashMap<String, ClassItem> classItemList, final String newClassItemName,
-            final String oldClassItemName, HashMap<String, RelationshipItem> relationships) {
+    public static String renameClassItem(final HashMap<String, ClassItem> classItemList,
+         HashMap<String, RelationshipItem> relationships, final String newClassItemName,
+            final String oldClassItemName) {
         if (classItemList == null) {
             throw new IllegalArgumentException("classItemList cannot be null");
         }
@@ -434,8 +437,8 @@ public class ClassItem {
      * and the map of relationships from main to remove the relationships
      * corresponding to the deleted class
      */
-    public static String removeClassItem(final HashMap<String, ClassItem> classItems, final String classItemName,
-        HashMap<String, RelationshipItem> relationships) {
+    public static String removeClassItem(final HashMap<String, ClassItem> classItems,
+        HashMap<String, RelationshipItem> relationships, final String classItemName) {
         // precondition checking
 
         if (classItems == null) {
@@ -489,7 +492,7 @@ public class ClassItem {
     // }
 
     // method to add a new method to the map for this class item
-    public String addMethod(String methodName) {
+    public static String addMethod(ClassItem classItem, String methodName) {
         // preconditions
         if (methodName == null || methodName.isBlank()) {
             throw new IllegalArgumentException("Method name cannot be null or blank");
@@ -499,7 +502,7 @@ public class ClassItem {
         methodName = methodName.trim();
 
         // check if the method name already exists in the class
-        if (methodItems.containsKey(methodName)) {
+        if (classItem.getMethodItems().containsKey(methodName)) {
             // return failure message
             return "Method name: " + methodName + " already in use.";
         }
@@ -508,14 +511,14 @@ public class ClassItem {
         MethodItem newMethod = new MethodItem(methodName);
 
         // insert new method item into map
-        methodItems.put(methodName, newMethod);
+        classItem.getMethodItems().put(methodName, newMethod);
 
         // return successful add of method
         return "Method name: " + methodName + " successfully added.";
     }
 
     // method to remove a method from class
-    public String removeMethod(String methodName) {
+    public static String removeMethod(ClassItem classItem, String methodName) {
         // preconditions
         if (methodName == null || methodName.isBlank()) {
             throw new IllegalArgumentException("Method name cannot be null or blank");
@@ -525,19 +528,19 @@ public class ClassItem {
         methodName = methodName.trim();
 
         // check if the method name is a valid key
-        if (!methodItems.containsKey(methodName)) {
+        if (!classItem.getMethodItems().containsKey(methodName)) {
             // return failure message
             return "Method name: " + methodName + " does not exist";
         }
 
         // remove method item from hash map
-        methodItems.remove(methodName);
+        classItem.getMethodItems().remove(methodName);
 
         // return successful removal of method
         return "Method name: " + methodName + " successfully removed";
     }
 
-    public String renameMethod(String oldName, String newName) {
+    public static String renameMethod(ClassItem classItem, String oldName, String newName) {
         // preconditions
         if (oldName == null || oldName.isBlank() || newName == null || newName.isBlank()) {
             return "Method names cannot be null or blank.";
@@ -548,23 +551,23 @@ public class ClassItem {
         newName = newName.trim();
 
         // check if the new name is already taken
-        if (methodItems.containsKey(newName)) {
+        if (classItem.getMethodItems().containsKey(newName)) {
             return "Method name: " + newName + " already in use.";
         }
 
         // check if the old name is a valid key
-        if (methodItems.containsKey(oldName)) {
+        if (classItem.getMethodItems().containsKey(oldName)) {
             // copy the old method
-            MethodItem newMethod = methodItems.get(oldName);
+            MethodItem newMethod = classItem.getMethodItems().get(oldName);
 
             // set new method name
             newMethod.setMethodName(newName);
 
             // remove old method from map
-            methodItems.remove(oldName);
+            classItem.getMethodItems().remove(oldName);
 
             // add new method item to class
-            methodItems.put(newName, newMethod);
+            classItem.getMethodItems().put(newName, newMethod);
 
             // return success
             return "Method name: " + oldName + " successfully changed to " + newName;
@@ -575,7 +578,7 @@ public class ClassItem {
 
     }
 
-    public String addField(String fieldName, String type) {
+    public static String addField(ClassItem classItem, String type, String fieldName) {
         // preconditions
         if (fieldName == null || fieldName.isBlank() || type == null || type.isBlank()) {
             return "Field name or type cannot be null or blank";
@@ -587,7 +590,7 @@ public class ClassItem {
         type = type.trim();
 
         // check if field already exists
-        if (fieldItems.containsKey(fieldName)) {
+        if (classItem.getFieldItems().containsKey(fieldName)) {
             return "Field name: " + fieldName + " already in use.";
         }
 
@@ -595,12 +598,12 @@ public class ClassItem {
         FieldItem newField = new FieldItem(fieldName, type);
 
         // add new field item to map
-        fieldItems.put(fieldName, newField);
+        classItem.getFieldItems().put(fieldName, newField);
 
-        return fieldName + " was successfully added to " + this.name;
+        return fieldName + " was successfully added to " + classItem.getName();
     }
 
-    public String removeField(String fieldName) {
+    public static String removeField(ClassItem classItem, String fieldName) {
         // preconditions
         if (fieldName == null || fieldName.isBlank()) {
             return "Field name cannot be null or blank";
@@ -610,19 +613,19 @@ public class ClassItem {
         fieldName = fieldName.trim();
 
         // check if field exists
-        if (!fieldItems.containsKey(fieldName)) {
+        if (!classItem.getFieldItems().containsKey(fieldName)) {
             return "Field name: " + fieldName + " does not exist.";
         }
 
 
 
         // remove field from map
-        fieldItems.remove(fieldName);
+        classItem.getFieldItems().remove(fieldName);
 
         return "Field name: " + fieldName + " successfully removed.";
     }
 
-    public String renameField(String oldName, String newName) {
+    public static String renameField(ClassItem classItem, String oldName, String newName) {
         // preconditions
         if (oldName == null || oldName.isBlank() || newName == null || newName.isBlank()) {
             return "Field names cannot be null or blank";
@@ -633,23 +636,23 @@ public class ClassItem {
         newName = newName.trim();
 
         // check if new name is already in use
-        if (fieldItems.containsKey(newName)) {
+        if (classItem.getFieldItems().containsKey(newName)) {
             return "Field name: " + newName + " already in use";
         }
 
         // if the old field exists change it
-        if (fieldItems.containsKey(oldName)) {
+        if (classItem.getFieldItems().containsKey(oldName)) {
             // copy old field object
-            FieldItem newField = fieldItems.get(oldName);
+            FieldItem newField = classItem.getFieldItems().get(oldName);
 
             // remove old field from map
-            fieldItems.remove(oldName);
+            classItem.getFieldItems().remove(oldName);
 
             // set field objects name to new name
             newField.setFieldName(newName);
 
             // add new field item into map
-            fieldItems.put(newName, newField);
+            classItem.getFieldItems().put(newName, newField);
 
             return "Field name: " + oldName + " successfully changed to " + newName;
         } else {
