@@ -8,8 +8,9 @@ public class CLI
 {
 	BaseController controller;
 	Data data;
-    Scanner scanner = new Scanner(System.in);
+  Scanner scanner = new Scanner(System.in);
 
+	// constructor for the CLI. takes in the data model and creates a new controller from the data
 	public CLI(Data data)
 	{
 		this.data = data;
@@ -86,10 +87,14 @@ public class CLI
 				break;
 			*/
 			case "addclass":
+			// Our switch statements typically take this form.
+			// First we check the syntax of the command to make sure it's correct.
 				if (input.length != 2)
 					{ System.out.println("Syntax: " + UI.CommandSyntax(input[0]));
 					return; }
+				// Then we call the controller method for adding a class and since the controller returns a String, we print the result.
 				System.out.println(controller.AddClass(input[1]));
+				// Then we use UI which is another view module of the program to list the classes.
 				UI.ListClasses(data.getClassItems());
 				break;
 			case "removeclass":

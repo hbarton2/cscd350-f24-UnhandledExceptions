@@ -7,15 +7,25 @@ import Model.RelationshipItem;
 
 public class BaseController
 {
-    Data data = new Data();
-    
+    // our controller gets passed in a data object for storage from the CLI which gets passed a data object from main
+    Data data;
+
     public BaseController(Data data)
     {
         this.data = data;
     }
 
+    /*
+     * Our controller is responsible for handling the commands passed in from the CLI and grabbing data from the model to manipulate.
+     * The controller is also responsible for returning the results of the commands to the CLI to be displayed to the user.
+     * The controller methods ONLY TAKE the input from the user and use the data object to manipulate the data via methods from the model.
+     * All controller methods must follow suit and return a string to be displayed to the user via the CLI.
+     */
+
+    // Example: The addClass is only taking a string file name from the CLI input.
     public String AddClass(String newName)
     {
+        // We take the input and use data to manipulate the class item hashmap in data, then pass in the user input, and this returns a message back to the CLI.
         return ClassItem.addClassItem(data.getClassItems(), newName);
     }
 
@@ -71,6 +81,7 @@ public class BaseController
 
     public String AddParameter(String className, String methodName, String type, String name)
     {
+        // Here we need to get a methodItem object from data before passing it in to addParameter in the model.
         MethodItem methodItem = data.getClassItems().get(className).getMethodItems().get(methodName);
         return MethodItem.addParameter(methodItem, type, name);
     }
