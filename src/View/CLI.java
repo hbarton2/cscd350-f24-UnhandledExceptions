@@ -95,6 +95,7 @@ public class CLI
 				// Then we call the controller method for adding a class and since the controller returns a String, we print the result.
 				// input[1] = class name input
 				System.out.println(controller.AddClassListener(input[1]));
+				// Then we use UI which is another view module of the program to edit the class that was just created
 				UI.editClass(input[1], scanner, controller);
 				// Then we use UI which is another view module of the program to list the classes.
 				UI.ListClasses(data.getClassItems());

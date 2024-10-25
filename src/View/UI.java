@@ -206,42 +206,63 @@ public class UI
 		*/
 	}
 
+	/*
+		EditClass takes a class name and a scanner, and allows the user to add fields and methods to the class. The controller is passed as well to send data to the model.
+		The point of it is that it is a menu that displays when adding a class, to make filling out class details easier for the user.
+		This outputs a display, that's why it's in the view package, and uses the controller to update the model.
+	*/
 	public static void editClass(String className, Scanner kb, BaseController controller) {
+		// Add fields to the class via this loop
 		while (true) {
 			System.out.println("Add field: Usage: [type] [name] or type `exit` to exit");
 			String result = kb.nextLine().trim();
+			// Exit this loop if the user types "exit" and goes to adding methods
 			if (result.toLowerCase().equals("exit")){
 				break;
 			}
-
+			// splitting between type and name
+			// input[0] = type and input[1] = name
 			String[] input = result.split(" ");
-
+			// Send data to controller and print the output the controller sends back
 			System.out.println(controller.AddFieldListener(className, input[0], input[1]));
 		}
-
+		
+		// Add methods to the class via this loop
+		// same basic structure as adding fields
 		while (true) {
 			System.out.println("Add method: Usage: [methodName] or type `exit` to exit");
 			String result = kb.nextLine().trim();
+			// Exiting this loop exits creating a class
 			if (result.toLowerCase().equals("exit")){
 				break;
 			}
-
+			// result should be the method name
+			// passing to controller to add a method
 			System.out.println(controller.AddMethodListener(className, result));
+			// another menu after adding a method to add parameters
 			editMethod(className, result, kb, controller);
 
 		}
 
 	}
 
+	/*
+	 * editMethod takes the classname and methodname to specify the method, scanner from editClass, and the same controller to manipulate data.
+	 * The point of it is to add parameters to a method the same way we add methods and fields to a class.
+	 * This is private because editClass() is the only method that uses this in the program.
+	 */
 	private static void editMethod(String className, String methodName, Scanner kb, BaseController controller) {
 		while (true) {
 			System.out.println("Add parameter to " + methodName + ": Usage: [type] [name] or type `exit` to exit");
 			String result = kb.nextLine().trim();
+			// exiting this loop returns back to the add methods portion of editClass
 			if (result.toLowerCase().equals("exit")){
 				break;
 			}
 			String[] input = result.split(" ");
+			// input[0] = type and input[1] = name
 
+			// send input to controller to manipulate data
 			System.out.println(controller.AddParameterListener(className, methodName, input[0], input[1]));
 
 		}
