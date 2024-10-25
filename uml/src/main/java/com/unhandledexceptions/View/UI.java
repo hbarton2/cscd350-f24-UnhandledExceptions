@@ -1,12 +1,13 @@
-package View;
+package com.unhandledexceptions.View;
+
 import java.util.HashMap;
 
-import Model.ClassItem;
-import Model.FieldItem;
-import Model.MethodItem;
-import Model.RelationshipItem;
+import com.unhandledexceptions.Model.ClassItem;
+import com.unhandledexceptions.Model.FieldItem;
+import com.unhandledexceptions.Model.MethodItem;
+import com.unhandledexceptions.Model.RelationshipItem;
 import java.util.Scanner;
-import Controller.BaseController;
+import com.unhandledexceptions.Controller.BaseController;
 public class UI
 {
 	// hashmap of commands and usages for the help and for displaying usage to user if input is wrong

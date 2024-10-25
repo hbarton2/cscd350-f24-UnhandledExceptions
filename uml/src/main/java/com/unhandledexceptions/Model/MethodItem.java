@@ -1,4 +1,5 @@
-package Model;
+package com.unhandledexceptions.Model;
+
 import java.util.HashMap;
 
 public class MethodItem {

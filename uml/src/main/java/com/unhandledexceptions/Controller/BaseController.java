@@ -1,10 +1,10 @@
-package Controller;
+package com.unhandledexceptions.Controller;
 
-import Model.ClassItem;
-import Model.MethodItem;
-import Model.Data;
-import Model.RelationshipItem;
-import View.UI;
+import com.unhandledexceptions.Model.ClassItem;
+import com.unhandledexceptions.Model.MethodItem;
+import com.unhandledexceptions.Model.Data;
+import com.unhandledexceptions.Model.RelationshipItem;
+import com.unhandledexceptions.View.UI;
 
 public class BaseController
 {

@@ -1,10 +1,9 @@
-package Tests;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 
-import Model.ClassItem;
-import Model.RelationshipItem;
-import View.UI;
+import com.unhandledexceptions.Model.ClassItem;
+import com.unhandledexceptions.Model.RelationshipItem;
+import com.unhandledexceptions.View.UI;
 
 import java.util.HashMap;
 

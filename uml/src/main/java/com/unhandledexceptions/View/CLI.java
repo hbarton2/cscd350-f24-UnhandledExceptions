@@ -1,8 +1,9 @@
-package View;
+package com.unhandledexceptions.View;
+
 import java.util.Scanner;
 
-import Model.Data;
-import Controller.BaseController;
+import com.unhandledexceptions.Model.Data;
+import com.unhandledexceptions.Controller.BaseController;
 
 public class CLI 
 {

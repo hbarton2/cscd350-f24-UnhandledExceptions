@@ -1,9 +1,4 @@
-package Model;
-/*
-    - Class to create a ParameterItem object
-    - ParameterItems are constructed with a String representing the name
-    - ParameterItems will be stored into a map in the MethodItem class
-*/
+package com.unhandledexceptions.Model;
 
 public class ParameterItem {
     // enum to check if the data type is valid

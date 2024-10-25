@@ -1,8 +1,10 @@
+package com.unhandledexceptions;
+
 import java.util.Scanner;
 
-import Model.Data;
-import View.CLI;
-import View.GUI;
+import com.unhandledexceptions.Model.Data;
+import com.unhandledexceptions.View.CLI;
+import com.unhandledexceptions.View.GUI;
 
 public class Main 
 {
