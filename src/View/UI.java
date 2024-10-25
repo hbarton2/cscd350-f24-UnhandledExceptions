@@ -214,15 +214,20 @@ public class UI
 	public static void editClass(String className, Scanner kb, BaseController controller) {
 		// Add fields to the class via this loop
 		while (true) {
-			System.out.println("Add field: Usage: [type] [name] or type `exit` to exit");
+			System.out.println("Add field: [type] [name] to add a field, `next` to move on to methods, or `exit` to exit");
 			String result = kb.nextLine().trim();
 			// Exit this loop if the user types "exit" and goes to adding methods
-			if (result.toLowerCase().equals("exit")){
+			if (result.toLowerCase().length() == 0) {
+				return;
+			} else if (result.toLowerCase().equals("exit")) {
+				return;
+			} else if (result.toLowerCase().equals("next")) {
 				break;
 			}
 			// splitting between type and name
 			// input[0] = type and input[1] = name
 			String[] input = result.split(" ");
+			if (input.length != 2) return;
 			// Send data to controller and print the output the controller sends back
 			System.out.println(controller.AddFieldListener(className, input[0], input[1]));
 		}
@@ -230,18 +235,20 @@ public class UI
 		// Add methods to the class via this loop
 		// same basic structure as adding fields
 		while (true) {
-			System.out.println("Add method: Usage: [methodName] or type `exit` to exit");
+			System.out.println("Add method: [methodName] to add a method, or `exit` to exit");
 			String result = kb.nextLine().trim();
 			// Exiting this loop exits creating a class
-			if (result.toLowerCase().equals("exit")){
+			if (result.toLowerCase().length() == 0) {
+				return;
+			} else if (result.toLowerCase().equals("exit")) {
 				break;
 			}
 			// result should be the method name
 			// passing to controller to add a method
 			System.out.println(controller.AddMethodListener(className, result));
 			// another menu after adding a method to add parameters
-			editMethod(className, result, kb, controller);
-
+			String res = editMethod(className, result, kb, controller);
+			if (res.equals("exit")) return;
 		}
 
 	}
@@ -251,21 +258,24 @@ public class UI
 	 * The point of it is to add parameters to a method the same way we add methods and fields to a class.
 	 * This is private because editClass() is the only method that uses this in the program.
 	 */
-	private static void editMethod(String className, String methodName, Scanner kb, BaseController controller) {
+	private static String editMethod(String className, String methodName, Scanner kb, BaseController controller) {
 		while (true) {
-			System.out.println("Add parameter to " + methodName + ": Usage: [type] [name] or type `exit` to exit");
+			System.out.println("Add parameter to " + methodName + ": [type] [name] to add a parameter or `exit` to exit");
 			String result = kb.nextLine().trim();
 			// exiting this loop returns back to the add methods portion of editClass
-			if (result.toLowerCase().equals("exit")){
+			if (result.toLowerCase().length() == 0) {
 				break;
+			} else if (result.toLowerCase().equals("exit")) {
+				return "exit";
 			}
+
 			String[] input = result.split(" ");
 			// input[0] = type and input[1] = name
-
+			if (input.length != 2) return "done";
 			// send input to controller to manipulate data
 			System.out.println(controller.AddParameterListener(className, methodName, input[0], input[1]));
-
 		}
+		return "done";
 	}
 	
 	/*
