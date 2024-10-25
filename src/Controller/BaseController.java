@@ -4,6 +4,7 @@ import Model.ClassItem;
 import Model.MethodItem;
 import Model.Data;
 import Model.RelationshipItem;
+import View.UI;
 
 public class BaseController
 {
@@ -27,10 +28,6 @@ public class BaseController
     {
         // We take the input and use data to manipulate the class item hashmap in data, then pass in the user input, and this returns a message back to the CLI.
         return ClassItem.addClassItem(data.getClassItems(), newName);
-    }
-
-    // this handles sending menus to our cli via ClassItemView and manipulating data via methods in ClassItem
-    public void editClassListener() {
     }
 
     public String RemoveClassListener(String name)

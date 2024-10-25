@@ -5,6 +5,8 @@ import Model.ClassItem;
 import Model.FieldItem;
 import Model.MethodItem;
 import Model.RelationshipItem;
+import java.util.Scanner;
+import Controller.BaseController;
 public class UI
 {
 	// hashmap of commands and usages for the help and for displaying usage to user if input is wrong
@@ -202,6 +204,47 @@ public class UI
 		System.out.println("Parameter: Firstly, type in the name of the class the parameter belongs to");
 		System.out.println("then, type in the name of the paramater you want to add/delete/rename\n");
 		*/
+	}
+
+	public static void editClass(String className, Scanner kb, BaseController controller) {
+		while (true) {
+			System.out.println("Add field: Usage: [type] [name] or type `exit` to exit");
+			String result = kb.nextLine().trim();
+			if (result.toLowerCase().equals("exit")){
+				break;
+			}
+
+			String[] input = result.split(" ");
+
+			System.out.println(controller.AddFieldListener(className, input[0], input[1]));
+		}
+
+		while (true) {
+			System.out.println("Add method: Usage: [methodName] or type `exit` to exit");
+			String result = kb.nextLine().trim();
+			if (result.toLowerCase().equals("exit")){
+				break;
+			}
+
+			System.out.println(controller.AddMethodListener(className, result));
+			editMethod(className, result, kb, controller);
+
+		}
+
+	}
+
+	private static void editMethod(String className, String methodName, Scanner kb, BaseController controller) {
+		while (true) {
+			System.out.println("Add parameter to " + methodName + ": Usage: [type] [name] or type `exit` to exit");
+			String result = kb.nextLine().trim();
+			if (result.toLowerCase().equals("exit")){
+				break;
+			}
+			String[] input = result.split(" ");
+
+			System.out.println(controller.AddParameterListener(className, methodName, input[0], input[1]));
+
+		}
 	}
 	
 	/*
