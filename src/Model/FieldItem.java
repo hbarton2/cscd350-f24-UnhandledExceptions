@@ -1,3 +1,4 @@
+package Model;
 public class FieldItem
 {
 	private String fieldName;
