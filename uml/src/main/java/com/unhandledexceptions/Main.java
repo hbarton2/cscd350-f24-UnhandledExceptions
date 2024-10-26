@@ -6,7 +6,7 @@ import com.unhandledexceptions.Model.Data;
 import com.unhandledexceptions.View.CLI;
 import com.unhandledexceptions.View.GUI;
 
-public class Main 
+public class Main
 {
 	// prints the program name and then starts looping run.
 	public static void main(String[] args)
@@ -23,9 +23,8 @@ public class Main
 		}
 		else
 		{
-			GUI gui = new GUI(new Data());
-			while (true)
-				gui.Run();
+			GUI.main();
 		}
+		scanner.close();
 	}
 };
