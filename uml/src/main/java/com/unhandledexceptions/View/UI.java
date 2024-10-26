@@ -21,7 +21,7 @@ public class UI
 		commandSyntax.put("addclass", "addclass [classname]");
 		commandSyntax.put("removeclass", "removeclass [classname]");
 		commandSyntax.put("renameclass", "renameclass [classname] [newclassname]");
-		commandSyntax.put("addrelation", "addrelation [sourceclassname] [destinationclassname]");
+		commandSyntax.put("addrelation", "addrelation [sourceclassname] [destinationclassname] [type]");
 		commandSyntax.put("removerelation", "removerelation [sourceclassname] [destinationclassname]");
 		commandSyntax.put("addfield", "addfield [classname] [type] [fieldname]");
 		commandSyntax.put("removefield", "removefield [classname] [fieldname]");
