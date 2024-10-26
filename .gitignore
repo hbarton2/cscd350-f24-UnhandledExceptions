@@ -1,0 +1,11 @@
+# Ignore class files
+*.class
+
+# Ignore Maven target directory
+/target/
+
+# Ignore IDE files (if applicable)
+.idea/
+*.iml
+*.log
+*.class
