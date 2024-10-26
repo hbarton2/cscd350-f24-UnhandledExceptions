@@ -1,5 +1,5 @@
 @echo off
 
-set CLASSPATH=bin;lib\*
+cd /d "%~dp0\.."
 
-java -cp "%CLASSPATH%" Main
+mvn exec:java

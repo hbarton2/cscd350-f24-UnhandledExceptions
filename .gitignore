@@ -9,3 +9,4 @@
 *.iml
 *.log
 *.class
+/uml/target

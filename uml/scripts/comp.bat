@@ -1,5 +1,5 @@
 @echo off
 
-set CLASSPATH=bin;lib\*
+cd /d "%~dp0\.."
 
-javac -d bin src\*.java
+mvn clean install
