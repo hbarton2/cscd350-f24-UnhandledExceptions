@@ -40,9 +40,16 @@ public class BaseController
         return ClassItem.renameClassItem(data.getClassItems(), data.getRelationshipItems(), oldName, newName);
     }
 
-    public String AddRelationshipListener(String source, String destination)
+    public String AddRelationshipListener(String source, String destination, String type)
     {
-        return RelationshipItem.addRelationship(data.getClassItems(), data.getRelationshipItems(), source, destination);
+        // Need to ensure that the type is only one of four allowed types.
+        if (!(type.toLowerCase().trim().equals("aggregation") || type.toLowerCase().trim().equals("composition") || type.toLowerCase().trim().equals("generalization") || type.toLowerCase().trim().equals("realization")))
+        {
+            // If it's not one of the four types, we return a message to the user.
+            return "Invalid relationship type. Valid types: aggregation, composition, generalization, realization";
+        }
+
+        return RelationshipItem.addRelationship(data.getClassItems(), data.getRelationshipItems(), source, destination, type);
     }
 
     public String RemoveRelationshipListener(String source, String destination)
