@@ -33,7 +33,7 @@ public class RelationshipItem
 
     public static String addRelationship(
         HashMap<String, ClassItem> classes, 
-        HashMap<String, RelationshipItem> relationships, String source, String destination)
+        HashMap<String, RelationshipItem> relationships, String source, String destination, String type)
     {
         // at this point the key is created with everything being lowercase
         String key = source + "_" + destination;
@@ -50,7 +50,7 @@ public class RelationshipItem
         }
 
         // creating the relationship object
-        RelationshipItem relationship = new RelationshipItem(classes.get(source), classes.get(destination));
+        RelationshipItem relationship = new RelationshipItem(classes.get(source), classes.get(destination), type);
 
         // adding the relationship to the map
         relationships.put(key, relationship);
