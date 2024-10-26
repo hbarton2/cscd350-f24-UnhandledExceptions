@@ -8,10 +8,11 @@ public class RelationshipItem
     // ClassItem objects that represent the source and destination of the relationship
     private ClassItem source;
     private ClassItem destination;
+    private String type;
     
     public RelationshipItem() {} //blank constructor for IO serialization
 
-    public RelationshipItem(final ClassItem source, final ClassItem destination){
+    public RelationshipItem(final ClassItem source, final ClassItem destination, final String type){
 
         // checking for null values and throwing an exception if the source or destination are null
         // we can't have a relationship with only a source or only a destination
@@ -19,9 +20,10 @@ public class RelationshipItem
             throw new IllegalArgumentException("source and destination must not be null");
         }
 
-        // sets the source and destination ClassItem objects
+        // sets the source and destination ClassItem objects as well as the String type
         this.source = source;
         this.destination = destination;
+        this.type = type;
     }
 
     /* addRelationship takes a Map of relationships we currently have created from the main.java, String source and String destination.
@@ -77,7 +79,7 @@ public class RelationshipItem
 
     //returns the source ClassItem object
     public ClassItem getSource() {
-        return source;
+        return this.source;
     }
 
     //sets the destination
@@ -87,12 +89,20 @@ public class RelationshipItem
 
     //returns the destination ClassItem object
     public ClassItem getDestination() {
-        return destination;
+        return this.destination;
     }
 
     //sets the destination
     public void setDestination(ClassItem destination) {
         this.destination = destination;
+    }
+
+    public String getType() {
+        return this.type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 
     // overrides the toString method to return a string representation of the relationship
