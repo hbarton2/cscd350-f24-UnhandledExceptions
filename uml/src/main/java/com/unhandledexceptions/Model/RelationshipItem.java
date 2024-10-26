@@ -110,7 +110,7 @@ public class RelationshipItem
     public String toString(){
 
         //the ClassItem objects have a getName() method that returns the name of the class
-        return this.source.getName() + " has a relationship with " + this.destination.getName();
+        return this.source.getName() + " ---- " + this.type + " ----> " + this.destination.getName();
     }
 
 
