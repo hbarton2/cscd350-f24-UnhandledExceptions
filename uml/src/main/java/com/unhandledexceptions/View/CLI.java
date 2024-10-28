@@ -117,10 +117,10 @@ public class CLI
 				break;
 
 			case "addrelation":
-				if (input.length != 3)
+				if (input.length != 4)
 					{ System.out.println("Syntax: " + UI.CommandSyntax(input[0]));
 					return; }
-				System.out.println(controller.AddRelationshipListener(input[1], input[2]));
+				System.out.println(controller.AddRelationshipListener(input[1], input[2], input[3]));
 				UI.ListRelationships(data.getRelationshipItems());
 				break;
 			case "removerelation":
