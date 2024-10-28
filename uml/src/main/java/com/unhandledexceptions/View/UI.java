@@ -214,7 +214,7 @@ public class UI
 	}
 
 	/*
-		EditClass takes a class name and a scanner, and allows the user to add fields and methods to the class. The controller is passed as well to send data to the model.
+		EditClass takes a class name and a reader, and allows the user to add fields and methods to the class. The controller is passed as well to send data to the model.
 		The point of it is that it is a menu that displays when adding a class, to make filling out class details easier for the user.
 		This outputs a display, that's why it's in the view package, and uses the controller to update the model.
 	*/
@@ -265,7 +265,7 @@ public class UI
 	}
 
 	/*
-	 * editMethod takes the classname and methodname to specify the method, scanner from editClass, and the same controller to manipulate data.
+	 * editMethod takes the classname and methodname to specify the method, reader from editClass, and the same controller to manipulate data.
 	 * The point of it is to add parameters to a method the same way we add methods and fields to a class.
 	 * This is private because editClass() is the only method that uses this in the program.
 	 */

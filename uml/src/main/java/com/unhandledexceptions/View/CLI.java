@@ -27,11 +27,14 @@ public class CLI
 	{
 		try{
 			System.out.print("\nueUML (m for menu): ");
+			// create a new console reader, similar to Scanner
 			ConsoleReader reader = new ConsoleReader();
-			// add our completer to the console reader with a temp list of commands for testing right now
+			// add our completer to the console reader with our list of commands from UI.java
+			// this will autocomplete only our commands and not any other input
 			reader.addCompleter(new CommandCompleter(
 				new ArrayList<>(UI.getCommands().keySet())));
 
+			// read the input line with the reader and execute menu call
 			CommandParsing(reader, reader.readLine().split(" "));
 		} catch(IOException e){
 			e.printStackTrace();
