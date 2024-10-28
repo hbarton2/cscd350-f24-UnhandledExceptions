@@ -1,12 +1,13 @@
 package com.unhandledexceptions.View;
 
+import java.io.IOException;
 import java.util.HashMap;
 
 import com.unhandledexceptions.Model.ClassItem;
 import com.unhandledexceptions.Model.FieldItem;
 import com.unhandledexceptions.Model.MethodItem;
 import com.unhandledexceptions.Model.RelationshipItem;
-import java.util.Scanner;
+import jline.console.ConsoleReader;
 import com.unhandledexceptions.Controller.BaseController;
 public class UI
 {
@@ -212,45 +213,49 @@ public class UI
 		The point of it is that it is a menu that displays when adding a class, to make filling out class details easier for the user.
 		This outputs a display, that's why it's in the view package, and uses the controller to update the model.
 	*/
-	public static void editClass(String className, Scanner kb, BaseController controller) {
-		// Add fields to the class via this loop
-		while (true) {
-			System.out.println("Add field: [type] [name] to add a field, `next` to move on to methods, or `exit` to exit");
-			String result = kb.nextLine().trim();
-			// Exit this loop if the user types "exit" and goes to adding methods
-			if (result.toLowerCase().length() == 0) {
-				return;
-			} else if (result.toLowerCase().equals("exit")) {
-				return;
-			} else if (result.toLowerCase().equals("next")) {
-				break;
+	public static void editClass(String className, ConsoleReader reader, BaseController controller) {
+		try{
+			// Add fields to the class via this loop
+			while (true) {
+				System.out.println("Add field: [type] [name] to add a field, `next` to move on to methods, or `exit` to exit");
+				String result = reader.readLine().trim();
+				// Exit this loop if the user types "exit" and goes to adding methods
+				if (result.toLowerCase().length() == 0) {
+					return;
+				} else if (result.toLowerCase().equals("exit")) {
+					return;
+				} else if (result.toLowerCase().equals("next")) {
+					break;
+				}
+				// splitting between type and name
+				// input[0] = type and input[1] = name
+				String[] input = result.split(" ");
+				if (input.length != 2) return;
+				// Send data to controller and print the output the controller sends back
+				System.out.println(controller.AddFieldListener(className, input[0], input[1]));
 			}
-			// splitting between type and name
-			// input[0] = type and input[1] = name
-			String[] input = result.split(" ");
-			if (input.length != 2) return;
-			// Send data to controller and print the output the controller sends back
-			System.out.println(controller.AddFieldListener(className, input[0], input[1]));
-		}
-		
-		// Add methods to the class via this loop
-		// same basic structure as adding fields
-		while (true) {
-			System.out.println("Add method: [methodName] to add a method, or `exit` to exit");
-			String result = kb.nextLine().trim();
-			// Exiting this loop exits creating a class
-			if (result.toLowerCase().length() == 0) {
-				return;
-			} else if (result.toLowerCase().equals("exit")) {
-				break;
+			
+			// Add methods to the class via this loop
+			// same basic structure as adding fields
+			while (true) {
+				System.out.println("Add method: [methodName] to add a method, or `exit` to exit");
+				String result = reader.readLine().trim();
+				// Exiting this loop exits creating a class
+				if (result.toLowerCase().length() == 0) {
+					return;
+				} else if (result.toLowerCase().equals("exit")) {
+					break;
+				}
+				// result should be the method name
+				// passing to controller to add a method
+				System.out.println(controller.AddMethodListener(className, result));
+				// another menu after adding a method to add parameters
+				String res = editMethod(className, result, reader, controller);
+				if (res.equals("exit")) return;
 			}
-			// result should be the method name
-			// passing to controller to add a method
-			System.out.println(controller.AddMethodListener(className, result));
-			// another menu after adding a method to add parameters
-			String res = editMethod(className, result, kb, controller);
-			if (res.equals("exit")) return;
-		}
+	}catch(IOException e){
+		e.printStackTrace();
+	}
 
 	}
 
@@ -259,24 +264,29 @@ public class UI
 	 * The point of it is to add parameters to a method the same way we add methods and fields to a class.
 	 * This is private because editClass() is the only method that uses this in the program.
 	 */
-	private static String editMethod(String className, String methodName, Scanner kb, BaseController controller) {
-		while (true) {
-			System.out.println("Add parameter to " + methodName + ": [type] [name] to add a parameter or `exit` to exit");
-			String result = kb.nextLine().trim();
-			// exiting this loop returns back to the add methods portion of editClass
-			if (result.toLowerCase().length() == 0) {
-				break;
-			} else if (result.toLowerCase().equals("exit")) {
-				return "exit";
-			}
+	private static String editMethod(String className, String methodName, ConsoleReader reader, BaseController controller) {
+		try{
+			while (true) {
+				System.out.println("Add parameter to " + methodName + ": [type] [name] to add a parameter or `exit` to exit");
+				String result = reader.readLine().trim();
+				// exiting this loop returns back to the add methods portion of editClass
+				if (result.toLowerCase().length() == 0) {
+					break;
+				} else if (result.toLowerCase().equals("exit")) {
+					return "exit";
+				}
 
-			String[] input = result.split(" ");
-			// input[0] = type and input[1] = name
-			if (input.length != 2) return "done";
-			// send input to controller to manipulate data
-			System.out.println(controller.AddParameterListener(className, methodName, input[0], input[1]));
+				String[] input = result.split(" ");
+				// input[0] = type and input[1] = name
+				if (input.length != 2) return "done";
+				// send input to controller to manipulate data
+				System.out.println(controller.AddParameterListener(className, methodName, input[0], input[1]));
+			}
+			return "done";
+		}catch(IOException e){
+			e.printStackTrace();
+			return "error reading input";
 		}
-		return "done";
 	}
 	
 	/*
