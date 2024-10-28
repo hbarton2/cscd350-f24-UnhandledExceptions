@@ -4,6 +4,10 @@ import java.util.Scanner;
 
 import com.unhandledexceptions.Model.Data;
 import com.unhandledexceptions.Controller.BaseController;
+import jline.console.ConsoleReader;
+import com.unhandledexceptions.Controller.CommandCompleter;
+import java.io.IOException;
+import java.util.Arrays;
 
 public class CLI 
 {
@@ -21,8 +25,19 @@ public class CLI
 	// main program loop. displays the prompt then starts checking for input
 	public void Run()
 	{
-		System.out.print("\nueUML (m for menu): ");
-		CommandParsing(scanner.nextLine().split(" "));
+		try{
+			System.out.print("\nueUML (m for menu): ");
+			ConsoleReader reader = new ConsoleReader();
+			// add our completer to the console reader with a temp list of commands for testing right now
+			reader.addCompleter(new CommandCompleter(Arrays.asList(
+				"addclass", "removeclass", "renameclass"
+				)));
+
+			CommandParsing(reader, reader.readLine().split(" "));
+		} catch(IOException e){
+			e.printStackTrace();
+		}
+		
 	}
 
 	/*	takes the input split by space.
@@ -31,7 +46,7 @@ public class CLI
 		if not, it prints the proper syntax for that command from UI.CommandSyntax.
 		if so, it runs the command.
 	*/
-	public void CommandParsing(String[] input)
+	public void CommandParsing(ConsoleReader reader, String[] input)
 	{
 		switch (input[0].toLowerCase())
 		{
@@ -74,19 +89,6 @@ public class CLI
 			case "m":
 				UI.Menu(false);
 				break;
-			case "69": // shhh
-				//tester();
-				break;
-			/*
-			case "edit":
-				if (input.length != 2)
-				{ System.out.println("Syntax: " + UI.CommandSyntax(input[0]));
-					return; }
-				if(data.getClassItems().containsKey(input[1])){
-					ClassItem.addToClassMenu(data.getClassItems().get(input[1]),scanner);
-				}
-				break;
-			*/
 			case "addclass":
 			// Our switch statements typically take this form.
 			// First we check the syntax of the command to make sure it's correct.
@@ -202,39 +204,4 @@ public class CLI
 		}
 	}
 
-	/*
-	// simple test method for us (shhh!)
-	private void tester() 
-	{
-		HashMap<String, ClassItem> classItems = data.getClassItems();
-		HashMap<String, RelationshipItem> relationshipItems = data.getRelationshipItems();
-
-		ClassItem.addClassItem(classItems, "mcdonalds");
-		classItems.get("mcdonalds").addField("location", "String");
-		classItems.get("mcdonalds").addField("owner", "person");
-		classItems.get("mcdonalds").addMethod("cook_fries");
-		classItems.get("mcdonalds").addMethod("cook_burger");
-		classItems.get("mcdonalds").getMethodItems().get("cook_fries").addParameter("int", "time");
-		classItems.get("mcdonalds").getMethodItems().get("cook_fries").addParameter("String", "potatoes");
-		classItems.get("mcdonalds").getMethodItems().get("cook_burger").addParameter("int", "time");
-		classItems.get("mcdonalds").getMethodItems().get("cook_burger").addParameter("String", "patty");
-
-		ClassItem.addClassItem(classItems, "tacobell");
-		classItems.get("tacobell").addField("location", "String");
-		classItems.get("tacobell").addField)("owner", "Person");
-		classItems.get("tacobell").addMethod("cook_taco");
-		classItems.get("tacobell").addMethod("cook_casadilla");
-		classItems.get("tacobell").getMethodItems().get("cook_taco").addParameter("int", "time");
-		classItems.get("tacobell").getMethodItems().get("cook_taco").addParameter("String", "meat");
-		classItems.get("tacobell").getMethodItems().get("cook_casadilla").addParameter("int", "time");
-		classItems.get("tacobell").getMethodItems().get("cook_casadilla").addParameter("String", "chicken");
-
-		RelationshipItem relationship = new RelationshipItem(
-				classItems.get("mcdonalds"), classItems.get("tacobell"));
-
-		// adding the relationship to the map
-		String key = "mcdonalds_tacobell";
-		relationshipItems.put(key, relationship);
-	}
-	*/
 }
