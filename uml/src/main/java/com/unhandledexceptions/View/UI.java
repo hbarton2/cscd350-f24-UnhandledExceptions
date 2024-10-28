@@ -15,6 +15,7 @@ public class UI
 	private static final HashMap<String, String> commandSyntax = new HashMap<>();
 
 	static {
+		commandSyntax.put("help", "help");
 		commandSyntax.put("v", "v [classname]");
 		commandSyntax.put("view", "view [classname]");
 		commandSyntax.put("save", "save [filename]");
@@ -34,13 +35,17 @@ public class UI
 		commandSyntax.put("removeparameter", "removeparameter [classname] [methodname] [parametertype] [parametername]");
 		commandSyntax.put("changeparameter", "changeparameter [classname] [methodname] [parametertype] [parametername] "
 						+ "[newparametertype] [newparametername]");
-		commandSyntax.put("edit", "edit [classname]");
 	}
 
 	// nicer way to get syntax strings
 	public static String CommandSyntax(String command)
 	{
 		return commandSyntax.get(command);
+	}
+
+	public static HashMap<String, String> getCommands()
+	{
+		return commandSyntax;
 	}
 
 	/*

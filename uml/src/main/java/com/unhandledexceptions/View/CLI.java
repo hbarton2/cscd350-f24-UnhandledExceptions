@@ -1,13 +1,13 @@
 package com.unhandledexceptions.View;
 
 import java.util.Scanner;
+import java.util.ArrayList;
 
 import com.unhandledexceptions.Model.Data;
 import com.unhandledexceptions.Controller.BaseController;
 import jline.console.ConsoleReader;
 import com.unhandledexceptions.Controller.CommandCompleter;
 import java.io.IOException;
-import java.util.Arrays;
 
 public class CLI 
 {
@@ -29,9 +29,8 @@ public class CLI
 			System.out.print("\nueUML (m for menu): ");
 			ConsoleReader reader = new ConsoleReader();
 			// add our completer to the console reader with a temp list of commands for testing right now
-			reader.addCompleter(new CommandCompleter(Arrays.asList(
-				"addclass", "removeclass", "renameclass"
-				)));
+			reader.addCompleter(new CommandCompleter(
+				new ArrayList<>(UI.getCommands().keySet())));
 
 			CommandParsing(reader, reader.readLine().split(" "));
 		} catch(IOException e){
