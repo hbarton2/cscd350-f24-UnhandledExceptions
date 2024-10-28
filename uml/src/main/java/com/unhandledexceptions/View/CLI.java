@@ -1,6 +1,6 @@
 package com.unhandledexceptions.View;
 
-import java.util.Scanner;
+// import java.util.Scanner;
 import java.util.ArrayList;
 
 import com.unhandledexceptions.Model.Data;
@@ -13,7 +13,7 @@ public class CLI
 {
 	BaseController controller;
 	Data data;
-  Scanner scanner = new Scanner(System.in);
+  // Scanner scanner = new Scanner(System.in);
 
 	// constructor for the CLI. takes in the data model and creates a new controller from the data
 	public CLI(Data data)
