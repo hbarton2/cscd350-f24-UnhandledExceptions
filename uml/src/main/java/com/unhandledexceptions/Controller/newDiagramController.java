@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import com.unhandledexceptions.View.GUI;
 
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
@@ -44,70 +45,43 @@ public class newDiagramController {
 
     @FXML
     public void addClass(String classNameIn){
-        //creates frame for classItem box
+        // Creates frame for ClassItem box
         StackPane classBox = new StackPane();
+        classBox.getStyleClass().add("class-box"); // Add CSS style class for the box
+        //classBox.setStyle("-fx-background-color: #b91010; -fx-border-color: gray; -fx-border-width: 1px;");
 
-        anchorPane.getChildren().add(classBox); 
+        anchorPane.getChildren().add(classBox);
 
-        classBox.setPrefSize(boxWidth, boxHeight);
-        Rectangle rectangle = new Rectangle(boxWidth,boxHeight, Color.gray(0));
-        rectangle.setOpacity(.25);
-        classBox.getChildren().add(rectangle);
-
-
+        // Create a VBox to hold the class name label and the TitledPanes
         VBox vbox = new VBox();
-        StackPane namePane = new StackPane();
-        Rectangle nameBox = new Rectangle(classBox.getWidth(),0, Color.AQUAMARINE);
-        nameBox.setHeight(boxHeight/6);
+        vbox.setSpacing(10); // Set spacing between components
+        vbox.setAlignment(Pos.CENTER); // Center align the contents of the VBox
+
+        // Create and style the class name label
         Label className = new Label(classNameIn);
-        namePane.getChildren().addAll(nameBox,className);
+        className.getStyleClass().add("class-name-label"); // Add CSS class for the class name label
 
-        Separator separatorLine = new Separator();
+        // Create separator line (optional, uncomment if needed)
+        // Separator separatorLine = new Separator();
 
-        //Field Tree
-        TreeView<String> fieldTree = new TreeView<>();
-        TreeItem<String> fieldRoot = new TreeItem<>("Fields");
-        
-        TreeItem<String> field1 = new TreeItem<>("type1 name1");
-        TreeItem<String> field2 = new TreeItem<>("type2 name2");
-        TreeItem<String> field3 = new TreeItem<>("type3 name3");
+        // Create TitledPane for fields
+        TitledPane fieldsPane = new TitledPane();
+        fieldsPane.setText("Fields");
+        ListView<String> fieldsList = new ListView<>();
+        fieldsList.getStyleClass().add("list-view"); // Apply CSS class for the fields ListView
+        fieldsPane.setContent(fieldsList);
 
-        fieldRoot.getChildren().addAll(field1,field2,field3);
-        fieldRoot.setExpanded(true);
+        // Create TitledPane for methods
+        TitledPane methodsPane = new TitledPane();
+        methodsPane.setText("Methods");
+        ListView<String> methodsList = new ListView<>();
+        methodsList.getStyleClass().add("list-view"); // Apply CSS class for the methods ListView
+        methodsPane.setContent(methodsList);
 
-        fieldTree.setRoot(fieldRoot);
-        fieldRoot.setExpanded(true);
+        // Add the components to the VBox
+        vbox.getChildren().addAll(className, fieldsPane, methodsPane);
 
-        
-        
-        //Method Tree
-        TreeView<String> methodTree = new TreeView<>();
-        TreeItem<String> methodRoot = new TreeItem<>("Methods");
-        
-        TreeItem<String> method1 = new TreeItem<>("name1");
-        TreeItem<String> param1 = new TreeItem<>("type1 name1");
-        TreeItem<String> param2 = new TreeItem<>("type2 name2");
-        method1.getChildren().addAll(param1, param2);
-
-        TreeItem<String> method2 = new TreeItem<>("name2");
-        TreeItem<String> param3 = new TreeItem<>("type1 name1");
-        TreeItem<String> param4 = new TreeItem<>("type2 name2");
-        method2.getChildren().addAll(param3, param4);
-
-        TreeItem<String> method3 = new TreeItem<>("name3");
-        TreeItem<String> param5 = new TreeItem<>("type1 name1");
-        TreeItem<String> param6 = new TreeItem<>("type2 name2");
-        method3.getChildren().addAll(param1, param2);
-
-        methodRoot.getChildren().addAll(method1,method2,method3);
-        methodRoot.setExpanded(true);
-        method1.getChildren().addAll(param1,param2);
-        method2.getChildren().addAll(param3,param4);
-        method3.getChildren().addAll(param5,param6);
-        
-        methodTree.setRoot(methodRoot);
-
-        //mousedrag
+        // Set up mouse drag functionality
         classBox.setOnMousePressed(event -> {
             classBox.toFront();
             offsetX = event.getX();
@@ -119,13 +93,11 @@ public class newDiagramController {
             classBox.setLayoutY(event.getSceneY() - offsetY);
         });
 
-        vbox.getChildren().addAll(namePane,separatorLine,fieldTree,methodTree);
-
+        // Add the VBox to the classBox
         classBox.getChildren().add(vbox);
-
-        //adjustBoxPositions();
          
     }
+
 
     @FXML
     public void addClassButton(ActionEvent event)
