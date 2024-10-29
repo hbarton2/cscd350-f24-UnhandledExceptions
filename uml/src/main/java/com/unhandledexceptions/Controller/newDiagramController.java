@@ -1,7 +1,7 @@
 package com.unhandledexceptions.Controller;
 
 import java.io.IOException;
-
+import java.util.Optional;
 
 import com.unhandledexceptions.View.GUI;
 
@@ -10,6 +10,8 @@ import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Separator;
+import javafx.scene.control.TextInputDialog;
+import javafx.scene.control.TitledPane;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.layout.AnchorPane;
@@ -19,8 +21,16 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
+import javafx.scene.input.MouseEvent;
 
 public class newDiagramController {
+
+    private double offsetX;
+    private double offsetY;
+    
+    @FXML
+    private VBox classBox;
     
     //referenced in .fxml "fx:id='anchorPane'"
     @FXML
@@ -33,7 +43,7 @@ public class newDiagramController {
     private final double startY = 30; // Starting Y position
 
     @FXML
-    public void addClass(){
+    public void addClass(String classNameIn){
         //creates frame for classItem box
         StackPane classBox = new StackPane();
 
@@ -49,7 +59,7 @@ public class newDiagramController {
         StackPane namePane = new StackPane();
         Rectangle nameBox = new Rectangle(classBox.getWidth(),0, Color.AQUAMARINE);
         nameBox.setHeight(boxHeight/6);
-        Label className = new Label("ClassName");
+        Label className = new Label(classNameIn);
         namePane.getChildren().addAll(nameBox,className);
 
         Separator separatorLine = new Separator();
@@ -97,15 +107,46 @@ public class newDiagramController {
         
         methodTree.setRoot(methodRoot);
 
-   
+        //mousedrag
+        classBox.setOnMousePressed(event -> {
+            classBox.toFront();
+            offsetX = event.getX();
+            offsetY = event.getY();
+        });
+
+        classBox.setOnMouseDragged(event -> {
+            classBox.setLayoutX(event.getSceneX() - offsetX);
+            classBox.setLayoutY(event.getSceneY() - offsetY);
+        });
 
         vbox.getChildren().addAll(namePane,separatorLine,fieldTree,methodTree);
 
         classBox.getChildren().add(vbox);
 
-        adjustBoxPositions();
+        //adjustBoxPositions();
          
     }
+
+    @FXML
+    public void addClassButton(ActionEvent event)
+    {
+        TextInputDialog className = new TextInputDialog();
+        className.setTitle("Add Class");
+        className.setHeaderText("Enter the class name");
+        className.setContentText("Class name: ");
+
+
+        Optional<String> result = className.showAndWait();
+
+        if(result.isPresent())
+        {
+            String classNameIn = result.get();
+            addClass(classNameIn);
+        }
+
+        
+    }
+
 
     private void adjustBoxPositions() {
         double anchorPaneWidth = anchorPane.getWidth();
@@ -134,6 +175,8 @@ public class newDiagramController {
             }
         }
     }
+
+    
     
 
 
