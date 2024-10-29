@@ -173,6 +173,7 @@ public class ClassItem {
 
     }
 
+    /*
     // Check if the new name to be used is available (not a duplicate name), if
     // duplicate, display message.
     // private static boolean checkValidNewName(final Map<String, ClassItem>
@@ -182,12 +183,12 @@ public class ClassItem {
            return false;
        }
 
-    if(!(classItemList.containsKey(newClassItemName))) //if the name is not
-       return true;
-    System.out.println("\"" + newClassItemName + "\" is already in use." );
-       return false;
+        if(!(classItemList.containsKey(newClassItemName))) //if the name is not
+        return true;
+        System.out.println("\"" + newClassItemName + "\" is already in use." );
+        return false;
     }
-
+    */
     // checks if the oldClassItem is a class already contained in the Map passed in.
     // displays error message when false.
     // private static boolean checkValidOldName(final Map<String, ClassItem>

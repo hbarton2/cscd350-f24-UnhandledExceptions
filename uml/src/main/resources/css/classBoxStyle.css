@@ -7,7 +7,7 @@
     -fx-border-width: 1px;
     -fx-background-color: white;
     -fx-padding: 10;
-    -fx-spacing: 10;
+    -fx-spacing: 1;
     -fx-border-radius: 5;
     -fx-background-radius: 5;
 }
@@ -23,7 +23,7 @@
 }
 
 .titled-pane > .title {
-    -fx-background-color: #3b5998;  /* Dark blue title background */
+    -fx-background-color: #a3a4a7;  /* Dark blue title background */
     -fx-text-fill: white;
     -fx-font-weight: bold;
     -fx-padding: 5 10 5 10;
