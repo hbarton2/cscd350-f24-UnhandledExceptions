@@ -44,6 +44,7 @@ public class ClassItemTests {
     assertEquals("Class name must be unique.", ClassItem.addClassItem(classMap, "testclass"));
   }
 
+  // tests removing class works
   @Test
   public void testRemoveClassItem() {
     // remove the class testerclass
@@ -53,13 +54,72 @@ public class ClassItemTests {
     assertFalse(classMap.containsKey("testerclass"));
   }
 
+  // tests removing classes if the class does not exist
   @Test
   public void testRemoveClassItemNoClassExists() {
     // remove a class that does not exist
     assertEquals("No class with name \"blahblahblah\" exists.", ClassItem.removeClassItem(classMap, relationshipMap, "blahblahblah"));
   }
 
-  
+  // tests if removing a class removes the relationships
+  @Test
+  public void testRemovingClassRemovesRelationships() {
+    // add a class and a relationship between the two classes
+    ClassItem.addClassItem(classMap, "testclass");
+    RelationshipItem.addRelationship(classMap, relationshipMap, "testclass", "testerclass", "composition");
+
+    // remove the class
+    ClassItem.removeClassItem(classMap, relationshipMap, "testclass");
+
+    // see if the relationship is removed, there should be no relationships in the map
+    assertTrue(relationshipMap.isEmpty());
+  }
+
+  // tests renaming a class works
+  @Test
+  public void testRenameClassItem() {
+    // rename the class testerclass
+    ClassItem.renameClassItem(classMap, relationshipMap, "newclass", "testerclass");
+
+    // make sure testerclass isn't in classMap anymore
+    assertFalse(classMap.containsKey("testerclass"));
+
+    // make sure newClass is in classMap
+    assertTrue(classMap.containsKey("newclass"));
+  }
+
+  // tests to see if renaming changes the relationship as well
+  @Test
+  public void testRenameClassItemChangeRelationship() {
+    // add a class and a relationship between the two classes
+    ClassItem.addClassItem(classMap, "testclass");
+    RelationshipItem.addRelationship(classMap, relationshipMap, "testclass", "testerclass", "composition");
+
+    // rename the testclass
+    ClassItem.renameClassItem(classMap, relationshipMap, "newclass", "testclass");
+
+    // make sure the relationship is updated
+    assertTrue(relationshipMap.containsKey("newclass_testerclass"));
+  }
+
+  // tests to see what happens when you rename a class that does not exist
+  @Test
+  public void testRenameClassItemNoClassExists() {
+    // rename a class that does not exist
+    assertEquals("blahblahblah does not exist.", ClassItem.renameClassItem(classMap, relationshipMap, "newclass", "blahblahblah"));
+  }
+
+  // tests to see what happens when you rename a class to a name that already exists
+  @Test
+  public void testRenameClassItemDuplicateClass() {
+    // add a class to the classMap
+    ClassItem.addClassItem(classMap, "testclass");
+
+    // rename the class to a name that already exists
+    assertEquals("testerclass is already in use.", ClassItem.renameClassItem(classMap, relationshipMap, "testerclass", "testclass"));
+  }
+
+
 
    
 
