@@ -12,6 +12,7 @@ import javafx.scene.layout.BackgroundImage;
 import javafx.scene.layout.BackgroundPosition;
 import javafx.scene.layout.BackgroundRepeat;
 import javafx.scene.layout.BackgroundSize;
+import javafx.scene.layout.StackPane;
 import javafx.scene.Node;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.transform.Scale;
@@ -25,6 +26,9 @@ public class mainDiagramController
     private final double boxWidth = 200; // Width of the boxes
     private final double boxHeight = 300; // Height of the content box
     private RelationLine placingRelation;
+
+    @FXML
+    private StackPane bgpane;
 
     @FXML
     private AnchorPane anchorPane;
@@ -49,15 +53,6 @@ public class mainDiagramController
     @FXML
     private void initialize()
     {
-        addClassMenu.setOnShowing(event -> {
-             addClass(); 
-            });
-
-        anchorPane.getTransforms().add(scaleTransform);
-
-        scrollPane.addEventFilter(ScrollEvent.SCROLL, this::handleZoom);
-
-        anchorPane.setOnMouseMoved(event -> mouseMove(event));
 
         //bg stuff
         Image backgroundImage = new Image(getClass().getResource("/images/nms.png").toExternalForm());
@@ -71,6 +66,16 @@ public class mainDiagramController
             )
         );
         anchorPane.setBackground(new Background(bgImage));
+
+        addClassMenu.setOnShowing(event -> {
+             addClass(); 
+            });
+
+        anchorPane.getTransforms().add(scaleTransform);
+
+        scrollPane.addEventFilter(ScrollEvent.SCROLL, this::handleZoom);
+
+        anchorPane.setOnMouseMoved(event -> mouseMove(event));
     }
 
     @FXML
