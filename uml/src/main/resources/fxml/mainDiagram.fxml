@@ -48,7 +48,7 @@
           <items>
             <MenuItem mnemonicParsing="false" text="New" />
                   <SeparatorMenuItem mnemonicParsing="false" />
-            <MenuItem mnemonicParsing="false" onAction="#addClassButton" text="Open…" />
+            <MenuItem mnemonicParsing="false" onAction="#addClass" text="Open…" />
             <Menu mnemonicParsing="false" text="Open Recent" />
             <SeparatorMenuItem mnemonicParsing="false" />
             <MenuItem mnemonicParsing="false" text="Save" />
@@ -62,8 +62,8 @@
             <MenuItem mnemonicParsing="false" text="About MyHelloApp" />
           </items>
         </Menu>
-            <Menu disable="true" mnemonicParsing="false" onAction="#addClassButton" text="|" />
-            <Menu fx:id="addClassMenu" mnemonicParsing="false" onAction="#addClassButton" text="Add Class">
+            <Menu disable="true" mnemonicParsing="false" onAction="#addClass" text="|" />
+            <Menu fx:id="addClassMenu" mnemonicParsing="false" onAction="#addClass" text="Add Class">
                <items>
                   <CustomMenuItem mnemonicParsing="false" text="Unspecified Action" />
                </items></Menu>
