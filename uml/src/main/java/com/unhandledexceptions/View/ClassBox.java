@@ -19,7 +19,8 @@ public class ClassBox extends StackPane
 {
     final double RANCHOR_VIEW_DISTANCE = 50;  // Distance threshold for visibility
 
-    private Rectangle[] ranchor = new Rectangle[4];
+    private VBox dragBox;
+    private Rectangle[] ranchors = new Rectangle[4];
     //private double offsetX;
     //private double offsetY;
 
@@ -39,6 +40,7 @@ public class ClassBox extends StackPane
 
         // Create a VBox to hold the class name label and the TitledPanes
         VBox vbox = new VBox();
+        dragBox = vbox;
         vbox.setSpacing(10); // Set spacing between components
         vbox.setAlignment(Pos.CENTER); // Center align the contents of the VBox
         vbox.getStyleClass().add("class-box");
@@ -68,21 +70,21 @@ public class ClassBox extends StackPane
          "Field1 : int",
             "Field2 : String",
             "Field3 : boolean",
-            "Field1 : int",
-            "Field2 : String",
-            "Field3 : boolean",
-            "Field1 : int",
-            "Field2 : String",
-            "Field3 : boolean",
-            "Field1 : int",
-            "Field2 : String",
-            "Field3 : boolean",
-            "Field1 : int",
-            "Field2 : String",
-            "Field3 : boolean",
-            "Field1 : int",
-            "Field2 : String",
-            "Field3 : boolean"
+            "Field4 : int",
+            "Field5 : String",
+            "Field6 : boolean",
+            "Field7 : int",
+            "Field8 : String",
+            "Field9 : boolean",
+            "Field10 : int",
+            "Field11 : String",
+            "Field12 : boolean",
+            "Field13 : int",
+            "Field14 : String",
+            "Field15 : boolean",
+            "Field16 : int",
+            "Field17 : String",
+            "Field18 : boolean"
         );
         fieldsList.setItems(dummyFields);
 
@@ -141,15 +143,15 @@ public class ClassBox extends StackPane
         //ranchors (relationship anchors)
         for (int i = 0; i < 4; i++)
         {
-            ranchor[i] = new Rectangle(10, 10);
-            ranchor[i].setFill(Color.BLACK);
-            int index = i;
-            ranchor[i].setOnMouseClicked(event -> AddRelation(index));
+            ranchors[i] = new Rectangle(10, 10);
+            ranchors[i].setFill(Color.BLACK);
+            //int index = i;
+            //ranchor[i].setOnMouseClicked(event -> AddRelation(index));
         }
 
         //structure
-        vbase.getChildren().addAll(ranchor[0], hbase, ranchor[2]);
-        hbase.getChildren().addAll(ranchor[3], vbox, ranchor[1]);
+        vbase.getChildren().addAll(ranchors[0], hbase, ranchors[2]);
+        hbase.getChildren().addAll(ranchors[3], vbox, ranchors[1]);
 
         // Add the components to the VBox
         vbox.getChildren().addAll(className, fieldsPane, methodsPane);
@@ -157,40 +159,24 @@ public class ClassBox extends StackPane
         // Add the VBox to the classBox
         getChildren().add(vbase);
 
-        // Set up mouse drag functionality
-        // vbox.setOnMousePressed(event -> {
-        //     toFront();
-        //     offsetX = event.getSceneX() - getLayoutX();
-        //     offsetY = event.getSceneY() - getLayoutY();
-        // });
-
         // ranchor visibility
         vbase.setOnMouseEntered(event -> {
-            for (Rectangle r : ranchor)
+            for (Rectangle r : ranchors)
                 r.setVisible(true);
         });
         vbase.setOnMouseExited(event -> {
-            for (Rectangle r : ranchor)
+            for (Rectangle r : ranchors)
                 r.setVisible(false);
         });
 
         vbox.setOnMouseEntered(event -> {
-            for (Rectangle r : ranchor)
+            for (Rectangle r : ranchors)
                 r.setVisible(false);
         });
         vbox.setOnMouseExited(event -> {
-            for (Rectangle r : ranchor)
+            for (Rectangle r : ranchors)
                 r.setVisible(true);
         });
-        // vbox.setOnMouseDragged(event -> {
-        //     setLayoutX(event.getSceneX() - offsetX);
-        //     setLayoutY(event.getSceneY() - offsetY);
-        // });
-    }
-
-    private void AddRelation(int index)
-    {
-        System.out.println("clicked: " + index);
     }
 
     private void NameClicked(Label className)
@@ -206,5 +192,15 @@ public class ClassBox extends StackPane
         {
             className.setText(result.get());
         }
+    }
+
+    public VBox getDragBox()
+    {
+        return this.dragBox;
+    }
+
+    public Rectangle[] getRanchors()
+    {
+        return this.ranchors;
     }
 }
