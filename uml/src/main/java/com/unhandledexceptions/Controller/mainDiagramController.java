@@ -5,6 +5,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Menu;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.control.ScrollPane;
 
 public class mainDiagramController 
 {
@@ -13,6 +14,9 @@ public class mainDiagramController
 
     @FXML
     private AnchorPane anchorPane;
+
+    @FXML
+    private ScrollPane scrollPane;
 
     @FXML
     private Menu addClassMenu;
