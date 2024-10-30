@@ -1,5 +1,7 @@
 package com.unhandledexceptions.View;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
@@ -57,8 +59,33 @@ public class ClassBox extends StackPane
         TitledPane fieldsPane = new TitledPane();
         fieldsPane.setExpanded(false);
         fieldsPane.setText("Fields");
+
+        fieldsPane.setMaxHeight(150);
         ListView<String> fieldsList = new ListView<>();
         fieldsList.getStyleClass().add("list-view"); // Apply CSS class for the fields ListView
+
+        ObservableList<String> dummyFields = FXCollections.observableArrayList(
+         "Field1 : int",
+            "Field2 : String",
+            "Field3 : boolean",
+            "Field1 : int",
+            "Field2 : String",
+            "Field3 : boolean",
+            "Field1 : int",
+            "Field2 : String",
+            "Field3 : boolean",
+            "Field1 : int",
+            "Field2 : String",
+            "Field3 : boolean",
+            "Field1 : int",
+            "Field2 : String",
+            "Field3 : boolean",
+            "Field1 : int",
+            "Field2 : String",
+            "Field3 : boolean"
+        );
+        fieldsList.setItems(dummyFields);
+
         fieldsPane.setContent(fieldsList);
 
         // Create TitledPane for methods
