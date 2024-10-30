@@ -92,9 +92,51 @@ public class ClassBox extends StackPane
         TitledPane methodsPane = new TitledPane();
         methodsPane.setExpanded(false);
         methodsPane.setText("Methods");
-        ListView<String> methodsList = new ListView<>();
+        methodsPane.setMaxHeight(200);
+        
+        //List that will hold the individual method panes
+        ListView<TitledPane> methodsList = new ListView<>();
         methodsList.getStyleClass().add("list-view"); // Apply CSS class for the methods ListView
+                
+        //method panes to go in methodsList
+        TitledPane method1 = new TitledPane();
+        method1.setExpanded(false);
+        method1.setText("method1");
+        method1.setMaxHeight(125);
+        method1.setMaxWidth(220);
+        
+        ListView<String> method1List = new ListView<>();
+        ObservableList<String> method1Params = FXCollections.observableArrayList(
+            "Type : Param1",
+            "Type : Param2",
+            "Type : Param3"
+        );
+
+        ObservableList<TitledPane> titlePanes = FXCollections.observableArrayList(
+            method1
+        );
+
+        //adds list of params to method1's list
+        method1List.setItems(method1Params);
+
+        //adds method1List to method1 TitlePane
+        method1.setContent(method1List);
+
+        //adds list of titlePanes to the overall methodsList
+        methodsList.setItems(titlePanes);
+
+        //Adds methods TitlePane's List to the methodPane
         methodsPane.setContent(methodsList);
+/*                                                      _
+         * MethodsPane                  _                        |
+         *       method1                 |__method1 TitlePane    |
+         *          method1Params       _|                       |
+         *                              _                        |___ methodsPane TitlePane
+         *       method2                 |__method2 TitlePane    |
+         *          method2Params       _|                       |                                               
+         *                                                      _|
+         */ 
+
         
         //ranchors (relationship anchors)
         for (int i = 0; i < 4; i++)
