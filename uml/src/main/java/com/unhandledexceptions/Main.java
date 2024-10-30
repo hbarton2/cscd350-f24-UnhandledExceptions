@@ -22,10 +22,17 @@ public class Main
 			while (true)
 				cli.Run();
 		}
-		else if(input.equals("gui") || input.equals("g"));
+		else if(input.equals("gui") || input.equals("g"))
 		{
 			GUI.main();
 		}
+		else
+		{
+			System.out.println("Program terminated. Goodbye!");
+			System.exit(0);
+		}
+		
+
 		scanner.close();
 	}
 };
