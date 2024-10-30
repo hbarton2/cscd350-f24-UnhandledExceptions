@@ -60,7 +60,8 @@
         </Menu>
         <Menu mnemonicParsing="false" text="Help">
           <items>
-            <MenuItem mnemonicParsing="false" text="About MyHelloApp" />
+            <MenuItem mnemonicParsing="false" onAction="#resetZoom" text="Reset Zoom" />
+            <MenuItem mnemonicParsing="false" text="About" />
           </items>
         </Menu>
             <Menu disable="true" mnemonicParsing="false" onAction="#addClass" text="|" />
