@@ -7,10 +7,16 @@ import javafx.fxml.FXML;
 import javafx.geometry.Bounds;
 import javafx.scene.control.Menu;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundImage;
+import javafx.scene.layout.BackgroundPosition;
+import javafx.scene.layout.BackgroundRepeat;
+import javafx.scene.layout.BackgroundSize;
 import javafx.scene.Node;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.transform.Scale;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 
@@ -52,6 +58,19 @@ public class mainDiagramController
         scrollPane.addEventFilter(ScrollEvent.SCROLL, this::handleZoom);
 
         anchorPane.setOnMouseMoved(event -> mouseMove(event));
+
+        //bg stuff
+        Image backgroundImage = new Image(getClass().getResource("/images/nms.png").toExternalForm());
+        BackgroundImage bgImage = new BackgroundImage(
+            backgroundImage,
+            BackgroundRepeat.REPEAT,  // No repeat
+            BackgroundRepeat.NO_REPEAT,  // No repeat
+            BackgroundPosition.CENTER,   // Centered position
+            new BackgroundSize(
+                BackgroundSize.AUTO, BackgroundSize.AUTO, true, true, true, false
+            )
+        );
+        anchorPane.setBackground(new Background(bgImage));
     }
 
     @FXML
