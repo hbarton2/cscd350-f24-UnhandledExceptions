@@ -44,7 +44,7 @@
 
 
 
-<AnchorPane fx:id="anchorPane" prefHeight="900.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.unhandledexceptions.Controller.newDiagramController" stylesheets="@/css/classBoxStyle.css">
+<AnchorPane fx:id="anchorPane" prefHeight="900.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.unhandledexceptions.Controller.newDiagramController">
   <children>
     <MenuBar VBox.vgrow="NEVER">
       <menus>
