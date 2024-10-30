@@ -18,8 +18,8 @@ public class ClassBox extends StackPane
     final double RANCHOR_VIEW_DISTANCE = 50;  // Distance threshold for visibility
 
     private Rectangle[] ranchor = new Rectangle[4];
-    private double offsetX;
-    private double offsetY;
+    //private double offsetX;
+    //private double offsetY;
 
     public ClassBox(String classNameIn, double boxWidth, double boxHeight)
     {
@@ -89,16 +89,11 @@ public class ClassBox extends StackPane
         getChildren().add(vbase);
 
         // Set up mouse drag functionality
-        vbox.setOnMousePressed(event -> {
-            toFront();
-            offsetX = event.getSceneX() - getLayoutX();
-            offsetY = event.getSceneY() - getLayoutY();
-        });
-
-        vbox.setOnMouseDragged(event -> {
-            setLayoutX(event.getSceneX() - offsetX);
-            setLayoutY(event.getSceneY() - offsetY);
-        });
+        // vbox.setOnMousePressed(event -> {
+        //     toFront();
+        //     offsetX = event.getSceneX() - getLayoutX();
+        //     offsetY = event.getSceneY() - getLayoutY();
+        // });
 
         // ranchor visibility
         vbase.setOnMouseEntered(event -> {
@@ -118,6 +113,10 @@ public class ClassBox extends StackPane
             for (Rectangle r : ranchor)
                 r.setVisible(true);
         });
+        // vbox.setOnMouseDragged(event -> {
+        //     setLayoutX(event.getSceneX() - offsetX);
+        //     setLayoutY(event.getSceneY() - offsetY);
+        // });
     }
 
     private void AddRelation(int index)
