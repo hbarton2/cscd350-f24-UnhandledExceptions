@@ -1,18 +1,30 @@
 package com.unhandledexceptions.Controller;
 
 import com.unhandledexceptions.View.ClassBox;
+import com.unhandledexceptions.View.RelationLine;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.geometry.Bounds;
 import javafx.scene.control.Menu;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundImage;
+import javafx.scene.layout.BackgroundPosition;
+import javafx.scene.layout.BackgroundRepeat;
+import javafx.scene.layout.BackgroundSize;
+import javafx.scene.Node;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.transform.Scale;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.image.Image;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 
 public class mainDiagramController 
 {
     private final double boxWidth = 200; // Width of the boxes
     private final double boxHeight = 300; // Height of the content box
+    private RelationLine placingRelation;
 
     @FXML
     private AnchorPane anchorPane;
@@ -44,6 +56,21 @@ public class mainDiagramController
         anchorPane.getTransforms().add(scaleTransform);
 
         scrollPane.addEventFilter(ScrollEvent.SCROLL, this::handleZoom);
+
+        anchorPane.setOnMouseMoved(event -> mouseMove(event));
+
+        //bg stuff
+        Image backgroundImage = new Image(getClass().getResource("/images/nms.png").toExternalForm());
+        BackgroundImage bgImage = new BackgroundImage(
+            backgroundImage,
+            BackgroundRepeat.REPEAT,  // No repeat
+            BackgroundRepeat.NO_REPEAT,  // No repeat
+            BackgroundPosition.CENTER,   // Centered position
+            new BackgroundSize(
+                BackgroundSize.AUTO, BackgroundSize.AUTO, true, true, true, false
+            )
+        );
+        anchorPane.setBackground(new Background(bgImage));
     }
 
     @FXML
@@ -51,13 +78,15 @@ public class mainDiagramController
     {
         ClassBox classBox = new ClassBox("newClass", boxWidth, boxHeight);
         anchorPane.getChildren().add(classBox);
-        classBox.setOnMousePressed(event -> {
+
+        //setup mouse drag
+        classBox.getDragBox().setOnMousePressed(event -> {
                 classBox.toFront();
                 offsetX = event.getSceneX() - classBox.getLayoutX();
                 offsetY = event.getSceneY() - classBox.getLayoutY();
             });
     
-            classBox.setOnMouseDragged(event -> {
+            classBox.getDragBox().setOnMouseDragged(event -> {
                 double newX = (event.getSceneX() - offsetX) * zoomFactor;
                 double newY = (event.getSceneY() - offsetY) * zoomFactor;
             
@@ -65,7 +94,54 @@ public class mainDiagramController
             classBox.setLayoutY(newY);
 
             adjustAnchorPaneSize(newX, newY, classBox);
+            updateRelationLines();
             });
+
+        //setup ranchor events
+        Rectangle ranchors[] = classBox.getRanchors();
+        for (Rectangle ranchor : ranchors)
+        {
+            ranchor.setOnMouseClicked(event -> ranchorClick(classBox, ranchor));
+        }
+    }
+
+    private void updateRelationLines()
+    {
+        for (Node node : anchorPane.getChildren()) {
+            if (node instanceof RelationLine) {
+                RelationLine line = (RelationLine) node;
+                line.Update();
+            }
+        }
+    }
+
+    private void mouseMove(MouseEvent event)
+    {
+        if (placingRelation != null)
+        {
+            placingRelation.setEndX(event.getSceneX());
+            placingRelation.setEndY(event.getSceneY() - 25);
+        }
+    }
+
+    private void ranchorClick(ClassBox classBox, Rectangle ranchor)
+    {
+        if (placingRelation == null)
+        {
+            Bounds rbounds = ranchor.localToScene(ranchor.getBoundsInLocal());
+            RelationLine line = new RelationLine();
+            line.setR1(ranchor);
+            
+            line.setEndX(rbounds.getMinX());
+            line.setEndY(rbounds.getMinY());
+            anchorPane.getChildren().add(line);
+            placingRelation = line;
+        }
+        else
+        {
+            placingRelation.setR2(ranchor);
+            placingRelation = null;
+        }
     }
 
     @FXML
