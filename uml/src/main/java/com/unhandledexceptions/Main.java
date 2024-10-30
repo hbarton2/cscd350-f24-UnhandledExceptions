@@ -29,10 +29,9 @@ public class Main
 		else
 		{
 			System.out.println("Program terminated. Goodbye!");
+			scanner.close();
 			System.exit(0);
-		}
-		
-
+		}		
 		scanner.close();
 	}
 };
