@@ -15,6 +15,8 @@ import javafx.scene.paint.Color;
 
 public class ClassBox extends StackPane
 {
+    final double RANCHOR_VIEW_DISTANCE = 50;  // Distance threshold for visibility
+
     private Rectangle[] ranchor = new Rectangle[4];
     private double offsetX;
     private double offsetY;
@@ -27,9 +29,11 @@ public class ClassBox extends StackPane
         VBox vbase = new VBox();
         vbase.setSpacing(10);
         vbase.setAlignment(Pos.CENTER);
+        //vbase.setStyle("-fx-background-color: lightblue;"); < debugging
         HBox hbase = new HBox();
         hbase.setSpacing(10);
         hbase.setAlignment(Pos.CENTER);
+        //hbase.setStyle("-fx-background-color: red;"); < debugging
 
         // Create a VBox to hold the class name label and the TitledPanes
         VBox vbox = new VBox();
@@ -65,7 +69,7 @@ public class ClassBox extends StackPane
         methodsList.getStyleClass().add("list-view"); // Apply CSS class for the methods ListView
         methodsPane.setContent(methodsList);
         
-        //ranchors
+        //ranchors (relationship anchors)
         for (int i = 0; i < 4; i++)
         {
             ranchor[i] = new Rectangle(10, 10);
@@ -94,6 +98,25 @@ public class ClassBox extends StackPane
         vbox.setOnMouseDragged(event -> {
             setLayoutX(event.getSceneX() - offsetX);
             setLayoutY(event.getSceneY() - offsetY);
+        });
+
+        // ranchor visibility
+        vbase.setOnMouseEntered(event -> {
+            for (Rectangle r : ranchor)
+                r.setVisible(true);
+        });
+        vbase.setOnMouseExited(event -> {
+            for (Rectangle r : ranchor)
+                r.setVisible(false);
+        });
+
+        vbox.setOnMouseEntered(event -> {
+            for (Rectangle r : ranchor)
+                r.setVisible(false);
+        });
+        vbox.setOnMouseExited(event -> {
+            for (Rectangle r : ranchor)
+                r.setVisible(true);
         });
     }
 
