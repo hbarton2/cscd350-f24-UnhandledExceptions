@@ -72,4 +72,33 @@ public class RelationshipItemTests {
     assertTrue(relationshipMap.containsKey("class1_class3"));
   }
 
+  // test that a relationship is removed successfully
+  @Test
+  public void testRemoveRelationship() {
+    // create relationship
+    RelationshipItem.addRelationship(classMap, relationshipMap, "class1", "class2", "composition");
+    // remove relationship
+    assertEquals("Relationship has been removed", RelationshipItem.removeRelationship(relationshipMap, "class1", "class2"));
+    // ensure that the map does not have the key
+    assertFalse(relationshipMap.containsKey("class1_class2"));
+  }
+
+  // test that a relationship is not removed if it does not exist
+  @Test
+  public void testRemoveRelationshipNotFound() {
+    // remove relationship that does not exist
+    assertEquals("Relationship not found.", RelationshipItem.removeRelationship(relationshipMap, "class1", "class2"));
+  }
+
+  // test that the relationship doesn't get removed if source and destination are mixed
+  @Test
+  public void testRemoveWithScrambledClasses() {
+    // create relationship
+    RelationshipItem.addRelationship(classMap, relationshipMap, "class1", "class2", "composition");
+    // remove relationship with source and destination mixed
+    assertEquals("Relationship not found.", RelationshipItem.removeRelationship(relationshipMap, "class2", "class1"));
+    // ensure that the map still has the key
+    assertTrue(relationshipMap.containsKey("class1_class2"));
+  }
+
 }
