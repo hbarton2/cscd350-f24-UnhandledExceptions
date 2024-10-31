@@ -12,19 +12,26 @@ public class Main
 	public static void main(String[] args)
 	{
 		System.out.println("\n-=Unhandled Exceptions UML Editor=-");
-		System.out.print("1. CLI\n2. GUI\n>");
+		System.out.print("Command line mode: (type cli or c)\nGraphical mode: (type gui or g)\nExit: (anything else)\n>");
 
 		Scanner scanner = new Scanner(System.in);
-		if (scanner.nextLine().equals("1"))
+		String input = scanner.nextLine().toLowerCase();
+		if (input.equals("cli") || input.equals("c"))
 		{
 			CLI cli = new CLI(new Data());
 			while (true)
 				cli.Run();
 		}
-		else
+		else if(input.equals("gui") || input.equals("g"))
 		{
 			GUI.main();
 		}
+		else
+		{
+			System.out.println("Program terminated. Goodbye!");
+			scanner.close();
+			System.exit(0);
+		}		
 		scanner.close();
 	}
 };

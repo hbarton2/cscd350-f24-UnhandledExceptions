@@ -32,37 +32,52 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 -->
 
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.CustomMenuItem?>
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.SeparatorMenuItem?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
-<?import javafx.scene.text.Font?>
 
-
-
-<AnchorPane fx:id="anchorPane" prefHeight="900.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.unhandledexceptions.Controller.newDiagramController">
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1280.0" stylesheets="@/css/classBoxStyle.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.unhandledexceptions.Controller.mainDiagramController">
   <children>
     <MenuBar VBox.vgrow="NEVER">
       <menus>
         <Menu mnemonicParsing="false" text="File">
           <items>
-            <MenuItem mnemonicParsing="false" text="Add Class" onAction="#addClassButton"/>
-            <MenuItem mnemonicParsing="false" text="Quit" onAction="#quit"/>
+            <MenuItem mnemonicParsing="false" text="New" />
+                  <SeparatorMenuItem mnemonicParsing="false" />
+            <MenuItem mnemonicParsing="false" onAction="#addClass" text="Open…" />
+            <Menu mnemonicParsing="false" text="Open Recent" />
+            <SeparatorMenuItem mnemonicParsing="false" />
+            <MenuItem mnemonicParsing="false" text="Save" />
+            <MenuItem mnemonicParsing="false" text="Save As…" />
+            <SeparatorMenuItem mnemonicParsing="false" />
+            <MenuItem mnemonicParsing="false" onAction="#quit" text="Quit" />
           </items>
         </Menu>
         <Menu mnemonicParsing="false" text="Help">
           <items>
-            <MenuItem mnemonicParsing="false" text="About MyHelloApp"/>
+            <MenuItem mnemonicParsing="false" onAction="#resetZoom" text="Reset Zoom" />
+            <MenuItem mnemonicParsing="false" text="About" />
           </items>
         </Menu>
+            <Menu disable="true" mnemonicParsing="false" onAction="#addClass" text="|" />
+            <Menu fx:id="addClassMenu" mnemonicParsing="false" onAction="#addClass" text="Add Class">
+               <items>
+                  <CustomMenuItem mnemonicParsing="false" text="Unspecified Action" />
+               </items></Menu>
       </menus>
     </MenuBar>
-    <VBox fx:id="classBox" layoutX="10.0" layoutY="50.0" prefWidth="620.0" prefHeight="340.0" spacing="10" >
-      <!-- The class box will be populated here from the controller -->
-    </VBox>
-  </children>
-</AnchorPane>
+      <StackPane fx:id="bgpane" prefHeight="150.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
+         <children>
+          <ScrollPane fx:id="scrollPane" fitToHeight="true" fitToWidth="true">
+            <AnchorPane fx:id="anchorPane" maxHeight="-1.0" maxWidth="-1.0" prefHeight="-1.0" prefWidth="-1.0" VBox.vgrow="ALWAYS" />
+          </ScrollPane>
+         </children>
+      </StackPane>
+ </children>
+</VBox>

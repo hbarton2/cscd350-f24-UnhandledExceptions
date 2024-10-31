@@ -1,0 +1,87 @@
+.anchor-pane {
+    -fx-background-color: transparent;
+}
+
+.class-box {
+    -fx-border-color: linear-gradient(270deg,black,white,black);
+    -fx-border-width: 1px;
+    -fx-background-color: white;
+    -fx-padding: 10;
+    -fx-spacing: 1;
+    -fx-border-radius: 5;
+    -fx-background-radius: 5;
+}
+
+/* TitledPane Styles */
+.titled-pane {
+    -fx-font-family: "Arial";
+    -fx-font-size: 14px;
+    -fx-text-fill: #333;
+    -fx-border-color: transparent;
+    -fx-border-width: 1;
+    -fx-background-radius: 4;
+}
+
+.titled-pane > .title {
+    -fx-background-color:transparent; 
+    -fx-border-color: transparent;
+    -fx-font-weight: bold;
+    -fx-padding: 5 10 5 10;
+    -fx-background-radius: 4 4 0 0;
+}
+
+.titled-pane > .content {
+    -fx-padding: 10;
+    -fx-background-color: #ffffff;
+}
+
+/* ListView styles for fields and methods */
+.list-view {
+    -fx-background-color: #fafafa;
+    -fx-border-color: #ddd;
+}
+
+.list-view .list-cell {
+    -fx-padding: 5 10;
+    -fx-background-color: transparent;
+    -fx-font-family: "Arial";
+    -fx-font-size: 13px;
+    -fx-border-color: #eee;
+}
+
+.list-view .list-cell:hover {
+    -fx-background-color: #e6f3ff; /* Light blue on hover */
+}
+
+/* ScrollPane Styles */
+.scroll-pane {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+}
+
+/* Label style for class name */
+.class-name-label {
+    -fx-font-size: 24px; /* Set the font size to make it bigger */
+    -fx-font-weight: bold;
+    -fx-padding: 10px; /* Add padding for spacing */
+    -fx-text-align: center; /* Center the text */
+    -fx-alignment: center; /* Ensure the label is centered in its parent */
+    -fx-fill: #333; /* Optional: change text color */
+}
+
+.fields-title-box {
+    -fx-background-color: transparent;
+    -fx-padding: 0;
+    -fx-border-color: transparent;
+    -fx-border-width: 0 0 1 0;
+}
+
+.transparent-button {
+    -fx-background-color: transparent; 
+    -fx-border-color: transparent; 
+    -fx-padding: 0;
+}
+
+.transparent-button:hover {
+    -fx-effect: dropshadow(gaussian, blue, 5, 0, 0, 0); 
+}

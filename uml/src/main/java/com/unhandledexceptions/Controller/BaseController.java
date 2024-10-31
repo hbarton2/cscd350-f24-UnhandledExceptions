@@ -4,7 +4,6 @@ import com.unhandledexceptions.Model.ClassItem;
 import com.unhandledexceptions.Model.MethodItem;
 import com.unhandledexceptions.Model.Data;
 import com.unhandledexceptions.Model.RelationshipItem;
-import com.unhandledexceptions.View.UI;
 
 public class BaseController
 {
