@@ -3,7 +3,7 @@
 }
 
 .class-box {
-    -fx-border-color: linear-gradient(black,white,black);
+    -fx-border-color: linear-gradient(270deg,black,white,black);
     -fx-border-width: 1px;
     -fx-background-color: white;
     -fx-padding: 10;
@@ -17,14 +17,14 @@
     -fx-font-family: "Arial";
     -fx-font-size: 14px;
     -fx-text-fill: #333;
-    -fx-border-color: #ddd;
+    -fx-border-color: transparent;
     -fx-border-width: 1;
     -fx-background-radius: 4;
 }
 
 .titled-pane > .title {
-    -fx-background-color: #a3a4a7;  /* Dark blue title background */
-    -fx-text-fill: white;
+    -fx-background-color:transparent; 
+    -fx-border-color: transparent;
     -fx-font-weight: bold;
     -fx-padding: 5 10 5 10;
     -fx-background-radius: 4 4 0 0;
@@ -67,4 +67,21 @@
     -fx-text-align: center; /* Center the text */
     -fx-alignment: center; /* Ensure the label is centered in its parent */
     -fx-fill: #333; /* Optional: change text color */
+}
+
+.fields-title-box {
+    -fx-background-color: transparent;
+    -fx-padding: 0;
+    -fx-border-color: transparent;
+    -fx-border-width: 0 0 1 0;
+}
+
+.transparent-button {
+    -fx-background-color: transparent; 
+    -fx-border-color: transparent; 
+    -fx-padding: 0;
+}
+
+.transparent-button:hover {
+    -fx-effect: dropshadow(gaussian, blue, 5, 0, 0, 0); 
 }

@@ -12,8 +12,11 @@ import javafx.scene.layout.BackgroundImage;
 import javafx.scene.layout.BackgroundPosition;
 import javafx.scene.layout.BackgroundRepeat;
 import javafx.scene.layout.BackgroundSize;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
+import javafx.scene.paint.Color;
 import javafx.scene.Node;
+import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.transform.Scale;
 import javafx.scene.control.ScrollPane;
@@ -21,8 +24,10 @@ import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 
-public class mainDiagramController 
+public class mainDiagramController implements ClassBoxEventHandler
 {
+    private mainDiagramController controller;
+
     private final double boxWidth = 200; // Width of the boxes
     private final double boxHeight = 300; // Height of the content box
     private RelationLine placingRelation;
@@ -50,22 +55,30 @@ public class mainDiagramController
     private final double minZoom = 0.4;
     private final double maxZoom = 1.5;
 
+    //private ClassBox firstSelectedClassBox;
+    //private ClassBox secondSelectedClassBox;
+
+    public mainDiagramController() {
+        controller = this;
+    }
+
     @FXML
     private void initialize()
     {
 
-        //bg stuff
-        Image backgroundImage = new Image(getClass().getResource("/images/nms.png").toExternalForm());
-        BackgroundImage bgImage = new BackgroundImage(
-            backgroundImage,
-            BackgroundRepeat.REPEAT,  // No repeat
-            BackgroundRepeat.NO_REPEAT,  // No repeat
-            BackgroundPosition.CENTER,   // Centered position
-            new BackgroundSize(
-                BackgroundSize.AUTO, BackgroundSize.AUTO, true, true, true, false
-            )
-        );
-        anchorPane.setBackground(new Background(bgImage));
+        
+        // //bg stuff
+        // Image backgroundImage = new Image(getClass().getResource("/images/nms.png").toExternalForm());
+        // BackgroundImage bgImage = new BackgroundImage(
+        //     backgroundImage,
+        //     BackgroundRepeat.REPEAT,  // No repeat
+        //     BackgroundRepeat.NO_REPEAT,  // No repeat
+        //     BackgroundPosition.CENTER,   // Centered position
+        //     new BackgroundSize(
+        //         BackgroundSize.AUTO, BackgroundSize.AUTO, true, true, true, false
+        //     )
+        // );
+        // anchorPane.setBackground(new Background(bgImage)); 
 
         addClassMenu.setOnShowing(event -> {
              addClass(); 
@@ -81,7 +94,7 @@ public class mainDiagramController
     @FXML
     public void addClass() 
     {
-        ClassBox classBox = new ClassBox("newClass", boxWidth, boxHeight);
+        ClassBox classBox = new ClassBox("newClass", boxWidth, boxHeight, controller);
         anchorPane.getChildren().add(classBox);
 
         //setup mouse drag
@@ -206,5 +219,13 @@ public class mainDiagramController
     {
         System.exit(0);
     }
+
+    @Override
+    public void onClassBoxClicked(ClassBox classBox) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'onClassBoxClicked'");
+    }
+
+    
     
 }
