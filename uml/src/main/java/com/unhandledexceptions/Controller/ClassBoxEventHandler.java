@@ -7,4 +7,6 @@ public interface ClassBoxEventHandler {
 
     void onClassBoxClicked(ClassBox classBox);
 
+    void onAddClassClicked();
+
 }

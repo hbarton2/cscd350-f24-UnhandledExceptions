@@ -1,10 +1,13 @@
 package com.unhandledexceptions.Controller;
 
+import com.unhandledexceptions.Model.ClassItem;
+import com.unhandledexceptions.Model.Data;
 import com.unhandledexceptions.View.ClassBox;
 import com.unhandledexceptions.View.RelationLine;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Bounds;
+import javafx.scene.control.Dialog;
 import javafx.scene.control.Menu;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Background;
@@ -20,6 +23,7 @@ import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.transform.Scale;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TextInputDialog;
 import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
@@ -31,6 +35,8 @@ public class mainDiagramController implements ClassBoxEventHandler
     private final double boxWidth = 200; // Width of the boxes
     private final double boxHeight = 300; // Height of the content box
     private RelationLine placingRelation;
+
+    private Data data;
 
     @FXML
     private StackPane bgpane;
@@ -55,11 +61,9 @@ public class mainDiagramController implements ClassBoxEventHandler
     private final double minZoom = 0.4;
     private final double maxZoom = 1.5;
 
-    //private ClassBox firstSelectedClassBox;
-    //private ClassBox secondSelectedClassBox;
-
     public mainDiagramController() {
         controller = this;
+        data = new Data();
     }
 
     @FXML
@@ -80,9 +84,9 @@ public class mainDiagramController implements ClassBoxEventHandler
         // );
         // anchorPane.setBackground(new Background(bgImage)); 
 
-        addClassMenu.setOnShowing(event -> {
-             addClass(); 
-            });
+        // addClassMenu.setOnShowing(event -> {
+        //      addClass(); 
+        //     });
 
         anchorPane.getTransforms().add(scaleTransform);
 
@@ -92,9 +96,9 @@ public class mainDiagramController implements ClassBoxEventHandler
     }
 
     @FXML
-    public void addClass() 
+    public void addClass(String className) 
     {
-        ClassBox classBox = new ClassBox("newClass", boxWidth, boxHeight, controller);
+        ClassBox classBox = new ClassBox(className, boxWidth, boxHeight, controller);
         anchorPane.getChildren().add(classBox);
 
         //setup mouse drag
@@ -224,6 +228,20 @@ public class mainDiagramController implements ClassBoxEventHandler
     public void onClassBoxClicked(ClassBox classBox) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'onClassBoxClicked'");
+    }
+
+    @Override
+    public void onAddClassClicked(){
+        //class box 
+        String className = ClassBox.classNameDialog();
+        String result = ClassItem.addClassItem(data.getClassItems(), className);
+        if(result.equals("Class \"" + className.trim().toLowerCase() + "\" created."))
+        {
+            addClass(className);
+        }else{
+            System.out.println(result);
+        }
+        
     }
 
     

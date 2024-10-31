@@ -39,6 +39,11 @@ public class ClassBox extends StackPane
         createClassBox(classNameIn, boxWidth, boxHeight);
     }
 
+    public void setEventHandler(ClassBoxEventHandler eventHandler)
+    {
+        this.eventHandler = eventHandler;
+    }
+
     private void createClassBox(String classNameIn, double boxWidth, double boxHeight)
     {
         //getStyleClass().add("class-box"); // Add CSS style class for the box
@@ -328,4 +333,23 @@ public class ClassBox extends StackPane
 
         return linkButton;
     }
+
+    public static String classNameDialog(){
+        TextInputDialog dialog = new TextInputDialog();
+        dialog.setTitle("Add Class");
+        dialog.setHeaderText("Enter the class name");
+        dialog.setContentText("Class name: ");
+        
+        Optional<String> result = dialog.showAndWait();
+
+        if(result.isPresent())
+        {
+            return result.get();
+        }
+        return null;
+    }
+
+
+
+    
 }
