@@ -29,6 +29,8 @@ public class ClassBox extends StackPane
     final double RANCHOR_VIEW_DISTANCE = 50;  // Distance threshold for visibility
 
     private VBox dragBox;
+
+    //Relationship anchors
     private Rectangle[] ranchors = new Rectangle[4];
     //private double offsetX;
     //private double offsetY;
@@ -79,176 +81,13 @@ public class ClassBox extends StackPane
             }
         });
 
-
-        // Button linkButton = createLinkButton();
-        // linkButton.setOnMouseClicked(event -> {
-        //     if(event.getButton() == MouseButton.PRIMARY && eventHandler != null)
-        //         eventHandler.onLinkButtonClicked(this);
-        // });
-
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
 
         nameAndLink.getChildren().addAll(className, spacer);
 
-
-        // Create separator line (optional, uncomment if needed)
-        // Separator separatorLine = new Separator();
-
-        // Create TitledPane for fields
-        TitledPane fieldsPane = new TitledPane();
-        fieldsPane.setExpanded(false);
-        //fieldsPane.setText("Fields");
-        fieldsPane.setMaxHeight(150);
-        
-        
-
-        ListView<String> fieldsList = new ListView<>();
-        fieldsList.getStyleClass().add("list-view"); // Apply CSS class for the fields ListView
-
-        ObservableList<String> dummyFields = FXCollections.observableArrayList(
-         "Field1 : int",
-            "Field2 : String",
-            "Field3 : boolean",
-            "Field4 : int"
-
-        );
-    // Create the button for adding fields
-    Button addButton = new Button("+");
-    addButton.getStyleClass().add("transparent-button");
-    //when pressed, open dialog for user input
-    addButton.setOnAction(e -> {
-        TextInputDialog dialog = new TextInputDialog();
-        dialog.setTitle("Add Field");
-        dialog.setHeaderText("Enter the field name and type");
-        dialog.setContentText("Field:");
-
-        Optional<String> result = dialog.showAndWait();
-        result.ifPresent(field -> fieldsList.getItems().add(field));
-    });
-
-    // Create a label for "Fields"
-    Label fieldsLabel = new Label("Fields");
-
-    // Create an HBox to hold the fields label and the add button
-    //HARD CODED SPACING OF TITLE AND BUTTON
-    HBox fieldsTitleBox = new HBox(160); // Add spacing between label and button
-    fieldsTitleBox.setAlignment(Pos.CENTER_LEFT); // Align items to the left
-    fieldsTitleBox.getStyleClass().add("fields-title-box");
-    fieldsTitleBox.getChildren().addAll(fieldsLabel, addButton);
-
-    // Set the fieldsTitleBox HBox as the graphic of the TitledPane
-    fieldsPane.setGraphic(fieldsTitleBox);
-
-    //populates the FieldsList and sets the content of the fieldsPane to said list
-    fieldsList.setItems(dummyFields);
-    fieldsPane.setContent(fieldsList);
-    fieldsPane.getStyleClass().add("titled-pane");
-
-    // Create TitledPane for methods
-    TitledPane methodsPane = new TitledPane();
-    methodsPane.setExpanded(false);
-    //methodsPane.setText("Methods");
-    methodsPane.setMaxHeight(200);
-    methodsPane.getStyleClass().add("titled-pane");
-    
-    //List that will hold the individual method panes
-    ListView<TitledPane> methodsList = new ListView<>();
-    methodsList.getStyleClass().add("list-view"); // Apply CSS class for the methods ListView
-            
-    //method panes to go in methodsList
-    TitledPane method1 = new TitledPane();
-    method1.setExpanded(false);
-    //method1.setText("method1");
-    method1.setMaxHeight(125);
-    method1.setMaxWidth(220);
-    
-    ListView<String> method1List = new ListView<>();
-    ObservableList<String> method1Params = FXCollections.observableArrayList(
-        "Type : Param1",
-        "Type : Param2",
-        "Type : Param3"
-    );
-
-    ObservableList<TitledPane> titlePanes = FXCollections.observableArrayList(
-        method1
-    );
-
-    //METHODS ADD BUTTON
-    // Create the button for adding fields
-    Button addMethodsButton = new Button("+");
-    addMethodsButton.getStyleClass().add("transparent-button");
-    addMethodsButton.setAlignment(Pos.BASELINE_RIGHT);
-    //when pressed, open dialog for user input
-    addMethodsButton.setOnAction(e -> {
-        TextInputDialog dialog = new TextInputDialog();
-        dialog.setTitle("Add Method");
-        dialog.setHeaderText("Enter the Method name");
-        dialog.setContentText("Method:");
-
-        Optional<String> result = dialog.showAndWait();
-        //result.ifPresent(field -> fieldsList.getItems().add(field));
-    });
-
-    // Create a label for "Methods:"
-    Label methodsLabel = new Label("Methods");
-
-    //HARD CODED SPACING OF TITLE AND BUTTON
-    HBox methodsTitleBox = new HBox(143);//spacing between objects
-    methodsTitleBox.setAlignment(Pos.CENTER_LEFT);
-    methodsTitleBox.getStyleClass().add("fields-title-box");
-    methodsTitleBox.getChildren().addAll(methodsLabel, addMethodsButton);
-    methodsPane.setGraphic(methodsTitleBox);
-
-
-    /*******************Add button for individual methods************************/
-     // Create the button for adding fields
-     Button addParamsButton = new Button("+");
-     addParamsButton.getStyleClass().add("transparent-button");
-     //when pressed, open dialog for user input
-     addParamsButton.setOnAction(e -> {
-         TextInputDialog dialog = new TextInputDialog();
-         dialog.setTitle("Add Parameter:");
-         dialog.setHeaderText("Enter the Parameter type and name");
-         dialog.setContentText("Parameter:");
- 
-         Optional<String> result = dialog.showAndWait();
-        //result.ifPresent(field -> fieldsList.getItems().add(field));
-     });
- 
-     // Create a label for "Fields"
-     Label individualMethodLabel = new Label("method1:");
- 
-     // Create an HBox to hold the fields label and the add button
-     //HARD CODED SPACING OF TITLE AND BUTTON
-     HBox method1TitleBox = new HBox(90); // Add spacing between label and button
-     method1TitleBox.setAlignment(Pos.CENTER_LEFT); // Align items to the left
-     method1TitleBox.getChildren().addAll(individualMethodLabel, addParamsButton);
- 
-     // Set the fieldsTitleBox HBox as the graphic of the TitledPane
-     method1.setGraphic(method1TitleBox);
-
-    //adds list of params to method1's list
-    method1List.setItems(method1Params);
-
-    //adds method1List to method1 TitlePane
-    method1.setContent(method1List);
-
-    //adds list of titlePanes to the overall methodsList
-    methodsList.setItems(titlePanes);
-
-    //Adds methods TitlePane's List to the methodPane
-    methodsPane.setContent(methodsList);
-/*                                                      _
-        * MethodsPane                  _                        |
-        *       method1                 |__method1 TitlePane    |
-        *          method1Params       _|                       |
-        *                              _                        |___ methodsPane TitlePane
-        *       method2                 |__method2 TitlePane    |
-        *          method2Params       _|                       |                                               
-        *                                                      _|
-        */ 
-
+        TitledPane fieldsPane = createFieldPane();
+        TitledPane methodsPane = createMethodPane();
         
         //ranchors (relationship anchors)
         for (int i = 0; i < 4; i++)
@@ -263,8 +102,8 @@ public class ClassBox extends StackPane
         vbase.getChildren().addAll(ranchors[0], hbase, ranchors[2]);
         hbase.getChildren().addAll(ranchors[3], vbox, ranchors[1]);
 
-    // Add the components to the VBox
-    vbox.getChildren().addAll(nameAndLink, fieldsPane, methodsPane);
+        // Add the components to the VBox
+        vbox.getChildren().addAll(nameAndLink, fieldsPane, methodsPane);
 
         // Add the VBox to the classBox
         getChildren().add(vbase);
@@ -363,6 +202,140 @@ public class ClassBox extends StackPane
         return null;
     }
 
+    private TitledPane createMethodPane(){
+        // Create TitledPane for methods
+        TitledPane methodsPane = new TitledPane();
+        methodsPane.setExpanded(false);
+        methodsPane.setMaxHeight(250);
+        methodsPane.getStyleClass().add("titled-pane");
+        
+        //List of each methods TitledPane that will hold the individual method panes
+        ListView<TitledPane> methodsList = new ListView<>();
+        methodsList.getStyleClass().add("list-view"); // Apply CSS class for the methods ListView
+
+        // Create the button for adding Methods
+        Button addMethodsButton = new Button("+");
+        addMethodsButton.getStyleClass().add("transparent-button");
+        //when pressed, open dialog for user input
+        addMethodsButton.setOnAction(e -> {
+            TextInputDialog dialog = new TextInputDialog();
+            dialog.setTitle("Add Method");
+            dialog.setHeaderText("Enter the Method name");
+            dialog.setContentText("Method:");
+
+            Optional<String> result = dialog.showAndWait();
+            result.ifPresent(method -> {
+                TitledPane newMethodPane = createNewMethod(method);
+                methodsList.getItems().add(newMethodPane);
+            });
+        });
+
+       
+
+        //HARD CODED SPACING OF TITLE AND BUTTON
+        HBox methodsTitleBox = new HBox(139);//spacing between objects
+        methodsTitleBox.setAlignment(Pos.CENTER_LEFT);
+        methodsTitleBox.getStyleClass().add("fields-title-box");
+        
+        // Create a label for "Methods:"
+        Label methodsLabel = new Label("Methods:");
+
+        //Adds label and button to HBox, sets to methodsPane graphic.
+        methodsTitleBox.getChildren().addAll(methodsLabel, addMethodsButton);
+        methodsPane.setGraphic(methodsTitleBox);
+
+
+        /*******************Add button for individual methods************************/
+        // Create the button for adding params
+
+        //Adds methods TitlePane's List to the methodPane
+        methodsPane.setContent(methodsList);
+
+        return methodsPane;   
+        }
+
+    private TitledPane createNewMethod(String methodName){
+        TitledPane singleMethodPane = new TitledPane();
+        singleMethodPane.setExpanded(false);
+        //instead of static setting height, increase and decrease based on # of methods/params/fields.
+        singleMethodPane.setMaxWidth(225);
+        singleMethodPane.setMaxHeight(150);
+        singleMethodPane.getStyleClass().add("fields-title-box");
+        ListView<String> methodParamList = new ListView<>();
+        methodParamList.getStyleClass().add("list-view");
+
+        //The TitledPane requires a ListView as content, and the ListView requires an ObservableList.
+        ObservableList<String> params = FXCollections.observableArrayList(); 
+        methodParamList.setItems(params);
+
+        //TODO: fix issue where setting content here causes the list to be able to be expanded without items in it. set after an item is added?
+        singleMethodPane.setContent(methodParamList);
+
+        //Add params button
+        Button addParamsButton = new Button("+");
+        addParamsButton.getStyleClass().add("transparent-button");
+        //when pressed, open dialog for user input
+        addParamsButton.setOnAction(e -> {
+            TextInputDialog dialog = new TextInputDialog();
+            dialog.setTitle("Add Parameter:");
+            dialog.setHeaderText("Enter the Parameter type and name");
+            dialog.setContentText("Parameter:");
+            Optional<String> result = dialog.showAndWait();
+            result.ifPresent(param -> {
+                params.add(param);
+            });
+        });
+
+        HBox titleBox = new HBox(90);
+        Label singleMethodName = new Label(methodName);
+        titleBox.setAlignment(Pos.CENTER_LEFT);
+        titleBox.getStyleClass().add("fields-title-box");
+        titleBox.getChildren().addAll(singleMethodName,addParamsButton);
+        singleMethodPane.setGraphic(titleBox);;
+
+        return singleMethodPane;
+    }
+    private TitledPane createFieldPane(){
+        TitledPane fieldsPane = new TitledPane();
+        fieldsPane.setExpanded(false);
+        fieldsPane.setMaxHeight(150);
+        fieldsPane.getStyleClass().add("titled-pane");
+        ListView<String> fieldsList = new ListView<>();
+        fieldsList.getStyleClass().add("list-view"); // Apply CSS class for the fields ListView
+
+        //The TitledPane requires a ListView as content, and the ListView requires an ObservableList.
+        ObservableList<String> fields = FXCollections.observableArrayList();
+        fieldsList.setItems(fields);
+
+        //TODO: fix issue where setting content here causes the list to be able to be expanded without items in it. set after an item is added?
+        fieldsPane.setContent(fieldsList);  //
+
+        // Create the button for adding fields
+        Button addFieldButton = new Button("+");
+        addFieldButton.getStyleClass().add("transparent-button");
+        addFieldButton.setOnAction(e -> {
+            TextInputDialog dialog = new TextInputDialog();
+            dialog.setTitle("Add Field");
+            dialog.setHeaderText("Enter the field name and type");
+            dialog.setContentText("Field:");
+
+            Optional<String> result = dialog.showAndWait();
+            result.ifPresent(field -> {
+                fields.add(field);
+            });
+        });
+
+        // Create an HBox to hold the fields label and the add button
+        //HARD CODED SPACING OF TITLE AND BUTTON
+        HBox fieldsTitleBox = new HBox(160); // Add spacing between label and button
+        Label fieldsLabel = new Label("Fields");
+        fieldsTitleBox.setAlignment(Pos.CENTER_LEFT); // Align items to the left
+        fieldsTitleBox.getStyleClass().add("fields-title-box");
+        fieldsTitleBox.getChildren().addAll(fieldsLabel, addFieldButton);
+        fieldsPane.setGraphic(fieldsTitleBox);
+
+        return fieldsPane;
+    }
 
 
     
