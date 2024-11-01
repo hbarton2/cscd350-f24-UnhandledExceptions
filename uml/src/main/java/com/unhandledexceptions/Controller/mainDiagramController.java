@@ -98,7 +98,9 @@ public class mainDiagramController implements ClassBoxEventHandler
     @FXML
     public void addClass(String className) 
     {
+        //creates a new class box with the name, width, height, and controller(for event handling)
         ClassBox classBox = new ClassBox(className, boxWidth, boxHeight, controller);
+        //adds the class box to the anchor pane
         anchorPane.getChildren().add(classBox);
 
         //setup mouse drag
@@ -224,19 +226,27 @@ public class mainDiagramController implements ClassBoxEventHandler
         System.exit(0);
     }
 
+//================================================================================================================================================================
+// Method to handle the class box click(Not implemented, might be delete?)
     @Override
     public void onClassBoxClicked(ClassBox classBox) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'onClassBoxClicked'");
     }
 
+
+//================================================================================================================================================================
+// Method to handle the add class button
     @Override
     public void onAddClassClicked(){
-        //class box 
+        //displays dialog box prompting for class name 
         String className = ClassBox.classNameDialog();
+        //gets the result of adding the class
         String result = ClassItem.addClassItem(data.getClassItems(), className);
+        //parse result for either successful add or failure to add
         if(result.equals("Class \"" + className.trim().toLowerCase() + "\" created."))
         {
+            //if successful, add class to the anchor pane
             addClass(className);
         }else{
             System.out.println(result);

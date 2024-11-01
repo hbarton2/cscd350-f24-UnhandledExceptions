@@ -39,6 +39,8 @@ public class ClassBox extends StackPane
         createClassBox(classNameIn, boxWidth, boxHeight);
     }
 
+//================================================================================================================================================================
+//method to set the event handler for the class box
     public void setEventHandler(ClassBoxEventHandler eventHandler)
     {
         this.eventHandler = eventHandler;
@@ -321,25 +323,37 @@ public class ClassBox extends StackPane
         return this.ranchors;
     }
 
+//================================================================================================================================================================
+//method to create a button beside class name (top right corner) may use for delete or some other action
     private Button createLinkButton()
     {
+        //create a button with an image
         Button linkButton = new Button();
         ImageView linkImage = new ImageView("/images/link-image.png");
+        //set the size of the image
         linkImage.setFitHeight(30);
         linkImage.setFitWidth(30);
+        //set the background of the image to transparent
         linkImage.setStyle("-fx-background-color: transparent;");
+        //set the graphic of the button to the image
         linkButton.setGraphic(linkImage);
+        //set the style class of the button to a transparent button
         linkButton.getStyleClass().add("transparent-button");
 
         return linkButton;
     }
 
+//================================================================================================================================================================
+//method to create a dialog box for user input of class name
     public static String classNameDialog(){
+        //creates a dialog box for user input
         TextInputDialog dialog = new TextInputDialog();
+        //sets the title, header, and content of the dialog box
         dialog.setTitle("Add Class");
         dialog.setHeaderText("Enter the class name");
         dialog.setContentText("Class name: ");
         
+        //shows the dialog box and waits for user input
         Optional<String> result = dialog.showAndWait();
 
         if(result.isPresent())

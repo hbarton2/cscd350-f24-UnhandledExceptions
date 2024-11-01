@@ -61,12 +61,12 @@
 
 /* Label style for class name */
 .class-name-label {
-    -fx-font-size: 24px; /* Set the font size to make it bigger */
+    -fx-font-size: 24px; /* Increase font size */
     -fx-font-weight: bold;
     -fx-padding: 10px; /* Add padding for spacing */
-    -fx-text-align: center; /* Center the text */
-    -fx-alignment: center; /* Ensure the label is centered in its parent */
-    -fx-fill: #333; /* Optional: change text color */
+    -fx-text-align: center; /* Center text */
+    -fx-alignment: center; /* label centered in its parent */
+    -fx-fill: #333; /* change text color */
 }
 
 .fields-title-box {
@@ -83,5 +83,5 @@
 }
 
 .transparent-button:hover {
-    -fx-effect: dropshadow(gaussian, blue, 5, 0, 0, 0); 
+    -fx-effect: dropshadow(gaussian, blue, 5, 0, 0, 0); /* Add drop shadow on hover */
 }
