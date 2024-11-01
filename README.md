@@ -2,8 +2,8 @@
 
 ### Prerequisites
 
-- Java 21+
-- Maven 3+
+- Java 21+ [Installation](https://www.java.com/en/download/help/download_options.html)
+- Maven 3+ [Installation](https://maven.apache.org/download.cgi)
 
 First download the repo in a zip file and extract it.
 
