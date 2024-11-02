@@ -16,4 +16,6 @@ public interface ClassBoxEventHandler {
 
     void onClassNameClicked(String oldName, String newName, ClassBox classBox);
 
+    void onDeleteButtonClicked(ClassBox classBox, String className);
+
 }

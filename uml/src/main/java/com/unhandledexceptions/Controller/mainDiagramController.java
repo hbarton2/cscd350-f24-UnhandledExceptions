@@ -259,4 +259,17 @@ public class mainDiagramController implements ClassBoxEventHandler {
         }
     }
 
+    public void onDeleteButtonClicked(ClassBox classBox, String className) {
+        // Pass className to method and attempt to delete
+        String result = ClassItem.removeClassItem(data.getClassItems(), data.getRelationshipItems(), className);
+        // parse result for either successful delete or failure (class doesnt exist)
+        if (result.equals(className.toLowerCase() + " and corresponding relationships have been removed.")) {
+            // delete the class item
+            anchorPane.getChildren().remove(classBox);
+        } else {
+            // if failure, call showError and pass the result as error message
+            ClassBox.showError(result);
+        }
+    }
+
 }

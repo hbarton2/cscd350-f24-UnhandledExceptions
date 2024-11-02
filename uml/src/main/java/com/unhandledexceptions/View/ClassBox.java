@@ -85,7 +85,9 @@ public class ClassBox extends StackPane {
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
 
-        nameAndLink.getChildren().addAll(className, spacer);
+        Button deleteButton = createDeleteButton();
+
+        nameAndLink.getChildren().addAll(className, spacer, deleteButton);
 
         TitledPane fieldsPane = createFieldPane();
         TitledPane methodsPane = createMethodPane();
@@ -160,23 +162,43 @@ public class ClassBox extends StackPane {
     }
 
     // ================================================================================================================================================================
-    // method to create a button beside class name (top right corner) may use for
-    // delete or some other action
-    private Button createLinkButton() {
+    // method to create a delete button, sets the action to call
+    // the controller to delete the class
+    // action will also call an alert box to warn user
+    private Button createDeleteButton() {
         // create a button with an image
-        Button linkButton = new Button();
-        ImageView linkImage = new ImageView("/images/link-image.png");
+        Button deleteButton = new Button();
+        ImageView deleteImage = new ImageView("/images/trash-can-icon.png");
         // set the size of the image
-        linkImage.setFitHeight(30);
-        linkImage.setFitWidth(30);
+        deleteImage.setFitHeight(12);
+        deleteImage.setFitWidth(18);
         // set the background of the image to transparent
-        linkImage.setStyle("-fx-background-color: transparent;");
+        deleteImage.setStyle("-fx-background-color: transparent;");
         // set the graphic of the button to the image
-        linkButton.setGraphic(linkImage);
+        deleteButton.setGraphic(deleteImage);
         // set the style class of the button to a transparent button
-        linkButton.getStyleClass().add("transparent-button");
+        deleteButton.getStyleClass().add("transparent-button-delete");
 
-        return linkButton;
+        deleteButton.setOnAction(event -> {
+            Alert warning = deleteClassWarning();
+
+            // get confirmation for delete
+            Optional<ButtonType> result = warning.showAndWait();
+
+            if (result.isPresent() && result.get() == ButtonType.OK) {
+                // user accepted, get the classBox name
+                String className = getClassBoxName();
+
+                // call controller delete passing this class box and the name
+                eventHandler.onDeleteButtonClicked(this, className);
+
+            } else {
+                // user denied, cancel action
+                return;
+            }
+        });
+
+        return deleteButton;
     }
 
     // ================================================================================================================================================================
@@ -369,6 +391,36 @@ public class ClassBox extends StackPane {
                 // nothing else to do after accepting
             }
         });
+    }
+
+    // method to display warning when deleting a class box
+    private Alert deleteClassWarning() {
+        // create an alert box
+        Alert alert = new Alert(AlertType.CONFIRMATION);
+        // set the title and header as a warning
+        alert.setTitle("Warning");
+        alert.setHeaderText("Are you sure you want to delete this class?");
+        alert.setContentText("This action can not be undone");
+
+        // return the alert to be instantiated by delete action
+        return alert;
+    }
+
+    // helper method to retrieve the class name from the label
+    private String getClassBoxName() {
+        Label classNameLabel = (Label) this.lookup("#classNameLabel");
+
+        // check if the label exists
+        if (classNameLabel != null) {
+            // retrieve the name from the label
+            String className = classNameLabel.getText();
+
+            // return the class name
+            return className;
+        } else {
+            // return null if the label does not exist
+            return null;
+        }
     }
 
 }
