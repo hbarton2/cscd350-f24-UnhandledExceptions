@@ -3,7 +3,6 @@ package com.unhandledexceptions.Controller;
 import com.unhandledexceptions.View.ClassBox;
 import com.unhandledexceptions.View.RelationLine;
 
-import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Menu;
@@ -80,13 +79,13 @@ public class mainDiagramController implements ClassBoxEventHandler
         //setup mouse drag
         classBox.getDragBox().setOnMousePressed(event -> {
                 classBox.toFront();
-                offsetX = event.getSceneX() - classBox.getLayoutX();
-                offsetY = event.getSceneY() - classBox.getLayoutY();
+                offsetX = (event.getSceneX() / scaleTransform.getX()) - classBox.getLayoutX();
+                offsetY = (event.getSceneY() / scaleTransform.getY()) - classBox.getLayoutY();
             });
     
             classBox.getDragBox().setOnMouseDragged(event -> {
-                double newX = (event.getSceneX() - offsetX) * zoomFactor;
-                double newY = (event.getSceneY() - offsetY) * zoomFactor;
+                double newX = (event.getSceneX() / scaleTransform.getX()) - offsetX;
+                double newY = (event.getSceneY() / scaleTransform.getY()) - offsetY;
             
                 classBox.setLayoutX(newX);
                 classBox.setLayoutY(newY);
@@ -113,7 +112,7 @@ public class mainDiagramController implements ClassBoxEventHandler
         for (Node node : anchorPane.getChildren()) {
             if (node instanceof RelationLine) {
                 RelationLine line = (RelationLine) node;
-                line.Update();
+                line.Update(scaleTransform);
             }
         }
     }
@@ -121,7 +120,7 @@ public class mainDiagramController implements ClassBoxEventHandler
     private void mouseMove(MouseEvent event)
     {
         if (placingRelation != null)
-            placingRelation.Update(event);
+            placingRelation.Update(scaleTransform, event);
     }
 
     // mouse click on background event
@@ -137,11 +136,13 @@ public class mainDiagramController implements ClassBoxEventHandler
 
                 int i = (placingRelation.getI1() + 2) % 4;
                 Rectangle r = classBox.getRanchor(i);
-                classBox.setLayoutX(event.getSceneX() - r.getBoundsInParent().getMinX());
-                classBox.setLayoutY(event.getSceneY() - r.getBoundsInParent().getMinY() - 35);
+                double newX = event.getSceneX() - r.getBoundsInParent().getMinX();
+                double newY = event.getSceneY() - r.getBoundsInParent().getMinY() - 35;
+                classBox.setLayoutX(newX / scaleTransform.getX());
+                classBox.setLayoutY(newY / scaleTransform.getY());
 
                 placingRelation.setEnd(classBox, i);
-                placingRelation.Update();
+                placingRelation.Update(scaleTransform);
                 placingRelation = null;
             }).start();
         }
@@ -160,13 +161,14 @@ public class mainDiagramController implements ClassBoxEventHandler
             RelationLine line = new RelationLine();
             line.setStart(classBox, index);
             
-            line.Update(event);
+            line.Update(scaleTransform, event);
             anchorPane.getChildren().add(line);
             placingRelation = line;
         }
         else
         {
             placingRelation.setEnd(classBox, index);
+            placingRelation.Update(scaleTransform);
             placingRelation = null;
         }
     }

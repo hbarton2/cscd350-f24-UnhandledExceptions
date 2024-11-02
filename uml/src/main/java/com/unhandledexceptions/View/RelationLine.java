@@ -4,6 +4,7 @@ import javafx.application.Platform;
 import javafx.geometry.Bounds;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.shape.Polyline;
+import javafx.scene.transform.Scale;
 
 public class RelationLine extends Polyline
 {
@@ -16,27 +17,35 @@ public class RelationLine extends Polyline
         toBack();
     }
 
-    public void Update()
+    public void Update(Scale scaleTransform)
     {
         Bounds bounds = c1.getRanchor(i1).localToScene(c1.getRanchor(i1).getBoundsInLocal());
         Bounds bounds2 = c2.getRanchor(i2).localToScene(c2.getRanchor(i2).getBoundsInLocal());
+        double startX = bounds.getMinX() / scaleTransform.getX();
+        double startY = (bounds.getMinY() - 25) / scaleTransform.getY();
+        double endX = bounds2.getMinX() / scaleTransform.getX();
+        double endY = (bounds2.getMinY() - 25) / scaleTransform.getY();
+
+
 
         Platform.runLater(new Runnable() {
             @Override public void run() {
-                update(bounds.getMinX(), bounds.getMinY() - 25,
-                 bounds2.getMinX(), bounds2.getMinY() - 25);
+                update(startX, startY, endX, endY);
             }
         });
     }
 
-    public void Update(MouseEvent event)
+    public void Update(Scale scaleTransform, MouseEvent event)
     {
         Bounds bounds = c1.getRanchor(i1).localToScene(c1.getRanchor(i1).getBoundsInLocal());
+        double startX = bounds.getMinX() / scaleTransform.getX();
+        double startY = (bounds.getMinY() - 25) / scaleTransform.getY();
+        double endX = event.getSceneX() / scaleTransform.getX();
+        double endY = event.getSceneY() / scaleTransform.getY();
 
         Platform.runLater(new Runnable() {
             @Override public void run() {
-                update(bounds.getMinX(), bounds.getMinY() - 25,
-                 event.getSceneX(), event.getSceneY());
+                update(startX, startY, endX, endY);
             }
         });
     }
@@ -148,13 +157,11 @@ public class RelationLine extends Polyline
         this.i1 = index;
         this.c2 = c1;
         this.i2 = i1;
-        Update();
     }
 
     public void setEnd(ClassBox classBox, int index)
     {
         this.c2 = classBox;
         this.i2 = index;
-        Update();
     }
 }
