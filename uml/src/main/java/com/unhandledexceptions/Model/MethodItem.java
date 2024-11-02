@@ -159,7 +159,7 @@ public class MethodItem {
 	public String toString() {
 		StringBuilder out = new StringBuilder();
 		out.append("Method: ");
-		out.append(type);
+		out.append(type + " ");
 		out.append(methodName);
 		out.append(" Parameters: ");
 		// out.append(parameters.keySet());
