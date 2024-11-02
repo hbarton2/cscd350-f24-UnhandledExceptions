@@ -71,9 +71,9 @@ public class BaseController
         return ClassItem.renameField(data.getClassItems().get(className), oldName, newName);
     }
 
-    public String AddMethodListener(String className, String name)
+    public String AddMethodListener(String className, String name, String type)
     {
-        return ClassItem.addMethod(data.getClassItems().get(className), name);
+        return ClassItem.addMethod(data.getClassItems().get(className), name, type);
     }
 
     public String RemoveMethodListener(String className, String name)

@@ -158,10 +158,10 @@ public class CLI
 				break;
 				
 			case "addmethod":
-				if (input.length < 3)
+				if (input.length < 4)
 					{ System.out.println("Syntax: " + UI.CommandSyntax(input[0]));
 					return; }
-				System.out.println(controller.AddMethodListener(input[1], input[2]));
+				System.out.println(controller.AddMethodListener(input[1], input[2], input[3]));
 				System.out.println(UI.ListClass(data.getClassItems().get(input[1]), data.getRelationshipItems()));
 				break;
 			case "removemethod":

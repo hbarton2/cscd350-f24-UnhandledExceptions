@@ -201,7 +201,7 @@ public class ClassItem {
     // }
 
     // method to add a new method to the map for this class item
-    public static String addMethod(ClassItem classItem, String methodName) {
+    public static String addMethod(ClassItem classItem, String methodName, String returnType) {
         // preconditions
         if (methodName == null || methodName.isBlank()) {
             throw new IllegalArgumentException("Method name cannot be null or blank");
@@ -217,7 +217,7 @@ public class ClassItem {
         }
 
         // create a new method object with the method name
-        MethodItem newMethod = new MethodItem(methodName);
+        MethodItem newMethod = new MethodItem(methodName, returnType);
 
         // insert new method item into map
         classItem.getMethodItems().put(methodName, newMethod);
