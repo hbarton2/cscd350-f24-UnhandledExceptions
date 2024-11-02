@@ -28,8 +28,7 @@ import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 
-public class mainDiagramController implements ClassBoxEventHandler
-{
+public class mainDiagramController implements ClassBoxEventHandler {
     private mainDiagramController controller;
 
     private final double boxWidth = 200; // Width of the boxes
@@ -49,14 +48,14 @@ public class mainDiagramController implements ClassBoxEventHandler
 
     @FXML
     private Menu addClassMenu;
-    
-    //Used for dragging Class boxes
+
+    // Used for dragging Class boxes
     double offsetX;
     double offsetY;
 
-    //Zoom in/out variables
+    // Zoom in/out variables
     @FXML
-    private final Scale scaleTransform = new Scale(1.0,1.0);
+    private final Scale scaleTransform = new Scale(1.0, 1.0);
     private double zoomFactor = 1.05;
     private final double minZoom = 0.4;
     private final double maxZoom = 1.5;
@@ -67,26 +66,25 @@ public class mainDiagramController implements ClassBoxEventHandler
     }
 
     @FXML
-    private void initialize()
-    {
+    private void initialize() {
 
-        
         // //bg stuff
-        // Image backgroundImage = new Image(getClass().getResource("/images/nms.png").toExternalForm());
+        // Image backgroundImage = new
+        // Image(getClass().getResource("/images/nms.png").toExternalForm());
         // BackgroundImage bgImage = new BackgroundImage(
-        //     backgroundImage,
-        //     BackgroundRepeat.REPEAT,  // No repeat
-        //     BackgroundRepeat.NO_REPEAT,  // No repeat
-        //     BackgroundPosition.CENTER,   // Centered position
-        //     new BackgroundSize(
-        //         BackgroundSize.AUTO, BackgroundSize.AUTO, true, true, true, false
-        //     )
+        // backgroundImage,
+        // BackgroundRepeat.REPEAT, // No repeat
+        // BackgroundRepeat.NO_REPEAT, // No repeat
+        // BackgroundPosition.CENTER, // Centered position
+        // new BackgroundSize(
+        // BackgroundSize.AUTO, BackgroundSize.AUTO, true, true, true, false
+        // )
         // );
-        // anchorPane.setBackground(new Background(bgImage)); 
+        // anchorPane.setBackground(new Background(bgImage));
 
         // addClassMenu.setOnShowing(event -> {
-        //      addClass(); 
-        //     });
+        // addClass();
+        // });
 
         anchorPane.getTransforms().add(scaleTransform);
 
@@ -96,41 +94,39 @@ public class mainDiagramController implements ClassBoxEventHandler
     }
 
     @FXML
-    public void addClass(String className) 
-    {
-        //creates a new class box with the name, width, height, and controller(for event handling)
+    public void addClass(String className) {
+        // creates a new class box with the name, width, height, and controller(for
+        // event handling)
         ClassBox classBox = new ClassBox(className, boxWidth, boxHeight, controller);
-        //adds the class box to the anchor pane
+        // adds the class box to the anchor pane
         anchorPane.getChildren().add(classBox);
 
-        //setup mouse drag
+        // setup mouse drag
         classBox.getDragBox().setOnMousePressed(event -> {
-                classBox.toFront();
-                offsetX = event.getSceneX() - classBox.getLayoutX();
-                offsetY = event.getSceneY() - classBox.getLayoutY();
-            });
-    
-            classBox.getDragBox().setOnMouseDragged(event -> {
-                double newX = (event.getSceneX() - offsetX) * zoomFactor;
-                double newY = (event.getSceneY() - offsetY) * zoomFactor;
-            
+            classBox.toFront();
+            offsetX = event.getSceneX() - classBox.getLayoutX();
+            offsetY = event.getSceneY() - classBox.getLayoutY();
+        });
+
+        classBox.getDragBox().setOnMouseDragged(event -> {
+            double newX = (event.getSceneX() - offsetX) * zoomFactor;
+            double newY = (event.getSceneY() - offsetY) * zoomFactor;
+
             classBox.setLayoutX(newX);
             classBox.setLayoutY(newY);
 
             adjustAnchorPaneSize(newX, newY, classBox);
             updateRelationLines();
-            });
+        });
 
-        //setup ranchor events
+        // setup ranchor events
         Rectangle ranchors[] = classBox.getRanchors();
-        for (Rectangle ranchor : ranchors)
-        {
+        for (Rectangle ranchor : ranchors) {
             ranchor.setOnMouseClicked(event -> ranchorClick(classBox, ranchor));
         }
     }
 
-    private void updateRelationLines()
-    {
+    private void updateRelationLines() {
         for (Node node : anchorPane.getChildren()) {
             if (node instanceof RelationLine) {
                 RelationLine line = (RelationLine) node;
@@ -139,38 +135,31 @@ public class mainDiagramController implements ClassBoxEventHandler
         }
     }
 
-    private void mouseMove(MouseEvent event)
-    {
-        if (placingRelation != null)
-        {
+    private void mouseMove(MouseEvent event) {
+        if (placingRelation != null) {
             placingRelation.setEndX(event.getSceneX());
             placingRelation.setEndY(event.getSceneY() - 25);
         }
     }
 
-    private void ranchorClick(ClassBox classBox, Rectangle ranchor)
-    {
-        if (placingRelation == null)
-        {
+    private void ranchorClick(ClassBox classBox, Rectangle ranchor) {
+        if (placingRelation == null) {
             Bounds rbounds = ranchor.localToScene(ranchor.getBoundsInLocal());
             RelationLine line = new RelationLine();
             line.setR1(ranchor);
-            
+
             line.setEndX(rbounds.getMinX());
             line.setEndY(rbounds.getMinY());
             anchorPane.getChildren().add(line);
             placingRelation = line;
-        }
-        else
-        {
+        } else {
             placingRelation.setR2(ranchor);
             placingRelation = null;
         }
     }
 
     @FXML
-    public void resetZoom(ActionEvent event)
-    {
+    public void resetZoom(ActionEvent event) {
         event.consume();
         scaleTransform.setX(1.0);
         scaleTransform.setY(1.0);
@@ -178,13 +167,13 @@ public class mainDiagramController implements ClassBoxEventHandler
         anchorPane.setScaleX(1.0);
         anchorPane.setScaleY(1.0);
         anchorPane.layout();
-        
+
         // reset the scroll pane to the top-left corner
         // scrollPane.setVvalue(0); // Scroll to the top
-        // scrollPane.setHvalue(0); // Scroll to the left 
+        // scrollPane.setHvalue(0); // Scroll to the left
     }
 
-    private void adjustAnchorPaneSize(double newX, double newY, ClassBox classBox){
+    private void adjustAnchorPaneSize(double newX, double newY, ClassBox classBox) {
         // Expand AnchorPane if object goes beyond current bounds
         if (newX < 0) {
             anchorPane.setPrefWidth(anchorPane.getPrefWidth() - newX);
@@ -204,9 +193,9 @@ public class mainDiagramController implements ClassBoxEventHandler
         }
     }
 
-    private void handleZoom(ScrollEvent event){
-        if(event.isControlDown()){
-            
+    private void handleZoom(ScrollEvent event) {
+        if (event.isControlDown()) {
+
             double deltaY = event.getDeltaY();
 
             if (deltaY < 0) {
@@ -220,40 +209,51 @@ public class mainDiagramController implements ClassBoxEventHandler
             event.consume();
         }
     }
+
     @FXML
-    public void quit(ActionEvent event)
-    {
+    public void quit(ActionEvent event) {
         System.exit(0);
     }
 
-//================================================================================================================================================================
-// Method to handle the class box click(Not implemented, might be delete?)
+    // ================================================================================================================================================================
+    // Method to handle the class box click(Not implemented, might be delete?)
     @Override
     public void onClassBoxClicked(ClassBox classBox) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'onClassBoxClicked'");
     }
 
-
-//================================================================================================================================================================
-// Method to handle the add class button
+    // ================================================================================================================================================================
+    // Method to handle the add class button
     @Override
-    public void onAddClassClicked(){
-        //displays dialog box prompting for class name 
+    public void onAddClassClicked() {
+        // displays dialog box prompting for class name
         String className = ClassBox.classNameDialog();
-        //gets the result of adding the class
+        // gets the result of adding the class
         String result = ClassItem.addClassItem(data.getClassItems(), className);
-        //parse result for either successful add or failure to add
-        if(result.equals("Class \"" + className.trim().toLowerCase() + "\" created."))
-        {
-            //if successful, add class to the anchor pane
+        // parse result for either successful add or failure to add
+        if (result.equals("Class \"" + className.trim().toLowerCase() + "\" created.")) {
+            // if successful, add class to the anchor pane
             addClass(className);
-        }else{
+        } else {
             System.out.println(result);
         }
-        
+
     }
 
-    
-    
+    public void onClassNameClicked(String oldName, String newName, ClassBox classBox) {
+        // trim and lower input for checking result
+        oldName = oldName.trim().toLowerCase();
+        newName = newName.trim().toLowerCase();
+
+        String result = ClassItem.renameClassItem(data.getClassItems(), data.getRelationshipItems(), newName, oldName);
+        // parse result for either successful rename or failure
+        if (result.equals(oldName + " class renamed to \"" + newName + "\"")) {
+            ClassBox.renameClassLabel(newName, classBox);
+        } else {
+            System.out.println("Something went wrong?");
+            // handle error
+        }
+    }
+
 }

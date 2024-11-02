@@ -22,45 +22,41 @@ import javafx.scene.layout.VBox;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.paint.Color;
 
-public class ClassBox extends StackPane
-{
+public class ClassBox extends StackPane {
     private ClassBoxEventHandler eventHandler;
 
-    final double RANCHOR_VIEW_DISTANCE = 50;  // Distance threshold for visibility
+    final double RANCHOR_VIEW_DISTANCE = 50; // Distance threshold for visibility
 
     private VBox dragBox;
 
-    //Relationship anchors
+    // Relationship anchors
     private Rectangle[] ranchors = new Rectangle[4];
-    //private double offsetX;
-    //private double offsetY;
+    // private double offsetX;
+    // private double offsetY;
 
-    public ClassBox(String classNameIn, double boxWidth, double boxHeight, ClassBoxEventHandler eventHandler)
-    {
+    public ClassBox(String classNameIn, double boxWidth, double boxHeight, ClassBoxEventHandler eventHandler) {
         this.eventHandler = eventHandler;
         createClassBox(classNameIn, boxWidth, boxHeight);
     }
 
-//================================================================================================================================================================
-//method to set the event handler for the class box
-    public void setEventHandler(ClassBoxEventHandler eventHandler)
-    {
+    // ================================================================================================================================================================
+    // method to set the event handler for the class box
+    public void setEventHandler(ClassBoxEventHandler eventHandler) {
         this.eventHandler = eventHandler;
     }
 
-    private void createClassBox(String classNameIn, double boxWidth, double boxHeight)
-    {
-        //getStyleClass().add("class-box"); // Add CSS style class for the box
+    private void createClassBox(String classNameIn, double boxWidth, double boxHeight) {
+        // getStyleClass().add("class-box"); // Add CSS style class for the box
 
-        //create structure with boxes
+        // create structure with boxes
         VBox vbase = new VBox();
         vbase.setSpacing(10);
         vbase.setAlignment(Pos.CENTER);
-        //vbase.setStyle("-fx-background-color: lightblue;"); < debugging
+        // vbase.setStyle("-fx-background-color: lightblue;"); < debugging
         HBox hbase = new HBox();
         hbase.setSpacing(10);
         hbase.setAlignment(Pos.CENTER);
-        //hbase.setStyle("-fx-background-color: red;"); < debugging
+        // hbase.setStyle("-fx-background-color: red;"); < debugging
 
         // Create a VBox to hold the class name label and the TitledPanes
         VBox vbox = new VBox();
@@ -74,10 +70,12 @@ public class ClassBox extends StackPane
 
         // Create and style the class name label
         Label className = new Label(classNameIn);
+        className.setId("classNameLabel");
         className.getStyleClass().add("class-name-label"); // Add CSS class for the class name label
         className.setOnMouseClicked(event -> {
-            if (event.getButton() == MouseButton.SECONDARY) {
-                NameClicked(className);
+            if (event.getButton() == MouseButton.PRIMARY) {
+                String oldName = className.getText();
+                NameClicked(oldName, className);
             }
         });
 
@@ -88,17 +86,16 @@ public class ClassBox extends StackPane
 
         TitledPane fieldsPane = createFieldPane();
         TitledPane methodsPane = createMethodPane();
-        
-        //ranchors (relationship anchors)
-        for (int i = 0; i < 4; i++)
-        {
+
+        // ranchors (relationship anchors)
+        for (int i = 0; i < 4; i++) {
             ranchors[i] = new Rectangle(10, 10);
             ranchors[i].setFill(Color.BLACK);
             int index = i;
             ranchors[i].setOnMouseClicked(event -> AddRelation(index));
         }
 
-        //structure
+        // structure
         vbase.getChildren().addAll(ranchors[0], hbase, ranchors[2]);
         hbase.getChildren().addAll(ranchors[3], vbox, ranchors[1]);
 
@@ -127,96 +124,105 @@ public class ClassBox extends StackPane
                 r.setVisible(true);
         });
         // vbox.setOnMouseDragged(event -> {
-        //     setLayoutX(event.getSceneX() - offsetX);
-        //     setLayoutY(event.getSceneY() - offsetY);
+        // setLayoutX(event.getSceneX() - offsetX);
+        // setLayoutY(event.getSceneY() - offsetY);
         // });
     }
 
-    private void AddRelation(int index)
-    {
+    private void AddRelation(int index) {
         System.out.println("clicked: " + index);
     }
 
-    private void NameClicked(Label className)
-    {
+    private void NameClicked(String oldName, Label className) {
+
         TextInputDialog input = new TextInputDialog();
-        input.setTitle("Add Class");
+        input.setTitle("Rename Class");
         input.setHeaderText("Enter the class name");
         input.setContentText("Class name: ");
-        
+
         Optional<String> result = input.showAndWait();
 
-        if(result.isPresent())
-        {
-            className.setText(result.get());
+        if (result.isPresent()) {
+            String newName = result.get();
+            eventHandler.onClassNameClicked(oldName, newName, this);
         }
     }
 
-    public VBox getDragBox()
-    {
+    public VBox getDragBox() {
         return this.dragBox;
     }
 
-    public Rectangle[] getRanchors()
-    {
+    public Rectangle[] getRanchors() {
         return this.ranchors;
     }
 
-//================================================================================================================================================================
-//method to create a button beside class name (top right corner) may use for delete or some other action
-    private Button createLinkButton()
-    {
-        //create a button with an image
+    // ================================================================================================================================================================
+    // method to create a button beside class name (top right corner) may use for
+    // delete or some other action
+    private Button createLinkButton() {
+        // create a button with an image
         Button linkButton = new Button();
         ImageView linkImage = new ImageView("/images/link-image.png");
-        //set the size of the image
+        // set the size of the image
         linkImage.setFitHeight(30);
         linkImage.setFitWidth(30);
-        //set the background of the image to transparent
+        // set the background of the image to transparent
         linkImage.setStyle("-fx-background-color: transparent;");
-        //set the graphic of the button to the image
+        // set the graphic of the button to the image
         linkButton.setGraphic(linkImage);
-        //set the style class of the button to a transparent button
+        // set the style class of the button to a transparent button
         linkButton.getStyleClass().add("transparent-button");
 
         return linkButton;
     }
 
-//================================================================================================================================================================
-//method to create a dialog box for user input of class name
-    public static String classNameDialog(){
-        //creates a dialog box for user input
+    // ================================================================================================================================================================
+    // method to create a dialog box for user input of class name
+    public static String classNameDialog() {
+        // creates a dialog box for user input
         TextInputDialog dialog = new TextInputDialog();
-        //sets the title, header, and content of the dialog box
+        // sets the title, header, and content of the dialog box
         dialog.setTitle("Add Class");
         dialog.setHeaderText("Enter the class name");
         dialog.setContentText("Class name: ");
-        
-        //shows the dialog box and waits for user input
+
+        // shows the dialog box and waits for user input
         Optional<String> result = dialog.showAndWait();
 
-        if(result.isPresent())
-        {
+        if (result.isPresent()) {
             return result.get();
         }
         return null;
     }
 
-    private TitledPane createMethodPane(){
+    // ================================================================================================================================================================
+    // method to rename a class box label
+
+    public static void renameClassLabel(String newName, ClassBox classBox) {
+        Label nameLabel = (Label) classBox.lookup("#classNameLabel");
+
+        if (nameLabel != null) {
+            nameLabel.setText(newName);
+        } else {
+            System.out.println("Null label?");
+        }
+    }
+
+    private TitledPane createMethodPane() {
         // Create TitledPane for methods
         TitledPane methodsPane = new TitledPane();
         methodsPane.setExpanded(false);
         methodsPane.setMaxHeight(250);
         methodsPane.getStyleClass().add("titled-pane");
-        
-        //List of each methods TitledPane that will hold the individual method panes
+
+        // List of each methods TitledPane that will hold the individual method panes
         ListView<TitledPane> methodsList = new ListView<>();
         methodsList.getStyleClass().add("list-view"); // Apply CSS class for the methods ListView
 
         // Create the button for adding Methods
         Button addMethodsButton = new Button("+");
         addMethodsButton.getStyleClass().add("transparent-button");
-        //when pressed, open dialog for user input
+        // when pressed, open dialog for user input
         addMethodsButton.setOnAction(e -> {
             TextInputDialog dialog = new TextInputDialog();
             dialog.setTitle("Add Method");
@@ -230,51 +236,51 @@ public class ClassBox extends StackPane
             });
         });
 
-       
-
-        //HARD CODED SPACING OF TITLE AND BUTTON
-        HBox methodsTitleBox = new HBox(139);//spacing between objects
+        // HARD CODED SPACING OF TITLE AND BUTTON
+        HBox methodsTitleBox = new HBox(139);// spacing between objects
         methodsTitleBox.setAlignment(Pos.CENTER_LEFT);
         methodsTitleBox.getStyleClass().add("fields-title-box");
-        
+
         // Create a label for "Methods:"
         Label methodsLabel = new Label("Methods:");
 
-        //Adds label and button to HBox, sets to methodsPane graphic.
+        // Adds label and button to HBox, sets to methodsPane graphic.
         methodsTitleBox.getChildren().addAll(methodsLabel, addMethodsButton);
         methodsPane.setGraphic(methodsTitleBox);
 
-
-        /*******************Add button for individual methods************************/
+        /******************* Add button for individual methods ************************/
         // Create the button for adding params
 
-        //Adds methods TitlePane's List to the methodPane
+        // Adds methods TitlePane's List to the methodPane
         methodsPane.setContent(methodsList);
 
-        return methodsPane;   
-        }
+        return methodsPane;
+    }
 
-    private TitledPane createNewMethod(String methodName){
+    private TitledPane createNewMethod(String methodName) {
         TitledPane singleMethodPane = new TitledPane();
         singleMethodPane.setExpanded(false);
-        //instead of static setting height, increase and decrease based on # of methods/params/fields.
+        // instead of static setting height, increase and decrease based on # of
+        // methods/params/fields.
         singleMethodPane.setMaxWidth(225);
         singleMethodPane.setMaxHeight(150);
         singleMethodPane.getStyleClass().add("fields-title-box");
         ListView<String> methodParamList = new ListView<>();
         methodParamList.getStyleClass().add("list-view");
 
-        //The TitledPane requires a ListView as content, and the ListView requires an ObservableList.
-        ObservableList<String> params = FXCollections.observableArrayList(); 
+        // The TitledPane requires a ListView as content, and the ListView requires an
+        // ObservableList.
+        ObservableList<String> params = FXCollections.observableArrayList();
         methodParamList.setItems(params);
 
-        //TODO: fix issue where setting content here causes the list to be able to be expanded without items in it. set after an item is added?
+        // TODO: fix issue where setting content here causes the list to be able to be
+        // expanded without items in it. set after an item is added?
         singleMethodPane.setContent(methodParamList);
 
-        //Add params button
+        // Add params button
         Button addParamsButton = new Button("+");
         addParamsButton.getStyleClass().add("transparent-button");
-        //when pressed, open dialog for user input
+        // when pressed, open dialog for user input
         addParamsButton.setOnAction(e -> {
             TextInputDialog dialog = new TextInputDialog();
             dialog.setTitle("Add Parameter:");
@@ -290,12 +296,14 @@ public class ClassBox extends StackPane
         Label singleMethodName = new Label(methodName);
         titleBox.setAlignment(Pos.CENTER_LEFT);
         titleBox.getStyleClass().add("fields-title-box");
-        titleBox.getChildren().addAll(singleMethodName,addParamsButton);
-        singleMethodPane.setGraphic(titleBox);;
+        titleBox.getChildren().addAll(singleMethodName, addParamsButton);
+        singleMethodPane.setGraphic(titleBox);
+        ;
 
         return singleMethodPane;
     }
-    private TitledPane createFieldPane(){
+
+    private TitledPane createFieldPane() {
         TitledPane fieldsPane = new TitledPane();
         fieldsPane.setExpanded(false);
         fieldsPane.setMaxHeight(150);
@@ -303,12 +311,14 @@ public class ClassBox extends StackPane
         ListView<String> fieldsList = new ListView<>();
         fieldsList.getStyleClass().add("list-view"); // Apply CSS class for the fields ListView
 
-        //The TitledPane requires a ListView as content, and the ListView requires an ObservableList.
+        // The TitledPane requires a ListView as content, and the ListView requires an
+        // ObservableList.
         ObservableList<String> fields = FXCollections.observableArrayList();
         fieldsList.setItems(fields);
 
-        //TODO: fix issue where setting content here causes the list to be able to be expanded without items in it. set after an item is added?
-        fieldsPane.setContent(fieldsList);  //
+        // TODO: fix issue where setting content here causes the list to be able to be
+        // expanded without items in it. set after an item is added?
+        fieldsPane.setContent(fieldsList); //
 
         // Create the button for adding fields
         Button addFieldButton = new Button("+");
@@ -326,7 +336,7 @@ public class ClassBox extends StackPane
         });
 
         // Create an HBox to hold the fields label and the add button
-        //HARD CODED SPACING OF TITLE AND BUTTON
+        // HARD CODED SPACING OF TITLE AND BUTTON
         HBox fieldsTitleBox = new HBox(160); // Add spacing between label and button
         Label fieldsLabel = new Label("Fields");
         fieldsTitleBox.setAlignment(Pos.CENTER_LEFT); // Align items to the left
@@ -337,6 +347,4 @@ public class ClassBox extends StackPane
         return fieldsPane;
     }
 
-
-    
 }
