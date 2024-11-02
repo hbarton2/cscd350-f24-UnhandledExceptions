@@ -257,7 +257,7 @@ public class UI
 				// split[0] = name, split[1] = type
 				System.out.println(controller.AddMethodListener(className, split[0], split[1]));
 				// another menu after adding a method to add parameters
-				String res = editMethod(className, result, reader, controller);
+				String res = editMethod(className, split[0], reader, controller);
 				if (res.equals("exit")) return;
 			}
 	}catch(IOException e){
