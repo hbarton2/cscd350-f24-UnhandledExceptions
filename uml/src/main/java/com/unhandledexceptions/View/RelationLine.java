@@ -1,48 +1,160 @@
 package com.unhandledexceptions.View;
 
+import javafx.application.Platform;
 import javafx.geometry.Bounds;
-import javafx.scene.shape.Line;
-import javafx.scene.shape.Rectangle;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.shape.Polyline;
 
-public class RelationLine extends Line
+public class RelationLine extends Polyline
 {
     //just do it simple for now
-    private Rectangle r1;
-    private Rectangle r2;
+    private int i1, i2;
+    private ClassBox c1, c2;
+
+    public RelationLine()
+    {
+        toBack();
+    }
 
     public void Update()
     {
-        Bounds rbounds = r1.localToScene(r1.getBoundsInLocal());
-        setStartX(rbounds.getMinX());
-        setStartY(rbounds.getMinY()-25);
-        rbounds = r2.localToScene(r2.getBoundsInLocal());
-        setEndX(rbounds.getMinX());
-        setEndY(rbounds.getMinY()-25);
+        Bounds bounds = c1.getRanchor(i1).localToScene(c1.getRanchor(i1).getBoundsInLocal());
+        Bounds bounds2 = c2.getRanchor(i2).localToScene(c2.getRanchor(i2).getBoundsInLocal());
+
+        Platform.runLater(new Runnable() {
+            @Override public void run() {
+                update(bounds.getMinX(), bounds.getMinY() - 25,
+                 bounds2.getMinX(), bounds2.getMinY() - 25);
+            }
+        });
     }
 
-    public Rectangle getR1()
+    public void Update(MouseEvent event)
     {
-        return this.r1;
+        Bounds bounds = c1.getRanchor(i1).localToScene(c1.getRanchor(i1).getBoundsInLocal());
+
+        Platform.runLater(new Runnable() {
+            @Override public void run() {
+                update(bounds.getMinX(), bounds.getMinY() - 25,
+                 event.getSceneX(), event.getSceneY());
+            }
+        });
     }
 
-    public void setR1(Rectangle r1)
+    private void update(double startX, double startY, double endX, double endY)
     {
-        this.r1 = r1;
-        Bounds rbounds = r1.localToScene(r1.getBoundsInLocal());
-        setStartX(rbounds.getMinX());
-        setStartY(rbounds.getMinY()-25);
+        toBack();
+        getPoints().clear();
+
+        //start
+        getPoints().add(c1.getLayoutX() + c1.getWidth() / 2);
+        getPoints().add(c1.getLayoutY() + c1.getHeight() / 2);
+        getPoints().add(startX);
+        getPoints().add(startY);
+
+        //middle for top anchor
+        if (i1 == 0)
+        {
+            if (endY > startY)
+            {
+                double shift = c1.getWidth() / 2;
+                if (endX < startX)
+                    shift = shift * -1;
+                getPoints().add(startX + shift);
+                getPoints().add(startY);
+            }
+            getPoints().add(getPoints().get(getPoints().size() - 2));
+            getPoints().add(endY);
+        }
+
+        //middle for bottom anchor
+        if (i1 == 2)
+        {
+            if (endY < startY)
+            {
+                double shift = c1.getWidth() / 2;
+                if (endX < startX)
+                    shift = shift * -1;
+                getPoints().add(startX + shift);
+                getPoints().add(startY);
+            }
+            getPoints().add(getPoints().get(getPoints().size() - 2));
+            getPoints().add(endY);
+        }
+
+        //middle for left anchor
+        if (i1 == 3)
+        {
+            if (endX > startX)
+            {
+                double shift = c1.getHeight() / 2;
+                if (endY < startY)
+                    shift = shift * -1;
+                getPoints().add(startX);
+                getPoints().add(startY + shift);
+            }
+            getPoints().add(endX);
+            getPoints().add(getPoints().get(getPoints().size() - 2));
+        }
+
+        //middle for right anchor
+        if (i1 == 1)
+        {
+            if (endX < startX)
+            {
+                double shift = c1.getHeight() / 2;
+                if (endY < startY)
+                    shift = shift * -1;
+                getPoints().add(startX);
+                getPoints().add(startY + shift);
+            }
+            getPoints().add(endX);
+            getPoints().add(getPoints().get(getPoints().size() - 2));
+        }
+
+        //end
+        getPoints().add(endX);
+        getPoints().add(endY);
+        if (c1 != c2)
+        {
+            getPoints().add(c2.getLayoutX() + c2.getWidth() / 2);
+            getPoints().add(c2.getLayoutY() + c2.getHeight() / 2);
+        }
     }
 
-    public Rectangle getR2()
+    public int getI1()
     {
-        return this.r2;
+        return this.i1;
     }
 
-    public void setR2(Rectangle r2)
+    public int getI2()
     {
-        this.r2 = r2;
-        Bounds rbounds = r2.localToScene(r2.getBoundsInLocal());
-        setEndX(rbounds.getMinX());
-        setEndY(rbounds.getMinY()-25);
+        return this.i2;
+    }
+
+    public ClassBox getC1()
+    {
+        return this.c1;
+    }
+
+    public ClassBox getC2()
+    {
+        return this.c2;
+    }
+
+    public void setStart(ClassBox classBox, int index)
+    {
+        this.c1 = classBox;
+        this.i1 = index;
+        this.c2 = c1;
+        this.i2 = i1;
+        Update();
+    }
+
+    public void setEnd(ClassBox classBox, int index)
+    {
+        this.c2 = classBox;
+        this.i2 = index;
+        Update();
     }
 }

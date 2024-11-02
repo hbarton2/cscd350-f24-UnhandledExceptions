@@ -14,6 +14,7 @@ import com.unhandledexceptions.Controller.ClassBoxEventHandler;
 import javafx.scene.control.TitledPane;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
@@ -256,8 +257,8 @@ public class ClassBox extends StackPane
         vbase.getChildren().addAll(ranchors[0], hbase, ranchors[2]);
         hbase.getChildren().addAll(ranchors[3], vbox, ranchors[1]);
 
-    // Add the components to the VBox
-    vbox.getChildren().addAll(nameAndLink, fieldsPane, methodsPane);
+        // Add the components to the VBox
+        vbox.getChildren().addAll(nameAndLink, fieldsPane, methodsPane);
 
         // Add the VBox to the classBox
         getChildren().add(vbase);
@@ -280,10 +281,6 @@ public class ClassBox extends StackPane
             for (Rectangle r : ranchors)
                 r.setVisible(true);
         });
-        // vbox.setOnMouseDragged(event -> {
-        //     setLayoutX(event.getSceneX() - offsetX);
-        //     setLayoutY(event.getSceneY() - offsetY);
-        // });
     }
 
     private void AddRelation(int index)
@@ -311,9 +308,22 @@ public class ClassBox extends StackPane
         return this.dragBox;
     }
 
+    public Rectangle getRanchor(int i)
+    {
+        return this.ranchors[i];
+    }
+
     public Rectangle[] getRanchors()
     {
         return this.ranchors;
+    }
+
+    public Rectangle getClickedRanchor(MouseEvent event)
+    {
+        for (Rectangle ranchor : ranchors)
+            if (ranchor.contains(event.getX(), event.getY()))
+                return ranchor;
+        return null;
     }
 
     private Button createLinkButton()

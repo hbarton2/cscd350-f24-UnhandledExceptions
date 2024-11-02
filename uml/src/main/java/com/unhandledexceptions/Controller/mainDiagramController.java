@@ -2,25 +2,18 @@ package com.unhandledexceptions.Controller;
 
 import com.unhandledexceptions.View.ClassBox;
 import com.unhandledexceptions.View.RelationLine;
+
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.geometry.Bounds;
 import javafx.scene.control.Menu;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundImage;
-import javafx.scene.layout.BackgroundPosition;
-import javafx.scene.layout.BackgroundRepeat;
-import javafx.scene.layout.BackgroundSize;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
-import javafx.scene.paint.Color;
-import javafx.scene.Node;
-import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.Node;
 import javafx.scene.transform.Scale;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.image.Image;
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 
@@ -65,21 +58,6 @@ public class mainDiagramController implements ClassBoxEventHandler
     @FXML
     private void initialize()
     {
-
-        
-        // //bg stuff
-        // Image backgroundImage = new Image(getClass().getResource("/images/nms.png").toExternalForm());
-        // BackgroundImage bgImage = new BackgroundImage(
-        //     backgroundImage,
-        //     BackgroundRepeat.REPEAT,  // No repeat
-        //     BackgroundRepeat.NO_REPEAT,  // No repeat
-        //     BackgroundPosition.CENTER,   // Centered position
-        //     new BackgroundSize(
-        //         BackgroundSize.AUTO, BackgroundSize.AUTO, true, true, true, false
-        //     )
-        // );
-        // anchorPane.setBackground(new Background(bgImage)); 
-
         addClassMenu.setOnShowing(event -> {
              addClass(); 
             });
@@ -89,10 +67,12 @@ public class mainDiagramController implements ClassBoxEventHandler
         scrollPane.addEventFilter(ScrollEvent.SCROLL, this::handleZoom);
 
         anchorPane.setOnMouseMoved(event -> mouseMove(event));
+
+        anchorPane.setOnMouseClicked(event -> mouseClick(event));
     }
 
     @FXML
-    public void addClass() 
+    public ClassBox addClass()
     {
         ClassBox classBox = new ClassBox("newClass", boxWidth, boxHeight, controller);
         anchorPane.getChildren().add(classBox);
@@ -108,19 +88,24 @@ public class mainDiagramController implements ClassBoxEventHandler
                 double newX = (event.getSceneX() - offsetX) * zoomFactor;
                 double newY = (event.getSceneY() - offsetY) * zoomFactor;
             
-            classBox.setLayoutX(newX);
-            classBox.setLayoutY(newY);
+                classBox.setLayoutX(newX);
+                classBox.setLayoutY(newY);
 
-            adjustAnchorPaneSize(newX, newY, classBox);
-            updateRelationLines();
+                adjustAnchorPaneSize(newX, newY, classBox);
+                updateRelationLines();
             });
 
         //setup ranchor events
-        Rectangle ranchors[] = classBox.getRanchors();
-        for (Rectangle ranchor : ranchors)
+        for (int i = 0; i < 4; i++)
         {
-            ranchor.setOnMouseClicked(event -> ranchorClick(classBox, ranchor));
+            int index = i;
+            classBox.getRanchor(i).setOnMouseClicked(event -> {
+                ranchorClick(event, classBox, index);
+                event.consume();
+            });
         }
+
+        return classBox;
     }
 
     private void updateRelationLines()
@@ -136,28 +121,52 @@ public class mainDiagramController implements ClassBoxEventHandler
     private void mouseMove(MouseEvent event)
     {
         if (placingRelation != null)
+            placingRelation.Update(event);
+    }
+
+    // mouse click on background event
+    private void mouseClick(MouseEvent event)
+    {
+        if (placingRelation != null && event.getButton() == MouseButton.PRIMARY)
         {
-            placingRelation.setEndX(event.getSceneX());
-            placingRelation.setEndY(event.getSceneY() - 25);
+            ClassBox classBox = addClass();
+
+            new Thread(() -> {
+                try { Thread.sleep(50); 
+                } catch (InterruptedException e) { e.printStackTrace(); }
+
+                int i = (placingRelation.getI1() + 2) % 4;
+                Rectangle r = classBox.getRanchor(i);
+                classBox.setLayoutX(event.getSceneX() - r.getBoundsInParent().getMinX());
+                classBox.setLayoutY(event.getSceneY() - r.getBoundsInParent().getMinY() - 35);
+
+                placingRelation.setEnd(classBox, i);
+                placingRelation.Update();
+                placingRelation = null;
+            }).start();
+        }
+        else if (placingRelation != null && event.getButton() != MouseButton.PRIMARY)
+        {
+            anchorPane.getChildren().remove(placingRelation);
+            placingRelation = null;
         }
     }
 
-    private void ranchorClick(ClassBox classBox, Rectangle ranchor)
+    //mouse click on relation anchor event
+    private void ranchorClick(MouseEvent event, ClassBox classBox, int index)
     {
         if (placingRelation == null)
         {
-            Bounds rbounds = ranchor.localToScene(ranchor.getBoundsInLocal());
             RelationLine line = new RelationLine();
-            line.setR1(ranchor);
+            line.setStart(classBox, index);
             
-            line.setEndX(rbounds.getMinX());
-            line.setEndY(rbounds.getMinY());
+            line.Update(event);
             anchorPane.getChildren().add(line);
             placingRelation = line;
         }
         else
         {
-            placingRelation.setR2(ranchor);
+            placingRelation.setEnd(classBox, index);
             placingRelation = null;
         }
     }
