@@ -243,13 +243,15 @@ public class mainDiagramController implements ClassBoxEventHandler {
     }
 
     public void onClassNameClicked(String oldName, String newName, ClassBox classBox) {
-        // trim and lower input for checking result
+        // trim and lower input for checking result (this might be redundant)
         oldName = oldName.trim().toLowerCase();
         newName = newName.trim().toLowerCase();
 
         String result = ClassItem.renameClassItem(data.getClassItems(), data.getRelationshipItems(), newName, oldName);
         // parse result for either successful rename or failure
         if (result.equals(oldName + " class renamed to \"" + newName + "\"")) {
+            // if success, call the rename method in the view to update the classbox with
+            // the new name
             ClassBox.renameClassLabel(newName, classBox);
         } else {
             // if failure, call showError and pass result as error message

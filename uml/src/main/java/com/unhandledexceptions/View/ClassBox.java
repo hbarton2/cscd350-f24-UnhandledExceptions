@@ -200,13 +200,15 @@ public class ClassBox extends StackPane {
 
     // ================================================================================================================================================================
     // method to rename a class box label
-
     public static void renameClassLabel(String newName, ClassBox classBox) {
+        // gets the label from the classBox object
         Label nameLabel = (Label) classBox.lookup("#classNameLabel");
 
+        // if the label exists, rename
         if (nameLabel != null) {
             nameLabel.setText(newName);
         } else {
+            // TODO not sure how to handle this, error?
             System.out.println("Null label?");
         }
     }
@@ -351,14 +353,17 @@ public class ClassBox extends StackPane {
     }
 
     // ================================================================================================================================================================
-    // method to throw an error
-
+    // method to display an error message
     public static void showError(String errorMessage) {
+        // create an alert box
         Alert alert = new Alert(AlertType.ERROR);
+        // set title and header as an error
         alert.setTitle("Class Error");
         alert.setHeaderText("A Class Error Occured");
+        // set the context text as the error message string
         alert.setContentText(errorMessage);
 
+        // displays until user acknowledges
         alert.showAndWait().ifPresent(response -> {
             if (response == ButtonType.OK) {
                 // nothing else to do after accepting
