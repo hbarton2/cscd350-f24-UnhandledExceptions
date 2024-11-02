@@ -3,7 +3,9 @@ package com.unhandledexceptions.View;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextInputDialog;
@@ -12,6 +14,7 @@ import java.util.Optional;
 import com.unhandledexceptions.Controller.ClassBoxEventHandler;
 
 import javafx.scene.control.TitledPane;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.HBox;
@@ -345,6 +348,22 @@ public class ClassBox extends StackPane {
         fieldsPane.setGraphic(fieldsTitleBox);
 
         return fieldsPane;
+    }
+
+    // ================================================================================================================================================================
+    // method to throw an error
+
+    public static void showError(String errorMessage) {
+        Alert alert = new Alert(AlertType.ERROR);
+        alert.setTitle("Class Error");
+        alert.setHeaderText("A Class Error Occured");
+        alert.setContentText(errorMessage);
+
+        alert.showAndWait().ifPresent(response -> {
+            if (response == ButtonType.OK) {
+                // nothing else to do after accepting
+            }
+        });
     }
 
 }

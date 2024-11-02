@@ -236,7 +236,8 @@ public class mainDiagramController implements ClassBoxEventHandler {
             // if successful, add class to the anchor pane
             addClass(className);
         } else {
-            System.out.println(result);
+            // if failure, call showError and pass result as error message
+            ClassBox.showError(result);
         }
 
     }
@@ -251,8 +252,8 @@ public class mainDiagramController implements ClassBoxEventHandler {
         if (result.equals(oldName + " class renamed to \"" + newName + "\"")) {
             ClassBox.renameClassLabel(newName, classBox);
         } else {
-            System.out.println("Something went wrong?");
-            // handle error
+            // if failure, call showError and pass result as error message
+            ClassBox.showError(result);
         }
     }
 
