@@ -1,5 +1,7 @@
 package com.unhandledexceptions.View;
 
+import com.unhandledexceptions.Controller.BaseController;
+
 import javafx.application.Platform;
 import javafx.geometry.Bounds;
 import javafx.scene.input.MouseEvent;
@@ -11,10 +13,18 @@ public class RelationLine extends Polyline
     //just do it simple for now
     private int i1, i2;
     private ClassBox c1, c2;
+    private String type;
 
     public RelationLine()
     {
         toBack();
+        type = "aggregation";
+    }
+
+    public void Save(BaseController controller)
+    {
+        controller.AddRelationshipListener(c1.getClassName(), c2.getClassName(), type);
+        controller.PlaceRelationshipListener(c1.getClassName(), c2.getClassName(), i1, i2);
     }
 
     public void Update(Scale scaleTransform)
@@ -25,8 +35,6 @@ public class RelationLine extends Polyline
         double startY = (bounds.getMinY() - 25) / scaleTransform.getY();
         double endX = bounds2.getMinX() / scaleTransform.getX();
         double endY = (bounds2.getMinY() - 25) / scaleTransform.getY();
-
-
 
         Platform.runLater(new Runnable() {
             @Override public void run() {
@@ -129,6 +137,16 @@ public class RelationLine extends Polyline
             getPoints().add(c2.getLayoutX() + c2.getWidth() / 2);
             getPoints().add(c2.getLayoutY() + c2.getHeight() / 2);
         }
+    }
+
+    public String getType()
+    {
+        return this.type;
+    }
+
+    public void setType(String type)
+    {
+        this.type = type;
     }
 
     public int getI1()

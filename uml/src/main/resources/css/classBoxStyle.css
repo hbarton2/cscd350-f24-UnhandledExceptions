@@ -3,7 +3,6 @@
 }
 
 .class-box {
-    -fx-border-color: linear-gradient(270deg,black,white,black);
     -fx-border-width: 1px;
     -fx-background-color: white;
     -fx-padding: 10;

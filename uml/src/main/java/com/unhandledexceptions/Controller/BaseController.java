@@ -56,6 +56,11 @@ public class BaseController
         return RelationshipItem.removeRelationship(data.getRelationshipItems(), source, destination);
     }
 
+    public String PlaceRelationshipListener(String source, String dest, int sourceInt, int destInt)
+    {
+        return RelationshipItem.placeRelation(data.getRelationshipItems(), source, dest, sourceInt, destInt);
+    }
+
     public String AddFieldListener(String className, String type, String name)
     {
         return ClassItem.addField(data.getClassItems().get(className), type, name);

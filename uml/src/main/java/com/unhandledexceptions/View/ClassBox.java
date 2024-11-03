@@ -16,7 +16,6 @@ import com.unhandledexceptions.Controller.ClassBoxEventHandler;
 import javafx.scene.control.TitledPane;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -26,21 +25,23 @@ import javafx.scene.layout.VBox;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.paint.Color;
 
-public class ClassBox extends StackPane {
+public class ClassBox extends StackPane 
+{
     private ClassBoxEventHandler eventHandler;
-
+    private String className;
     final double RANCHOR_VIEW_DISTANCE = 50; // Distance threshold for visibility
 
     private VBox dragBox;
 
     // Relationship anchors
     private Rectangle[] ranchors = new Rectangle[4];
-    // private double offsetX;
-    // private double offsetY;
 
-    public ClassBox(String classNameIn, double boxWidth, double boxHeight, ClassBoxEventHandler eventHandler) {
+    public ClassBox(String classNameIn, double boxWidth,
+     double boxHeight, ClassBoxEventHandler eventHandler)
+     {
         this.eventHandler = eventHandler;
-        createClassBox(classNameIn, boxWidth, boxHeight);
+        this.className = classNameIn;
+        createClassBox(boxWidth, boxHeight);
     }
 
     public void Update()
@@ -54,7 +55,8 @@ public class ClassBox extends StackPane {
         this.eventHandler = eventHandler;
     }
 
-    private void createClassBox(String classNameIn, double boxWidth, double boxHeight) {
+    private void createClassBox(double boxWidth, double boxHeight)
+    {
         // getStyleClass().add("class-box"); // Add CSS style class for the box
 
         // create structure with boxes
@@ -78,13 +80,13 @@ public class ClassBox extends StackPane {
         nameAndLink.setAlignment(Pos.CENTER_LEFT);
 
         // Create and style the class name label
-        Label className = new Label(classNameIn);
-        className.setId("classNameLabel");
-        className.getStyleClass().add("class-name-label"); // Add CSS class for the class name label
-        className.setOnMouseClicked(event -> {
-            if (event.getButton() == MouseButton.PRIMARY) {
-                String oldName = className.getText();
-                NameClicked(oldName, className);
+        Label classNameLabel = new Label(className);
+        classNameLabel.setId("classNameLabel");
+        classNameLabel.getStyleClass().add("class-name-label"); // Add CSS class for the class name label
+        classNameLabel.setOnMouseClicked(event -> {
+            if (event.getClickCount() == 2) {
+                String oldName = classNameLabel.getText();
+                NameClicked(oldName, classNameLabel);
             }
         });
 
@@ -93,7 +95,7 @@ public class ClassBox extends StackPane {
 
         Button deleteButton = createDeleteButton();
 
-        nameAndLink.getChildren().addAll(className, spacer, deleteButton);
+        nameAndLink.getChildren().addAll(classNameLabel, spacer, deleteButton);
 
         TitledPane fieldsPane = createFieldPane();
         TitledPane methodsPane = createMethodPane();
@@ -102,8 +104,6 @@ public class ClassBox extends StackPane {
         for (int i = 0; i < 4; i++) {
             ranchors[i] = new Rectangle(10, 10);
             ranchors[i].setFill(Color.BLACK);
-            int index = i;
-            ranchors[i].setOnMouseClicked(event -> AddRelation(index));
         }
 
         // structure
@@ -136,10 +136,6 @@ public class ClassBox extends StackPane {
         });
     }
 
-    private void AddRelation(int index) {
-        System.out.println("clicked: " + index);
-    }
-
     private void NameClicked(String oldName, Label className) {
 
         TextInputDialog input = new TextInputDialog();
@@ -153,6 +149,16 @@ public class ClassBox extends StackPane {
             String newName = result.get();
             eventHandler.onClassNameClicked(oldName, newName, this);
         }
+    }
+
+    public String getClassName()
+    {
+        return this.className;
+    }
+
+    public void setClassName(String className)
+    {
+        this.className = className;
     }
 
     public VBox getDragBox() {
@@ -390,7 +396,7 @@ public class ClassBox extends StackPane {
         return fieldsPane;
     }
 
-    // ================================================================================================================================================================
+    // =====================================
     // method to display an error message
     public static void showError(String errorMessage) {
         // create an alert box

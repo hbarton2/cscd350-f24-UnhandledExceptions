@@ -1,20 +1,21 @@
 package com.unhandledexceptions.Model;
 
 import java.util.HashMap;
-import java.util.Scanner;
 
 public class ClassItem {
-    Scanner kb = new Scanner(System.in);
     String name;
 
     // Names of FieldItem/MethodItem are keys to Map<k,v>
     private HashMap<String, FieldItem> fieldItems;
     private HashMap<String, MethodItem> methodItems;
+    private double x, y;
 
     public ClassItem() {} //blank constructor for IO serialization
 
     private ClassItem(final String classItemName) {
         this.name = classItemName;
+        this.x = 0;
+        this.y = 0;
 
         // initializes Maps
         this.fieldItems = new HashMap<String, FieldItem>();
@@ -49,6 +50,26 @@ public class ClassItem {
         this.name = name;
     }
 
+    public double getX()
+    {
+        return this.x;
+    }
+
+    public void setX(double x)
+    {
+        this.x = x;
+    }
+
+    public double getY()
+    {
+        return this.y;
+    }
+
+    public void setY(double y)
+    {
+        this.y = y;
+    }
+
     public HashMap<String, FieldItem> getFieldItems() {
         return this.fieldItems;
     }
@@ -69,8 +90,8 @@ public class ClassItem {
     // check that the newClassItemName is available to use
 
     public static String renameClassItem(final HashMap<String, ClassItem> classItemList,
-         HashMap<String, RelationshipItem> relationships, final String newClassItemName,
-            final String oldClassItemName) {
+         HashMap<String, RelationshipItem> relationships, final String oldClassItemName,
+            final String newClassItemName) {
         if (classItemList == null) {
             throw new IllegalArgumentException("classItemList cannot be null");
         }
@@ -368,5 +389,4 @@ public class ClassItem {
     public String toString() {
         return this.name;
     }
-
 };
