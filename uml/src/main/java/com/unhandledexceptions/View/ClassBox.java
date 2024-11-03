@@ -88,6 +88,7 @@ public class ClassBox extends StackPane {
     }
 
     private void createClassBox(String classNameIn, double boxWidth, double boxHeight) {
+        //TODO: change this when we rename class
         this.className = classNameIn;
 
         // create structure with boxes
