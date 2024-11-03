@@ -1,6 +1,5 @@
 package com.unhandledexceptions.Controller;
 
-import com.unhandledexceptions.Model.ClassItem;
 import com.unhandledexceptions.Model.Data;
 import com.unhandledexceptions.View.ClassBox;
 import com.unhandledexceptions.View.RelationLine;
@@ -26,6 +25,7 @@ public class mainDiagramController implements ClassBoxEventHandler {
     private RelationLine placingRelation;
 
     private Data data;
+    private BaseController baseController;
 
     @FXML
     private StackPane bgpane;
@@ -53,6 +53,7 @@ public class mainDiagramController implements ClassBoxEventHandler {
     public mainDiagramController() {
         controller = this;
         data = new Data();
+        baseController = new BaseController(data);
     }
 
     @FXML
@@ -245,16 +246,17 @@ public class mainDiagramController implements ClassBoxEventHandler {
         // displays dialog box prompting for class name
         String className = ClassBox.classNameDialog();
         // gets the result of adding the class
-        String result = ClassItem.addClassItem(data.getClassItems(), className);
-        // parse result for either successful add or failure to add
-        if (result.equals("Class \"" + className.trim().toLowerCase() + "\" created.")) {
-            // if successful, add class to the anchor pane
-            addClass(className);
-        } else {
-            // if failure, call showError and pass result as error message
+        String result = baseController.AddClassListener(className);
+        // parse result for either successful rename or failure
+        if (result == "good")
+        {
+            ClassBox classBox = addClass(className);
+            classBox.Update();
+        }
+        else
+        {
             ClassBox.showError(result);
         }
-
     }
 
     public void onClassNameClicked(String oldName, String newName, ClassBox classBox) {
@@ -262,14 +264,15 @@ public class mainDiagramController implements ClassBoxEventHandler {
         oldName = oldName.trim().toLowerCase();
         newName = newName.trim().toLowerCase();
 
-        String result = ClassItem.renameClassItem(data.getClassItems(), data.getRelationshipItems(), newName, oldName);
+        String result = baseController.RenameClassListener(oldName, newName);
         // parse result for either successful rename or failure
-        if (result.equals(oldName + " class renamed to \"" + newName + "\"")) {
-            // if success, call the rename method in the view to update the classbox with
-            // the new name
+        if (result == "good")
+        {
+            classBox.Update();
             ClassBox.renameClassLabel(newName, classBox);
-        } else {
-            // if failure, call showError and pass result as error message
+        }
+        else
+        {
             ClassBox.showError(result);
         }
     }

@@ -42,7 +42,12 @@ public class ClassBox extends StackPane {
         createClassBox(classNameIn, boxWidth, boxHeight);
     }
 
-    // ================================================================================================================================================================
+    public void Update()
+    {
+        //update
+    }
+
+    // ============================================================================================
     // method to set the event handler for the class box
     public void setEventHandler(ClassBoxEventHandler eventHandler) {
         this.eventHandler = eventHandler;
