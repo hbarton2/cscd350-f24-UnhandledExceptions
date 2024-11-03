@@ -251,6 +251,13 @@ public class ClassBox extends StackPane
         dialog.setHeaderText("Enter the class name");
         dialog.setContentText("Class name: ");
 
+        Button okButton = (Button) dialog.getDialogPane().lookupButton(ButtonType.OK);
+        okButton.setDisable(true);
+
+        dialog.getEditor().textProperty().addListener((observable, oldValue, newValue) -> {
+            dialog.getDialogPane().lookupButton(ButtonType.OK).setDisable(newValue.trim().isEmpty());
+        });
+
         // shows the dialog box and waits for user input
         Optional<String> result = dialog.showAndWait();
 
