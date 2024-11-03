@@ -55,7 +55,7 @@ public class RelationshipItem
         // adding the relationship to the map
         relationships.put(key, relationship);
 
-        return "Relationship created successfully";
+        return "good";
     }
     /*
      * removeRelationship takes a Map of relationships we currently have created from the main.java, a String source and a String destination for the class names.
@@ -70,7 +70,7 @@ public class RelationshipItem
         // if the key is in the relationship map, we remove it along with the value which is a relationship object
         if(relationshipMap.containsKey(key)){
             relationshipMap.remove(key);
-            return "Relationship has been removed";
+            return "good";
         }
         else{
             return "Relationship not found.";

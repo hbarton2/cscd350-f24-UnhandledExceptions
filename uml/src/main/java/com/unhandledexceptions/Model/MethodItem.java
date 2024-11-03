@@ -85,7 +85,7 @@ public class MethodItem {
 		}
 
 		// return successful add of parameter
-		return "Parameter: " + type + " " + parameterName + " successfully added.";
+		return "good";
 	}
 
 	// getter to retrieve a parameter from the map
@@ -113,7 +113,7 @@ public class MethodItem {
 		methodItem.getParameters().remove(parameterName);
 
 		// return successful remove message
-		return "Parameter: " + type + " " + parameterName + " removed successfully.";
+		return "good";
 	}
 
 	// function to change a parameter name
@@ -147,7 +147,7 @@ public class MethodItem {
 			methodItem.getParameters().put(newName, newParam);
 
 			// return successful rename message
-			return "Parameter: " + oldType + " " + oldName + " successfully changed to: " + newType + " " + newName;
+			return "good";
 		} else {
 			// old name key does not exist in map
 			return "Parameter: " + oldType + " " + oldName + " does not exist.";
