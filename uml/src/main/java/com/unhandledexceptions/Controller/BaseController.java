@@ -61,7 +61,7 @@ public class BaseController
         return RelationshipItem.placeRelation(data.getRelationshipItems(), source, dest, sourceInt, destInt);
     }
 
-    public String AddFieldListener(String className, String type, String name)
+    public static String AddFieldListener(String className, String type, String name)
     {
         return ClassItem.addField(data.getClassItems().get(className), type, name);
     }

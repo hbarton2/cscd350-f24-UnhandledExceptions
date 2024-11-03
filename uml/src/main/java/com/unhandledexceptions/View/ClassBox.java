@@ -8,22 +8,18 @@ import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
-import javafx.scene.control.ComboBox;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextInputDialog;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import com.unhandledexceptions.Controller.BaseController;
 import com.unhandledexceptions.Controller.ClassBoxEventHandler;
 import javafx.scene.control.TitledPane;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -49,8 +45,6 @@ public class ClassBox extends StackPane
     private ClassBoxEventHandler eventHandler;
     private String className;
 
-    private String className;
-
     final double RANCHOR_VIEW_DISTANCE = 50; // Distance threshold for visibility
 
     private VBox dragBox;
@@ -65,7 +59,7 @@ public class ClassBox extends StackPane
      {
         this.eventHandler = eventHandler;
         this.className = classNameIn;
-        createClassBox(boxWidth, boxHeight);
+        createClassBox(classNameIn, boxWidth, boxHeight);
     }
 
     public void Update()
@@ -404,7 +398,7 @@ public class ClassBox extends StackPane
                 String name = userInput.getValue().toLowerCase();
                 //String typeName = type + " " + name;
                 String result = BaseController.AddFieldListener(className, type, name);
-                if(result.equals(name + " was successfully added to " + className)){
+                if(result.equals("good")){
                     //  fieldName + " was successfully added to " + classItem.getName()
                     fields.add(type + " " + name);
                 } else {

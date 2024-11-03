@@ -18,7 +18,6 @@ public class GUI extends Application
     //holds reference to the main stage (the GUI window)
     private static Stage stage;
     public GUI (){
-        this.data = data;
         this.controller = new BaseController(data);
     }
 
