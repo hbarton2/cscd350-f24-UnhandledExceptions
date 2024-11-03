@@ -22,6 +22,7 @@ import com.unhandledexceptions.Controller.BaseController;
 import com.unhandledexceptions.Controller.ClassBoxEventHandler;
 import javafx.scene.control.TitledPane;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -43,8 +44,10 @@ import javafx.scene.control.ButtonBar;
  */
 
 
-public class ClassBox extends StackPane {
+public class ClassBox extends StackPane 
+{
     private ClassBoxEventHandler eventHandler;
+    private String className;
 
     private String className;
 
@@ -56,32 +59,21 @@ public class ClassBox extends StackPane {
 
     // Relationship anchors
     private Rectangle[] ranchors = new Rectangle[4];
-    // private double offsetX;
-    // private double offsetY;
 
-    public ClassBox(String classNameIn, double boxWidth, double boxHeight, ClassBoxEventHandler eventHandler) {
+    public ClassBox(String classNameIn, double boxWidth,
+     double boxHeight, ClassBoxEventHandler eventHandler)
+     {
         this.eventHandler = eventHandler;
-        createClassBox(classNameIn, boxWidth, boxHeight);
-
+        this.className = classNameIn;
+        createClassBox(boxWidth, boxHeight);
     }
 
-    //for picking datatypes
-    //use when asking for data types of fields/parameters
-    // public enum DataType {
-    //     INT,
-    //     FLOAT,
-    //     DOUBLE,
-    //     STRING,
-    //     BOOLEAN,
-    //     CHAR,
-    //     LONG,
-    //     BYTE,
-    //     SHORT,
-    //     PERSON;
-    // }
-   
+    public void Update()
+    {
+        //update
+    }
 
-    // ================================================================================================================================================================
+    // ============================================================================================
     // method to set the event handler for the class box
     public void setEventHandler(ClassBoxEventHandler eventHandler) {
         this.eventHandler = eventHandler;
@@ -112,20 +104,22 @@ public class ClassBox extends StackPane {
         nameAndLink.setAlignment(Pos.CENTER_LEFT);
 
         // Create and style the class name label
-        Label className = new Label(classNameIn);
-        className.setId("classNameLabel");
-        className.getStyleClass().add("class-name-label"); // Add CSS class for the class name label
-        className.setOnMouseClicked(event -> {  //"rename" event
-            if (event.getButton() == MouseButton.PRIMARY) {
-                String oldName = className.getText();
-                NameClicked(oldName, className);
+        Label classNameLabel = new Label(className);
+        classNameLabel.setId("classNameLabel");
+        classNameLabel.getStyleClass().add("class-name-label"); // Add CSS class for the class name label
+        classNameLabel.setOnMouseClicked(event -> {  //"rename" event
+            if (event.getClickCount() == 2) {
+                String oldName = classNameLabel.getText();
+                NameClicked(oldName, classNameLabel);
             }
         });
 
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
 
-        nameAndLink.getChildren().addAll(className, spacer);
+        Button deleteButton = createDeleteButton();
+
+        nameAndLink.getChildren().addAll(classNameLabel, spacer, deleteButton);
 
         TitledPane fieldsPane = createFieldPane();
         TitledPane methodsPane = createMethodPane();
@@ -134,8 +128,6 @@ public class ClassBox extends StackPane {
         for (int i = 0; i < 4; i++) {
             ranchors[i] = new Rectangle(10, 10);
             ranchors[i].setFill(Color.BLACK);
-            int index = i;
-            ranchors[i].setOnMouseClicked(event -> AddRelation(index));
         }
 
         // structure
@@ -166,14 +158,6 @@ public class ClassBox extends StackPane {
             for (Rectangle r : ranchors)
                 r.setVisible(true);
         });
-        // vbox.setOnMouseDragged(event -> {
-        // setLayoutX(event.getSceneX() - offsetX);
-        // setLayoutY(event.getSceneY() - offsetY);
-        // });
-    }
-
-    private void AddRelation(int index) {
-        System.out.println("clicked: " + index);
     }
 
     private void NameClicked(String oldName, Label className) {
@@ -191,33 +175,77 @@ public class ClassBox extends StackPane {
         }
     }
 
+    public String getClassName()
+    {
+        return this.className;
+    }
+
+    public void setClassName(String className)
+    {
+        this.className = className;
+    }
+
     public VBox getDragBox() {
         return this.dragBox;
     }
 
-    public Rectangle[] getRanchors() {
+    public Rectangle getRanchor(int i)
+    {
+        return this.ranchors[i];
+    }
+
+    public Rectangle[] getRanchors()
+    {
         return this.ranchors;
     }
 
-    // ================================================================================================================================================================
-    // method to create a button beside class name (top right corner) may use for
-    // delete or some other action
-    // private Button createLinkButton() {
-    //     // create a button with an image
-    //     Button linkButton = new Button();
-    //     ImageView linkImage = new ImageView("/images/link-image.png");
-    //     // set the size of the image
-    //     linkImage.setFitHeight(30);
-    //     linkImage.setFitWidth(30);
-    //     // set the background of the image to transparent
-    //     linkImage.setStyle("-fx-background-color: transparent;");
-    //     // set the graphic of the button to the image
-    //     linkButton.setGraphic(linkImage);
-    //     // set the style class of the button to a transparent button
-    //     linkButton.getStyleClass().add("transparent-button");
+    public Rectangle getClickedRanchor(MouseEvent event)
+    {
+        for (Rectangle ranchor : ranchors)
+            if (ranchor.contains(event.getX(), event.getY()))
+                return ranchor;
+        return null;
+    }
 
-    //     return linkButton;
-    // }
+    // ================================================================================================================================================================
+    // method to create a delete button, sets the action to call
+    // the controller to delete the class
+    // action will also call an alert box to warn user
+    private Button createDeleteButton() {
+        // create a button with an image
+        Button deleteButton = new Button();
+        ImageView deleteImage = new ImageView("/images/trash-can-icon.png");
+        // set the size of the image
+        deleteImage.setFitHeight(12);
+        deleteImage.setFitWidth(18);
+        // set the background of the image to transparent
+        deleteImage.setStyle("-fx-background-color: transparent;");
+        // set the graphic of the button to the image
+        deleteButton.setGraphic(deleteImage);
+        // set the style class of the button to a transparent button
+        deleteButton.getStyleClass().add("transparent-button-delete");
+
+        deleteButton.setOnAction(event -> {
+            Alert warning = deleteClassWarning();
+
+            // get confirmation for delete
+            Optional<ButtonType> result = warning.showAndWait();
+
+            if (result.isPresent() && result.get() == ButtonType.OK) {
+                // user accepted, get the classBox name
+                String className = getClassBoxName();
+
+                // call controller delete passing this class box and the name
+                eventHandler.onDeleteButtonClicked(this, className);
+
+            } else {
+                // user denied, cancel action
+                return;
+            }
+        });
+
+        return deleteButton;
+    }
 
     // ================================================================================================================================================================
     // method to create a dialog box for user input of class name
@@ -484,6 +512,36 @@ public class ClassBox extends StackPane {
                 // nothing else to do after accepting
             }
         });
+    }
+
+    // method to display warning when deleting a class box
+    private Alert deleteClassWarning() {
+        // create an alert box
+        Alert alert = new Alert(AlertType.CONFIRMATION);
+        // set the title and header as a warning
+        alert.setTitle("Warning");
+        alert.setHeaderText("Are you sure you want to delete this class?");
+        alert.setContentText("This action can not be undone");
+
+        // return the alert to be instantiated by delete action
+        return alert;
+    }
+
+    // helper method to retrieve the class name from the label
+    private String getClassBoxName() {
+        Label classNameLabel = (Label) this.lookup("#classNameLabel");
+
+        // check if the label exists
+        if (classNameLabel != null) {
+            // retrieve the name from the label
+            String className = classNameLabel.getText();
+
+            // return the class name
+            return className;
+        } else {
+            // return null if the label does not exist
+            return null;
+        }
     }
 
 }

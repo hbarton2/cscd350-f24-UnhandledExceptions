@@ -4,21 +4,25 @@ import java.util.HashMap;
 
 public class MethodItem {
 	private String methodName;
+	// return type for the method
+	private String type;
 	// hash map to store ParamterItem's with their name as the key
 	private HashMap<String, ParameterItem> parameters;
 
 	public MethodItem() {} //blank constructor for IO serialization
 
-	public MethodItem(String methodName) {
+	public MethodItem(String methodName, String type) {
 		// preconditions
-		if (methodName == null || methodName.isBlank()) {
-			throw new IllegalArgumentException("Method name cannot be null or blank - constructor");
+		if (methodName == null || methodName.isBlank() || type == null || type.isBlank()) {
+			throw new IllegalArgumentException("Method name or type cannot be null or blank - constructor");
 		}
 
 		// strip input to remove any leading or trailing whitespace
 		methodName.trim();
+		type.trim();
 
 		this.methodName = methodName;
+		this.type = type;
 		// initialize hash map
 		this.parameters = new HashMap<>();
 	}
@@ -35,6 +39,14 @@ public class MethodItem {
 		}
 
 		this.methodName = newName;
+	}
+
+	public String getType() {
+		return this.type;
+	}
+	
+	public void setType(String newType) {
+		this.type = newType;
 	}
 
 	public HashMap<String, ParameterItem> getParameters() {
@@ -73,7 +85,7 @@ public class MethodItem {
 		}
 
 		// return successful add of parameter
-		return "Parameter: " + type + " " + parameterName + " successfully added.";
+		return "good";
 	}
 
 	// getter to retrieve a parameter from the map
@@ -101,7 +113,7 @@ public class MethodItem {
 		methodItem.getParameters().remove(parameterName);
 
 		// return successful remove message
-		return "Parameter: " + type + " " + parameterName + " removed successfully.";
+		return "good";
 	}
 
 	// function to change a parameter name
@@ -135,7 +147,7 @@ public class MethodItem {
 			methodItem.getParameters().put(newName, newParam);
 
 			// return successful rename message
-			return "Parameter: " + oldType + " " + oldName + " successfully changed to: " + newType + " " + newName;
+			return "good";
 		} else {
 			// old name key does not exist in map
 			return "Parameter: " + oldType + " " + oldName + " does not exist.";
@@ -147,6 +159,7 @@ public class MethodItem {
 	public String toString() {
 		StringBuilder out = new StringBuilder();
 		out.append("Method: ");
+		out.append(type + " ");
 		out.append(methodName);
 		out.append(" Parameters: ");
 		// out.append(parameters.keySet());

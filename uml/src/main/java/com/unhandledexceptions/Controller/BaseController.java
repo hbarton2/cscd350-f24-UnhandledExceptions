@@ -56,7 +56,12 @@ public class BaseController
         return RelationshipItem.removeRelationship(data.getRelationshipItems(), source, destination);
     }
 
-    public static String AddFieldListener(String className, String type, String name)
+    public String PlaceRelationshipListener(String source, String dest, int sourceInt, int destInt)
+    {
+        return RelationshipItem.placeRelation(data.getRelationshipItems(), source, dest, sourceInt, destInt);
+    }
+
+    public String AddFieldListener(String className, String type, String name)
     {
         return ClassItem.addField(data.getClassItems().get(className), type, name);
     }
@@ -71,9 +76,9 @@ public class BaseController
         return ClassItem.renameField(data.getClassItems().get(className), oldName, newName);
     }
 
-    public String AddMethodListener(String className, String name)
+    public String AddMethodListener(String className, String name, String type)
     {
-        return ClassItem.addMethod(data.getClassItems().get(className), name);
+        return ClassItem.addMethod(data.getClassItems().get(className), name, type);
     }
 
     public String RemoveMethodListener(String className, String name)

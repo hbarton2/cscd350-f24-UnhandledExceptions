@@ -12,8 +12,10 @@ public interface ClassBoxEventHandler {
 
     void onClassBoxClicked(ClassBox classBox);
 
-    void onAddClassClicked();
+    ClassBox onAddClassClicked();
 
     void onClassNameClicked(String oldName, String newName, ClassBox classBox);
+
+    void onDeleteButtonClicked(ClassBox classBox, String className);
 
 }

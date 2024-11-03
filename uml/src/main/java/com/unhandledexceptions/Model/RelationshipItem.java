@@ -9,11 +9,14 @@ public class RelationshipItem
     private ClassItem source;
     private ClassItem destination;
     private String type;
+    private int sourceLoc, destLoc;
     
     public RelationshipItem() {} //blank constructor for IO serialization
 
-    public RelationshipItem(final ClassItem source, final ClassItem destination, final String type){
-
+    public RelationshipItem(final ClassItem source, final ClassItem destination, final String type)
+    {
+        sourceLoc = 0;
+        destLoc = 0;
         // checking for null values and throwing an exception if the source or destination are null
         // we can't have a relationship with only a source or only a destination
         if(source == null || destination == null){
@@ -55,7 +58,7 @@ public class RelationshipItem
         // adding the relationship to the map
         relationships.put(key, relationship);
 
-        return "Relationship created successfully";
+        return "good";
     }
     /*
      * removeRelationship takes a Map of relationships we currently have created from the main.java, a String source and a String destination for the class names.
@@ -70,7 +73,24 @@ public class RelationshipItem
         // if the key is in the relationship map, we remove it along with the value which is a relationship object
         if(relationshipMap.containsKey(key)){
             relationshipMap.remove(key);
-            return "Relationship has been removed";
+            return "good";
+        }
+        else{
+            return "Relationship not found.";
+        }
+    }
+
+    public static String placeRelation(
+        HashMap<String, RelationshipItem> relationshipMap, 
+        String source, String dest, int sourceInt, int destInt)
+    {
+        // key is sourceclass_destinationclass
+        String key = source + "_" + dest;
+        // if the key is in the relationship map, we remove it along with the value which is a relationship object
+        if(relationshipMap.containsKey(key)){
+            relationshipMap.get(key).setSourceLoc(sourceInt);
+            relationshipMap.get(key).setDestLoc(destInt);
+            return "good";
         }
         else{
             return "Relationship not found.";
@@ -95,6 +115,26 @@ public class RelationshipItem
     //sets the destination
     public void setDestination(ClassItem destination) {
         this.destination = destination;
+    }
+
+    public int getSourceLoc()
+    {
+        return this.sourceLoc;
+    }
+
+    public void setSourceLoc(int sourceLoc)
+    {
+        this.sourceLoc = sourceLoc;
+    }
+
+    public int getDestLoc()
+    {
+        return this.destLoc;
+    }
+
+    public void setDestLoc(int destLoc)
+    {
+        this.destLoc = destLoc;
     }
 
     public String getType() {
