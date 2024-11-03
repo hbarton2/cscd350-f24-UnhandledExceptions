@@ -7,29 +7,19 @@ import com.unhandledexceptions.View.RelationLine;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Bounds;
-import javafx.scene.control.Dialog;
 import javafx.scene.control.Menu;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundImage;
-import javafx.scene.layout.BackgroundPosition;
-import javafx.scene.layout.BackgroundRepeat;
-import javafx.scene.layout.BackgroundSize;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
-import javafx.scene.paint.Color;
 import javafx.scene.Node;
-import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.transform.Scale;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.control.TextInputDialog;
-import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 
 public class mainDiagramController implements ClassBoxEventHandler {
     private mainDiagramController controller;
+    private BaseController baseController;
 
     private final double boxWidth = 200; // Width of the boxes
     private final double boxHeight = 300; // Height of the content box
@@ -63,6 +53,8 @@ public class mainDiagramController implements ClassBoxEventHandler {
     public mainDiagramController() {
         controller = this;
         data = new Data();
+        baseController = new BaseController(data);
+
     }
 
     @FXML
@@ -82,9 +74,9 @@ public class mainDiagramController implements ClassBoxEventHandler {
         // );
         // anchorPane.setBackground(new Background(bgImage));
 
-        // addClassMenu.setOnShowing(event -> {
-        // addClass();
-        // });
+        addClassMenu.setOnShowing(event -> {
+        onAddClassClicked();
+        });
 
         anchorPane.getTransforms().add(scaleTransform);
 
