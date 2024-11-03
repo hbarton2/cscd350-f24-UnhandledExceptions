@@ -2,35 +2,57 @@ package com.unhandledexceptions.View;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
+import javafx.scene.control.TextField;
 import javafx.scene.control.TextInputDialog;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
-
+import java.util.stream.Collectors;
+import com.unhandledexceptions.Controller.BaseController;
 import com.unhandledexceptions.Controller.ClassBoxEventHandler;
-
 import javafx.scene.control.TitledPane;
 import javafx.scene.control.Alert.AlertType;
-import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Rectangle;
+import javafx.util.Pair;
 import javafx.scene.paint.Color;
+import javafx.scene.control.ButtonBar;
+
+/*
+    fieldsList = list of fields {field1 field 2}
+
+ * List
+ *      [1] param1 param2 for method 1
+ *      [2] param1 param2 for method 2
+ */
+
 
 public class ClassBox extends StackPane {
     private ClassBoxEventHandler eventHandler;
 
+    private String className;
+
     final double RANCHOR_VIEW_DISTANCE = 50; // Distance threshold for visibility
 
     private VBox dragBox;
+
+    
 
     // Relationship anchors
     private Rectangle[] ranchors = new Rectangle[4];
@@ -40,7 +62,24 @@ public class ClassBox extends StackPane {
     public ClassBox(String classNameIn, double boxWidth, double boxHeight, ClassBoxEventHandler eventHandler) {
         this.eventHandler = eventHandler;
         createClassBox(classNameIn, boxWidth, boxHeight);
+
     }
+
+    //for picking datatypes
+    //use when asking for data types of fields/parameters
+    // public enum DataType {
+    //     INT,
+    //     FLOAT,
+    //     DOUBLE,
+    //     STRING,
+    //     BOOLEAN,
+    //     CHAR,
+    //     LONG,
+    //     BYTE,
+    //     SHORT,
+    //     PERSON;
+    // }
+   
 
     // ================================================================================================================================================================
     // method to set the event handler for the class box
@@ -49,7 +88,7 @@ public class ClassBox extends StackPane {
     }
 
     private void createClassBox(String classNameIn, double boxWidth, double boxHeight) {
-        // getStyleClass().add("class-box"); // Add CSS style class for the box
+        this.className = classNameIn;
 
         // create structure with boxes
         VBox vbase = new VBox();
@@ -75,7 +114,7 @@ public class ClassBox extends StackPane {
         Label className = new Label(classNameIn);
         className.setId("classNameLabel");
         className.getStyleClass().add("class-name-label"); // Add CSS class for the class name label
-        className.setOnMouseClicked(event -> {
+        className.setOnMouseClicked(event -> {  //"rename" event
             if (event.getButton() == MouseButton.PRIMARY) {
                 String oldName = className.getText();
                 NameClicked(oldName, className);
@@ -162,22 +201,22 @@ public class ClassBox extends StackPane {
     // ================================================================================================================================================================
     // method to create a button beside class name (top right corner) may use for
     // delete or some other action
-    private Button createLinkButton() {
-        // create a button with an image
-        Button linkButton = new Button();
-        ImageView linkImage = new ImageView("/images/link-image.png");
-        // set the size of the image
-        linkImage.setFitHeight(30);
-        linkImage.setFitWidth(30);
-        // set the background of the image to transparent
-        linkImage.setStyle("-fx-background-color: transparent;");
-        // set the graphic of the button to the image
-        linkButton.setGraphic(linkImage);
-        // set the style class of the button to a transparent button
-        linkButton.getStyleClass().add("transparent-button");
+    // private Button createLinkButton() {
+    //     // create a button with an image
+    //     Button linkButton = new Button();
+    //     ImageView linkImage = new ImageView("/images/link-image.png");
+    //     // set the size of the image
+    //     linkImage.setFitHeight(30);
+    //     linkImage.setFitWidth(30);
+    //     // set the background of the image to transparent
+    //     linkImage.setStyle("-fx-background-color: transparent;");
+    //     // set the graphic of the button to the image
+    //     linkButton.setGraphic(linkImage);
+    //     // set the style class of the button to a transparent button
+    //     linkButton.getStyleClass().add("transparent-button");
 
-        return linkButton;
-    }
+    //     return linkButton;
+    // }
 
     // ================================================================================================================================================================
     // method to create a dialog box for user input of class name
@@ -329,15 +368,23 @@ public class ClassBox extends StackPane {
         Button addFieldButton = new Button("+");
         addFieldButton.getStyleClass().add("transparent-button");
         addFieldButton.setOnAction(e -> {
-            TextInputDialog dialog = new TextInputDialog();
-            dialog.setTitle("Add Field");
-            dialog.setHeaderText("Enter the field name and type");
-            dialog.setContentText("Field:");
+            Pair<String, String> userInput = createInputDialogs("Field");
 
-            Optional<String> result = dialog.showAndWait();
-            result.ifPresent(field -> {
-                fields.add(field);
-            });
+            if(userInput != null){
+                String type = userInput.getKey().toLowerCase();
+                String name = userInput.getValue().toLowerCase();
+                //String typeName = type + " " + name;
+                String result = BaseController.AddFieldListener(className, type, name);
+                if(result.equals(name + " was successfully added to " + className)){
+                    //  fieldName + " was successfully added to " + classItem.getName()
+                    fields.add(type + " " + name);
+                } else {
+                    showError(result);
+                }
+            } else {    //prints to terminal that user canceled dialog box for adding field
+                System.out.println("Dialog was canceled");
+            }
+ 
         });
 
         // Create an HBox to hold the fields label and the add button
@@ -351,6 +398,73 @@ public class ClassBox extends StackPane {
 
         return fieldsPane;
     }
+
+    public Pair<String, String> createInputDialogs(String promptName) {
+        Dialog<Pair<String, String>> dialog = new Dialog<>();
+        dialog.setTitle("Add promptName");
+        dialog.setHeaderText("Enter the " + promptName.toLowerCase() + " and name.");
+
+        // Set the button types
+        ButtonType addButtonType = new ButtonType("Add", ButtonBar.ButtonData.OK_DONE);
+        dialog.getDialogPane().getButtonTypes().addAll(addButtonType, ButtonType.CANCEL);
+
+        // Create the labels and fields
+        GridPane grid = new GridPane();
+        grid.setHgap(10);
+        grid.setVgap(10);
+        grid.setPadding(new Insets(20, 150, 10, 10));
+
+        // ComboBox<String> typeComboBox = new ComboBox<>();
+        // setupComboBox(typeComboBox);
+
+        //Text for type input
+        TextField firstInputField = new TextField();
+        firstInputField.setPromptText(promptName);
+        //Text for name input
+        TextField secondInputField = new TextField();
+        secondInputField.setPromptText("Name");
+
+
+        grid.add(new Label(promptName.trim() + " type" + ":"), 0, 0);
+        grid.add(firstInputField, 1, 0);
+        grid.add(new Label("Name:"), 0, 1);
+        grid.add(secondInputField, 1, 1);
+
+        dialog.getDialogPane().setContent(grid);
+
+        // Enable/Disable the Add button depending on whether fields are empty
+        Node addButton = dialog.getDialogPane().lookupButton(addButtonType);
+        addButton.setDisable(true);
+
+        // Add listeners to fields to enable Add button when both fields have text
+        firstInputField.textProperty().addListener((observable, oldValue, newValue) -> {
+            addButton.setDisable(firstInputField.getText().isEmpty()|| secondInputField.getText().isEmpty());
+        });
+        secondInputField.textProperty().addListener((observable, oldValue, newValue) -> {
+            addButton.setDisable(firstInputField.getText().isEmpty()|| secondInputField.getText().isEmpty());
+        });
+
+        // Convert the result to a pair of strings when the Add button is clicked
+        dialog.setResultConverter(dialogButton -> {
+            if (dialogButton == addButtonType) {
+                return new Pair<>(firstInputField.getText(), secondInputField.getText());
+            }
+            return null;
+        });
+    
+        Optional<Pair<String, String>> result = dialog.showAndWait();
+        return result.orElse(null);  // Returns the result if present, otherwise null
+    }
+
+    // public void setupComboBox(ComboBox<String> typeComboBox) {
+    //      // Convert enum values to a List of Strings
+    //     List<String> typeList = Arrays.stream(DataType.values())
+    //         .map(Enum::name) // Convert enum to its string name
+    //         .collect(Collectors.toList());
+
+    //     typeComboBox.getItems().addAll(typeList); // Set the list of DataTypes in the ComboBox
+    //     typeComboBox.setPromptText("Select Type");
+    // }
 
     // ================================================================================================================================================================
     // method to display an error message
