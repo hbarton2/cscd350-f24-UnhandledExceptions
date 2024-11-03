@@ -2,6 +2,7 @@ package com.unhandledexceptions.View;
 
 import java.io.IOException;
 
+import com.unhandledexceptions.Controller.BaseController;
 import com.unhandledexceptions.Model.Data;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -13,9 +14,12 @@ public class GUI extends Application
 {
     //unsure how we'll implement data yet. I believe it will be in each scenes controller.
     Data data;
+    BaseController controller;
     //holds reference to the main stage (the GUI window)
     private static Stage stage;
     public GUI (){
+        this.data = data;
+        this.controller = new BaseController(data);
     }
 
     public static void setRoot(String fxml) throws IOException{
