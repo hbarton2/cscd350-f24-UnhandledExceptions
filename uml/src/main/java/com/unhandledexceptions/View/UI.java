@@ -28,7 +28,7 @@ public class UI
 		commandSyntax.put("addfield", "addfield [classname] [type] [fieldname]");
 		commandSyntax.put("removefield", "removefield [classname] [fieldname]");
 		commandSyntax.put("renamefield", "renamefield [classname] [fieldname] [newfieldname]");
-		commandSyntax.put("addmethod", "addmethod [classname] [methodname]");
+		commandSyntax.put("addmethod", "addmethod [classname] [methodname] [returnType]");
 		commandSyntax.put("removemethod", "removemethod [classname] [methodname]");
 		commandSyntax.put("renamemethod", "renamemethod [classname] [methodname] [newmethodname]");
 		commandSyntax.put("addparameter", "addparameter [classname] [methodname] [parametertype] [parametername]");
@@ -243,8 +243,9 @@ public class UI
 			// Add methods to the class via this loop
 			// same basic structure as adding fields
 			while (true) {
-				System.out.println("Add method: [methodName] to add a method, or `exit` to exit");
+				System.out.println("Add method: [methodName] [returnType] to add a method, or `exit` to exit");
 				String result = reader.readLine().trim();
+				String[] split = result.split(" ");
 				// Exiting this loop exits creating a class
 				if (result.toLowerCase().length() == 0) {
 					return;
@@ -253,9 +254,10 @@ public class UI
 				}
 				// result should be the method name
 				// passing to controller to add a method
-				System.out.println(controller.AddMethodListener(className, result));
+				// split[0] = name, split[1] = type
+				System.out.println(controller.AddMethodListener(className, split[0], split[1]));
 				// another menu after adding a method to add parameters
-				String res = editMethod(className, result, reader, controller);
+				String res = editMethod(className, split[0], reader, controller);
 				if (res.equals("exit")) return;
 			}
 	}catch(IOException e){

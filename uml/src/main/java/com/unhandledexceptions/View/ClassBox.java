@@ -17,6 +17,7 @@ import javafx.scene.control.TitledPane;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
@@ -126,10 +127,6 @@ public class ClassBox extends StackPane {
             for (Rectangle r : ranchors)
                 r.setVisible(true);
         });
-        // vbox.setOnMouseDragged(event -> {
-        // setLayoutX(event.getSceneX() - offsetX);
-        // setLayoutY(event.getSceneY() - offsetY);
-        // });
     }
 
     private void AddRelation(int index) {
@@ -155,15 +152,26 @@ public class ClassBox extends StackPane {
         return this.dragBox;
     }
 
-    public Rectangle[] getRanchors() {
+    public Rectangle getRanchor(int i)
+    {
+        return this.ranchors[i];
+    }
+
+    public Rectangle[] getRanchors()
+    {
         return this.ranchors;
     }
 
-    // ================================================================================================================================================================
-    // method to create a button beside class name (top right corner) may use for
-    // delete or some other action
-    private Button createLinkButton() {
-        // create a button with an image
+    public Rectangle getClickedRanchor(MouseEvent event)
+    {
+        for (Rectangle ranchor : ranchors)
+            if (ranchor.contains(event.getX(), event.getY()))
+                return ranchor;
+        return null;
+    }
+
+    private Button createLinkButton()
+    {
         Button linkButton = new Button();
         ImageView linkImage = new ImageView("/images/link-image.png");
         // set the size of the image

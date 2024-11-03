@@ -4,27 +4,21 @@ import com.unhandledexceptions.Model.ClassItem;
 import com.unhandledexceptions.Model.Data;
 import com.unhandledexceptions.View.ClassBox;
 import com.unhandledexceptions.View.RelationLine;
+
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Bounds;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Menu;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundImage;
-import javafx.scene.layout.BackgroundPosition;
-import javafx.scene.layout.BackgroundRepeat;
-import javafx.scene.layout.BackgroundSize;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
-import javafx.scene.paint.Color;
-import javafx.scene.Node;
-import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.Node;
 import javafx.scene.transform.Scale;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.image.Image;
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 
@@ -66,94 +60,119 @@ public class mainDiagramController implements ClassBoxEventHandler {
     }
 
     @FXML
-    private void initialize() {
-
-        // //bg stuff
-        // Image backgroundImage = new
-        // Image(getClass().getResource("/images/nms.png").toExternalForm());
-        // BackgroundImage bgImage = new BackgroundImage(
-        // backgroundImage,
-        // BackgroundRepeat.REPEAT, // No repeat
-        // BackgroundRepeat.NO_REPEAT, // No repeat
-        // BackgroundPosition.CENTER, // Centered position
-        // new BackgroundSize(
-        // BackgroundSize.AUTO, BackgroundSize.AUTO, true, true, true, false
-        // )
-        // );
-        // anchorPane.setBackground(new Background(bgImage));
-
-        // addClassMenu.setOnShowing(event -> {
-        // addClass();
-        // });
+    private void initialize()
+    {
+        addClassMenu.setOnShowing(event -> {
+            onAddClassClicked(); 
+            });
 
         anchorPane.getTransforms().add(scaleTransform);
 
         scrollPane.addEventFilter(ScrollEvent.SCROLL, this::handleZoom);
 
         anchorPane.setOnMouseMoved(event -> mouseMove(event));
+
+        anchorPane.setOnMouseClicked(event -> mouseClick(event));
     }
 
     @FXML
-    public void addClass(String className) {
-        // creates a new class box with the name, width, height, and controller(for
-        // event handling)
+    public ClassBox addClass(String className)
+    {
         ClassBox classBox = new ClassBox(className, boxWidth, boxHeight, controller);
-        // adds the class box to the anchor pane
         anchorPane.getChildren().add(classBox);
 
         // setup mouse drag
         classBox.getDragBox().setOnMousePressed(event -> {
-            classBox.toFront();
-            offsetX = event.getSceneX() - classBox.getLayoutX();
-            offsetY = event.getSceneY() - classBox.getLayoutY();
-        });
+                classBox.toFront();
+                offsetX = (event.getSceneX() / scaleTransform.getX()) - classBox.getLayoutX();
+                offsetY = (event.getSceneY() / scaleTransform.getY()) - classBox.getLayoutY();
+            });
+    
+            classBox.getDragBox().setOnMouseDragged(event -> {
+                double newX = (event.getSceneX() / scaleTransform.getX()) - offsetX;
+                double newY = (event.getSceneY() / scaleTransform.getY()) - offsetY;
+            
+                classBox.setLayoutX(newX);
+                classBox.setLayoutY(newY);
 
-        classBox.getDragBox().setOnMouseDragged(event -> {
-            double newX = (event.getSceneX() - offsetX) * zoomFactor;
-            double newY = (event.getSceneY() - offsetY) * zoomFactor;
+                adjustAnchorPaneSize(newX, newY, classBox);
+                updateRelationLines();
+            });
 
-            classBox.setLayoutX(newX);
-            classBox.setLayoutY(newY);
-
-            adjustAnchorPaneSize(newX, newY, classBox);
-            updateRelationLines();
-        });
-
-        // setup ranchor events
-        Rectangle ranchors[] = classBox.getRanchors();
-        for (Rectangle ranchor : ranchors) {
-            ranchor.setOnMouseClicked(event -> ranchorClick(classBox, ranchor));
+        //setup ranchor events
+        for (int i = 0; i < 4; i++)
+        {
+            int index = i;
+            classBox.getRanchor(i).setOnMouseClicked(event -> {
+                ranchorClick(event, classBox, index);
+                event.consume();
+            });
         }
+
+        return classBox;
     }
 
     private void updateRelationLines() {
         for (Node node : anchorPane.getChildren()) {
             if (node instanceof RelationLine) {
                 RelationLine line = (RelationLine) node;
-                line.Update();
+                line.Update(scaleTransform);
             }
         }
     }
 
-    private void mouseMove(MouseEvent event) {
-        if (placingRelation != null) {
-            placingRelation.setEndX(event.getSceneX());
-            placingRelation.setEndY(event.getSceneY() - 25);
+    private void mouseMove(MouseEvent event)
+    {
+        if (placingRelation != null)
+            placingRelation.Update(scaleTransform, event);
+    }
+
+    // mouse click on background event
+    private void mouseClick(MouseEvent event)
+    {
+        if (placingRelation != null && event.getButton() == MouseButton.PRIMARY)
+        {
+            ClassBox classBox = addClass("newClass");
+
+            new Thread(() -> {
+                try { Thread.sleep(50); 
+                } catch (InterruptedException e) { e.printStackTrace(); }
+
+                int i = (placingRelation.getI1() + 2) % 4;
+                Rectangle r = classBox.getRanchor(i);
+                double newX = event.getSceneX() - r.getBoundsInParent().getMinX();
+                double newY = event.getSceneY() - r.getBoundsInParent().getMinY() - 35;
+                classBox.setLayoutX(newX / scaleTransform.getX());
+                classBox.setLayoutY(newY / scaleTransform.getY());
+
+                placingRelation.setEnd(classBox, i);
+                placingRelation.Update(scaleTransform);
+                placingRelation = null;
+            }).start();
+        }
+        else if (placingRelation != null && event.getButton() != MouseButton.PRIMARY)
+        {
+            anchorPane.getChildren().remove(placingRelation);
+            placingRelation = null;
         }
     }
 
-    private void ranchorClick(ClassBox classBox, Rectangle ranchor) {
-        if (placingRelation == null) {
-            Bounds rbounds = ranchor.localToScene(ranchor.getBoundsInLocal());
+    //mouse click on relation anchor event
+    private void ranchorClick(MouseEvent event, ClassBox classBox, int index)
+    {
+        if (placingRelation == null)
+        {
             RelationLine line = new RelationLine();
-            line.setR1(ranchor);
-
-            line.setEndX(rbounds.getMinX());
-            line.setEndY(rbounds.getMinY());
+            line.setStart(classBox, index);
+            
+            line.Update(scaleTransform, event);
             anchorPane.getChildren().add(line);
             placingRelation = line;
-        } else {
-            placingRelation.setR2(ranchor);
+        }
+        else
+        {
+            placingRelation.setEnd(classBox, index);
+            placingRelation.Update(scaleTransform);
             placingRelation = null;
         }
     }
