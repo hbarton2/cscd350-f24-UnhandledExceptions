@@ -7,8 +7,6 @@ import com.unhandledexceptions.View.RelationLine;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.geometry.Bounds;
-import javafx.scene.control.Dialog;
 import javafx.scene.control.Menu;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.StackPane;
@@ -16,8 +14,6 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.Node;
 import javafx.scene.transform.Scale;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.control.TextInputDialog;
-import javafx.scene.image.Image;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;

@@ -15,7 +15,6 @@ import com.unhandledexceptions.Controller.ClassBoxEventHandler;
 
 import javafx.scene.control.TitledPane;
 import javafx.scene.control.Alert.AlertType;
-import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
@@ -170,6 +169,7 @@ public class ClassBox extends StackPane {
         return null;
     }
 
+    /*
     private Button createLinkButton()
     {
         Button linkButton = new Button();
@@ -186,6 +186,7 @@ public class ClassBox extends StackPane {
 
         return linkButton;
     }
+     */
 
     // ================================================================================================================================================================
     // method to create a dialog box for user input of class name
