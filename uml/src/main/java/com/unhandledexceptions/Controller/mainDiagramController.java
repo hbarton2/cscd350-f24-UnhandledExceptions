@@ -25,7 +25,7 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 
-public class mainDiagramController implements ClassBoxEventHandler
+public class mainDiagramController
 {
     private mainDiagramController controller;
     
@@ -157,7 +157,8 @@ public class mainDiagramController implements ClassBoxEventHandler
 
     @FXML public ClassBox addClass(String className)
     {
-        ClassBox classBox = new ClassBox(className, boxWidth, boxHeight, controller);
+        ClassBox classBox = new ClassBox(baseController, className, boxWidth, boxHeight);
+        //new ClassBox(baseController, className, boxWidth, boxHeight, controller);
         anchorPane.getChildren().add(classBox);
 
         classBox.setOnMouseClicked(event -> event.consume());
@@ -349,15 +350,15 @@ public class mainDiagramController implements ClassBoxEventHandler
 
     // ================================================================================================================================================================
     // Method to handle the class box click(Not implemented, might be delete?)
-    @Override
-    public void onClassBoxClicked(ClassBox classBox) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'onClassBoxClicked'");
-    }
+    // @Override
+    // public void onClassBoxClicked(ClassBox classBox) {
+    //     // TODO Auto-generated method stub
+    //     throw new UnsupportedOperationException("Unimplemented method 'onClassBoxClicked'");
+    // }
 
     // ================================================================================================================================================================
     // Method to handle the add class button
-    @Override
+    
     public ClassBox onAddClassClicked() {
         // displays dialog box prompting for class name
         String className = ClassBox.classNameDialog();
@@ -377,24 +378,6 @@ public class mainDiagramController implements ClassBoxEventHandler
         }
     }
 
-    public void onClassNameClicked(String oldName, String newName, ClassBox classBox) {
-        // trim and lower input for checking result (this might be redundant)
-        oldName = oldName.trim().toLowerCase();
-        newName = newName.trim().toLowerCase();
-
-        String result = baseController.RenameClassListener(oldName, newName);
-        // parse result for either successful rename or failure
-        if (result == "good")
-        {
-            classBox.Update();
-            classBox.setClassName(newName);
-            ClassBox.renameClassLabel(newName, classBox);
-        }
-        else
-        {
-            ClassBox.showError(result);
-        }
-    }
 
     public void onDeleteButtonClicked(ClassBox classBox, String className) {
         // Pass className to method and attempt to delete

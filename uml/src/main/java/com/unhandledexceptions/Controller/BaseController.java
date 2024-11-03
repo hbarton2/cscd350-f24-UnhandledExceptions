@@ -8,11 +8,11 @@ import com.unhandledexceptions.Model.RelationshipItem;
 public class BaseController
 {
     // our controller gets passed in a data object for storage from the CLI which gets passed a data object from main
-    static Data data;
+    Data data;
 
     public BaseController(Data data)
     {
-        BaseController.data = data;
+        this.data = data;
     }
 
     /*
@@ -61,7 +61,7 @@ public class BaseController
         return RelationshipItem.placeRelation(data.getRelationshipItems(), source, dest, sourceInt, destInt);
     }
 
-    public static String AddFieldListener(String className, String type, String name)
+    public String AddFieldListener(String className, String type, String name)
     {
         return ClassItem.addField(data.getClassItems().get(className), type, name);
     }

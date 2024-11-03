@@ -10,10 +10,11 @@ public interface ClassBoxEventHandler {
      * controller.
      */
 
-    void onClassBoxClicked(ClassBox classBox);
+    // void onClassBoxClicked(ClassBox classBox);
 
-    ClassBox onAddClassClicked();
+    // ClassBox onAddClassClicked();
 
+    //be moved to 
     void onClassNameClicked(String oldName, String newName, ClassBox classBox);
 
     void onDeleteButtonClicked(ClassBox classBox, String className);

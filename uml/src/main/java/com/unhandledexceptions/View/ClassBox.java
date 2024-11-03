@@ -42,22 +42,23 @@ import javafx.scene.control.ButtonBar;
 
 public class ClassBox extends StackPane 
 {
-    private ClassBoxEventHandler eventHandler;
     private String className;
 
     final double RANCHOR_VIEW_DISTANCE = 50; // Distance threshold for visibility
 
     private VBox dragBox;
 
+    BaseController baseController;
+
     
 
     // Relationship anchors
     private Rectangle[] ranchors = new Rectangle[4];
 
-    public ClassBox(String classNameIn, double boxWidth,
-     double boxHeight, ClassBoxEventHandler eventHandler)
-     {
-        this.eventHandler = eventHandler;
+    public ClassBox(BaseController baseController, String classNameIn, double boxWidth,
+     double boxHeight)
+    {
+        this.baseController = baseController;
         this.className = classNameIn;
         createClassBox(classNameIn, boxWidth, boxHeight);
     }
@@ -65,12 +66,6 @@ public class ClassBox extends StackPane
     public void Update()
     {
         //update
-    }
-
-    // ============================================================================================
-    // method to set the event handler for the class box
-    public void setEventHandler(ClassBoxEventHandler eventHandler) {
-        this.eventHandler = eventHandler;
     }
 
     private void createClassBox(String classNameIn, double boxWidth, double boxHeight) {
@@ -165,7 +160,19 @@ public class ClassBox extends StackPane
 
         if (result.isPresent()) {
             String newName = result.get();
-            eventHandler.onClassNameClicked(oldName, newName, this);
+            oldName = oldName.trim().toLowerCase();
+            newName = newName.trim().toLowerCase();
+    
+            String modelUpdated = baseController.RenameClassListener(oldName, newName);
+            // parse result for either successful rename or failure
+            if (modelUpdated == "good")
+            {
+                Update();
+            }
+            else
+            {
+                showError(modelUpdated);
+            }
         }
     }
 
@@ -230,7 +237,16 @@ public class ClassBox extends StackPane
                 String className = getClassBoxName();
 
                 // call controller delete passing this class box and the name
-                eventHandler.onDeleteButtonClicked(this, className);
+                String modelUpdated = baseController.RemoveClassListener(className);
+                // parse result for either successful rename or failure
+                if (modelUpdated == "good")
+                {
+                    //anchorPane.getChildren().remove(classBox);
+                }
+                else
+                {
+                    showError(modelUpdated);
+                }
 
             } else {
                 // user denied, cancel action
@@ -305,17 +321,36 @@ public class ClassBox extends StackPane
         addMethodsButton.getStyleClass().add("transparent-button");
         // when pressed, open dialog for user input
         addMethodsButton.setOnAction(e -> {
-            TextInputDialog dialog = new TextInputDialog();
-            dialog.setTitle("Add Method");
-            dialog.setHeaderText("Enter the Method name");
-            dialog.setContentText("Method:");
+            Pair<String, String> result = createInputDialogs("Method");
+            //TODO: functionalty to update model
+            if(result != null){
+                String type = result.getKey().toLowerCase();
+                String name = result.getValue().toLowerCase();
+                //String typeName = type + " " + name;    
+                String updateModel   = baseController.AddMethodListener(className, name, type);   
+                if (updateModel == "good")
+                {
+                    Update();   //updates view if model is successfully updated.
+                    /*
+                     * when method is added to model:
+                     * - pull methods from each class
+                     * -    if parameters in method,
+                     *          pull its parameters
+                     */         
 
-            Optional<String> result = dialog.showAndWait();
-            result.ifPresent(method -> {
-                TitledPane newMethodPane = createNewMethod(method);
-                methodsList.getItems().add(newMethodPane);
-            });
-        });
+                } else {
+                    showError(updateModel);
+                }
+            // result.ifPresent(method -> {
+            //     String modelUpdated baseController.AddMethodListener(className, name, type);
+
+            //     //update model
+            //     TitledPane newMethodPane = createNewMethod(method);
+            //     methodsList.getItems().add(newMethodPane);
+            // });
+        }});
+        
+
 
         // HARD CODED SPACING OF TITLE AND BUTTON
         HBox methodsTitleBox = new HBox(139);// spacing between objects
@@ -410,18 +445,18 @@ public class ClassBox extends StackPane
             if(userInput != null){
                 String type = userInput.getKey().toLowerCase();
                 String name = userInput.getValue().toLowerCase();
-                //String typeName = type + " " + name;
-                String result = BaseController.AddFieldListener(className, type, name);
-                if(result.equals("good")){
-                    //  fieldName + " was successfully added to " + classItem.getName()
-                    fields.add(type + " " + name);
+                //String typeName = type + " " + name;    
+                String result = baseController.AddFieldListener(className, name, type);   
+                if (result == "good")
+                {
+                    Update();   //updates view if model is successfully updated.
                 } else {
-                    showError(result);
-                }
+                    ClassBox.showError(result);
+        }
             } else {    //prints to terminal that user canceled dialog box for adding field
                 System.out.println("Dialog was canceled");
             }
- 
+
         });
 
         // Create an HBox to hold the fields label and the add button
@@ -456,7 +491,7 @@ public class ClassBox extends StackPane
 
         //Text for type input
         TextField firstInputField = new TextField();
-        firstInputField.setPromptText(promptName);
+        firstInputField.setPromptText("Type");
         //Text for name input
         TextField secondInputField = new TextField();
         secondInputField.setPromptText("Name");
