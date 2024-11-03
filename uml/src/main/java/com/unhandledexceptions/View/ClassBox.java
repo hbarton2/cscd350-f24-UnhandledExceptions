@@ -251,11 +251,18 @@ public class ClassBox extends StackPane
         dialog.setHeaderText("Enter the class name");
         dialog.setContentText("Class name: ");
 
+        //creates a reference variable okButton for the Ok button on the dialog box, and disables it
         Button okButton = (Button) dialog.getDialogPane().lookupButton(ButtonType.OK);
         okButton.setDisable(true);
 
+        // Add a listener to the text field to enable the OK button when input is not empty
+        /*
+         * the listener is triggers whenever the textProperty of the dialog editor box is changed, 
+         * when "newValue.trim().isEmpty()" returns true (no contents in the dialog box), okButton.setDisable is set to true (disabled)
+         * when "newValue.trim().isEmpty()" returns false (contents in the dialog box), okButton.setDisable is set to false (enabled)
+         */
         dialog.getEditor().textProperty().addListener((observable, oldValue, newValue) -> {
-            dialog.getDialogPane().lookupButton(ButtonType.OK).setDisable(newValue.trim().isEmpty());
+            okButton.setDisable(newValue.trim().isEmpty());
         });
 
         // shows the dialog box and waits for user input
