@@ -166,7 +166,7 @@ public class mainDiagramController
 
     @FXML public ClassBox addClass(String className)
     {
-        ClassBox classBox = new ClassBox(baseController, className, boxWidth, boxHeight);
+        ClassBox classBox = new ClassBox(anchorPane, baseController, className, boxWidth, boxHeight);
         //new ClassBox(baseController, className, boxWidth, boxHeight, controller);
         anchorPane.getChildren().add(classBox);
 
