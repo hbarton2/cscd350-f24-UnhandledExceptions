@@ -306,6 +306,29 @@ public class ClassItem {
 
     }
 
+    public static String retypeMethod(ClassItem classItem, String methodName, String newType){
+        // preconditions
+        if (newType == null || newType.isBlank()) {
+            return "Method names cannot be null or blank.";
+        }
+         newType = newType.trim();
+ 
+         // check if the method name is a valid key
+         if (classItem.getMethodItems().containsKey(methodName)) {
+            
+            MethodItem newMethod = classItem.getMethodItems().get(methodName);
+
+            // changes the type of the method
+            newMethod.setType(newType);
+            
+             // return success
+             return "good";
+         } else {
+             // invalid method name, return failure
+             return "Method name: " + methodName + " does not exist.";
+         }
+    }
+
     public static String addField(ClassItem classItem, String type, String fieldName) {
         // preconditions
         if (fieldName == null || fieldName.isBlank() || type == null || type.isBlank()) {

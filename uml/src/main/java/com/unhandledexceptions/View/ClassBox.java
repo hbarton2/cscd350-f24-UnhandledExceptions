@@ -495,7 +495,14 @@ public class ClassBox extends StackPane
         singleMethodName.setOnMouseClicked(event -> {
             if(event.getClickCount() == 2){
                 String oldName = singleMethodName.getText();
-                MethodClicked(oldName);
+                MethodNameClicked(oldName);
+            }
+        });
+
+        singleMethodType.setOnMouseClicked(event -> {
+            if(event.getClickCount() == 2){
+                String oldType = singleMethodType.getText();
+                MethodTypeClicked(singleMethodName.getText(), oldType);
             }
         });
 
@@ -508,6 +515,7 @@ public class ClassBox extends StackPane
         return singleMethodPane;
     }
 
+   
     private void clearFields()
     {
         ListView<String> fieldsList = (ListView<String>) fieldsPane.getContent();
@@ -578,7 +586,7 @@ public class ClassBox extends StackPane
         return fieldsPane;
     }
 
-    private void MethodClicked(String oldName){
+    private void MethodNameClicked(String oldName){
         TextInputDialog input = new TextInputDialog();
         input.setTitle("Rename Method");
         input.setHeaderText("Enter the method name");
@@ -610,6 +618,39 @@ public class ClassBox extends StackPane
             }
         }
     }
+
+    private void MethodTypeClicked(String methodName ,String oldName) {
+        TextInputDialog input = new TextInputDialog();
+        input.setTitle("Retype Method");
+        input.setHeaderText("Enter the method type");
+        input.setContentText("Method type: ");
+
+        Button okButton = (Button) input.getDialogPane().lookupButton(ButtonType.OK);
+        okButton.setDisable(true);
+
+        input.getEditor().textProperty().addListener((observable, oldValue, newValue) -> {
+            okButton.setDisable(newValue.trim().isEmpty());
+        });
+
+        Optional<String> result = input.showAndWait();
+
+        if (result.isPresent()) {
+            String newType = result.get();
+            newType = newType.trim().toLowerCase();
+    
+            String modelUpdated = baseController.RetypeMethodListener(className, methodName,newType);
+            // parse result for either successful rename or failure
+            if (modelUpdated == "good")
+            {
+                Update();
+            }
+            else
+            {
+                showError(modelUpdated);
+            }
+        }
+    }
+
     
 
     public Pair<String, String> createInputDialogs(String promptName) {

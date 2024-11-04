@@ -96,6 +96,10 @@ public class BaseController
         return ClassItem.renameMethod(data.getClassItems().get(className), oldName, newName);
     }
 
+    public String RetypeMethodListener(String className, String methodName, String newType){
+        return ClassItem.retypeMethod(data.getClassItems().get(className), methodName, newType);
+    }
+
     public String AddParameterListener(String className, String methodName, String type, String name)
     {
         // Here we need to get a methodItem object from data before passing it in to addParameter in the model.
