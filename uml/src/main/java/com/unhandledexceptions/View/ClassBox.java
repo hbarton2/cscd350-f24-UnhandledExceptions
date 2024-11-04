@@ -508,18 +508,6 @@ public class ClassBox extends StackPane
 
         return fieldsPane;
     }
-    /*
-     *  // Create and style the class name label
-        Label classNameLabel = new Label(className);
-        classNameLabel.setId("classNameLabel");
-        classNameLabel.getStyleClass().add("class-name-label"); // Add CSS class for the class name label
-        classNameLabel.setOnMouseClicked(event -> {  //"rename" event
-            if (event.getClickCount() == 2) {
-                String oldName = classNameLabel.getText();
-                NameClicked(oldName, classNameLabel);
-            }
-        });
-     */
 
     public Pair<String, String> createInputDialogs(String promptName) {
         Dialog<Pair<String, String>> dialog = new Dialog<>();
