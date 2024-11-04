@@ -66,6 +66,11 @@ public class ClassBox extends StackPane
         createClassBox(classNameIn, boxWidth, boxHeight);
     }
 
+    public void Remove(AnchorPane anchorPane)
+    {
+        anchorPane.getChildren().remove(this);
+    }
+
     public void Update()
     {
         //rename class: NameClicked, renameClassLabel

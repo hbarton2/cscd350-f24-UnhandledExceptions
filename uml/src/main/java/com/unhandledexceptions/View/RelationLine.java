@@ -32,17 +32,25 @@ public class RelationLine extends Polyline
     private String type;
 
     private Polygon shape;
+    BaseController baseController;
     
     // constructor for relationship line
-    public RelationLine(AnchorPane anchorPane)
+    public RelationLine(BaseController baseController, AnchorPane anchorPane)
     {
         // toBack() moves the relationship line to the back of the canvas so it doesn't cover the classboxes
         toBack();
+        this.baseController = baseController;
         type = "Composition";
         shape = new Polygon();
         anchorPane.getChildren().add(shape);
         shape.toBack();
         setOnMouseClicked(event -> mouseClicked(event));
+    }
+
+    public void Remove(AnchorPane anchorPane)
+    {
+        anchorPane.getChildren().remove(shape);
+        anchorPane.getChildren().remove(this);
     }
 
     private void mouseClicked(MouseEvent event)
@@ -64,6 +72,7 @@ public class RelationLine extends Polyline
             System.out.println("Dialog was canceled.");
         }
 
+        Save(baseController);
         Update(new Scale());
     }
 
@@ -266,12 +275,12 @@ public class RelationLine extends Polyline
         //misc
         setStrokeWidth(2);
         shape.setStrokeWidth(2);
-        shape.setStroke(Color.BLACK);        
+        shape.setStroke(Color.BLACK);
         shape.setFill(Color.BLACK);
         getStrokeDashArray().clear();
-        if (type != "Composition")
+        if (!type.equals("Composition"))
             shape.setFill(Color.TRANSPARENT);
-        if (type == "Realization")
+        if (type.equals("Realization"))
             getStrokeDashArray().addAll(10.0, 10.0);
         
     }

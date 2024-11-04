@@ -1,5 +1,6 @@
 package com.unhandledexceptions.Controller;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -78,8 +79,13 @@ public class mainDiagramController
     @FXML public void newMenuClick()
     {
         data.Clear();
-        anchorPane.getChildren().removeIf(node -> 
-        node instanceof ClassBox || node instanceof RelationLine);
+
+        ArrayList<Node> children = new ArrayList<>();
+        
+        for (Node child : anchorPane.getChildren())
+                children.add(child);
+        
+        anchorPane.getChildren().removeAll(children);
     }
 
     @FXML public void openRecentMenuClick()
@@ -143,9 +149,10 @@ public class mainDiagramController
 
             if (source != null && dest != null)
             {
-                RelationLine rLine = new RelationLine(anchorPane);
+                RelationLine rLine = new RelationLine(baseController, anchorPane);
                 rLine.setStart(source, sourceLoc);
                 rLine.setEnd(dest, destLoc);
+                rLine.setType(entry.getValue().getType());
                 anchorPane.getChildren().add(rLine);
                 
                 Platform.runLater(new Runnable() {
@@ -285,7 +292,7 @@ public class mainDiagramController
     {
         if (placingRelation == null)
         {
-            RelationLine line = new RelationLine(anchorPane);
+            RelationLine line = new RelationLine(baseController, anchorPane);
             line.setStart(classBox, index);
             
             line.Update(scaleTransform, event);
