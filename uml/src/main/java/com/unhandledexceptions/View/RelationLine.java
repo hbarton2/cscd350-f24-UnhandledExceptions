@@ -33,21 +33,33 @@ public class RelationLine extends Polyline
 
     private Polygon shape;
     BaseController baseController;
+    AnchorPane anchorPane;
     
     // constructor for relationship line
     public RelationLine(BaseController baseController, AnchorPane anchorPane)
     {
         // toBack() moves the relationship line to the back of the canvas so it doesn't cover the classboxes
         toBack();
+        this.anchorPane = anchorPane;
         this.baseController = baseController;
         type = "Composition";
         shape = new Polygon();
         anchorPane.getChildren().add(shape);
         shape.toBack();
-        setOnMouseClicked(event -> mouseClicked(event));
+        //setOnMouseClicked(event -> mouseClicked(event));
+        setOnMouseClicked(event -> {  //"rename" event
+            if (event.getClickCount() == 2) {
+                Remove();
+                event.consume();
+            }
+            else
+            {
+                mouseClicked(event);
+            }
+        });
     }
 
-    public void Remove(AnchorPane anchorPane)
+    public void Remove()
     {
         anchorPane.getChildren().remove(shape);
         anchorPane.getChildren().remove(this);
@@ -70,10 +82,7 @@ public class RelationLine extends Polyline
             type = selectedOption;
         } else {
             System.out.println("Dialog was canceled.");
-        }
-
-        Save(baseController);
-        Update(new Scale());
+        }        
     }
 
     // saves the relationships between classes into the model using the controller
@@ -273,8 +282,8 @@ public class RelationLine extends Polyline
         }
 
         //misc
-        setStrokeWidth(2);
-        shape.setStrokeWidth(2);
+        setStrokeWidth(3);
+        shape.setStrokeWidth(3);
         shape.setStroke(Color.BLACK);
         shape.setFill(Color.BLACK);
         getStrokeDashArray().clear();
