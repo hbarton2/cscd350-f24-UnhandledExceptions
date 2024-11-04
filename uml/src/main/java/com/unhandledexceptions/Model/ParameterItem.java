@@ -36,12 +36,12 @@ public class ParameterItem {
             throw new IllegalArgumentException("Type and Parameter name cannot be null or blank - constructor");
         }
 
-        if (DataType.isValidType(type)) {
+        //if (DataType.isValidType(type)) {
             this.parameterName = parameterName;
             this.type = type;
-        } else {
-            throw new IllegalArgumentException("Invalid type in parameter constructor");
-        }
+        //} else {
+        //    throw new IllegalArgumentException("Invalid type in parameter constructor");
+        //}
 
     }
 

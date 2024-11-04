@@ -13,9 +13,14 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextInputDialog;
+
+import java.util.HashMap;
 import java.util.Optional;
 import com.unhandledexceptions.Controller.BaseController;
-import com.unhandledexceptions.Controller.ClassBoxEventHandler;
+import com.unhandledexceptions.Model.ClassItem;
+import com.unhandledexceptions.Model.MethodItem;
+import com.unhandledexceptions.Model.ParameterItem;
+
 import javafx.scene.control.TitledPane;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.image.ImageView;
@@ -43,17 +48,12 @@ import javafx.scene.control.ButtonBar;
 public class ClassBox extends StackPane 
 {
     private String className;
-
     final double RANCHOR_VIEW_DISTANCE = 50; // Distance threshold for visibility
-
     private VBox dragBox;
-
     BaseController baseController;
+    private Rectangle[] ranchors = new Rectangle[4]; // Relationship anchors
 
-    
-
-    // Relationship anchors
-    private Rectangle[] ranchors = new Rectangle[4];
+    TitledPane methodsPane;
 
     public ClassBox(BaseController baseController, String classNameIn, double boxWidth,
      double boxHeight)
@@ -65,7 +65,30 @@ public class ClassBox extends StackPane
 
     public void Update()
     {
-        //update
+        //rename class: NameClicked, renameClassLabel
+        //delete class: createDeleteButton
+
+        //get me
+        ClassItem classItem = baseController.getData().getClassItems().get(className);
+        if (classItem == null)
+        {
+            
+        }
+
+        //name
+        renameClassLabel(classItem.getName());
+        
+        //fields
+
+        //methods
+        clearMethods();
+        HashMap<String, MethodItem> methodItems = classItem.getMethodItems();
+        for (HashMap.Entry<String, MethodItem> methodItem : methodItems.entrySet())
+        {
+            HashMap<String, ParameterItem> parameterItems = methodItem.getValue().getParameters();
+            ObservableList<String> params = FXCollections.observableArrayList(parameterItems.keySet());
+            addMethod(methodItem.getKey(), params);
+        }
     }
 
     private void createClassBox(String classNameIn, double boxWidth, double boxHeight) {
@@ -167,6 +190,7 @@ public class ClassBox extends StackPane
             // parse result for either successful rename or failure
             if (modelUpdated == "good")
             {
+                this.className = newName;
                 Update();
             }
             else
@@ -292,22 +316,33 @@ public class ClassBox extends StackPane
 
     // ================================================================================================================================================================
     // method to rename a class box label
-    public static void renameClassLabel(String newName, ClassBox classBox) {
+    public void renameClassLabel(String newName) {
         // gets the label from the classBox object
-        Label nameLabel = (Label) classBox.lookup("#classNameLabel");
+        Label nameLabel = (Label) lookup("#classNameLabel");
 
         // if the label exists, rename
-        if (nameLabel != null) {
+        if (nameLabel != null)
             nameLabel.setText(newName);
-        } else {
-            // TODO not sure how to handle this, error?
-            System.out.println("Null label?");
-        }
+    }
+
+    public void clearMethods()
+    {
+        ListView<TitledPane> methodsList = (ListView<TitledPane>) methodsPane.getContent();
+        methodsList.getItems().clear();
+    }
+
+    public void addMethod(String methodName, ObservableList<String> params)
+    {
+        TitledPane newMethodPane = createNewMethod(methodName);  //create new box with list for params
+        ListView<TitledPane> methodsList = (ListView<TitledPane>) methodsPane.getContent(); //extract the list the new box goes on
+        methodsList.getItems().add(newMethodPane); //add box to extracted list
+        ListView<String> methodParamList = (ListView<String>) newMethodPane.getContent();//extract paramlistview from newMethodPane
+        methodParamList.setItems(params);
     }
 
     private TitledPane createMethodPane() {
         // Create TitledPane for methods
-        TitledPane methodsPane = new TitledPane();
+        methodsPane = new TitledPane();
         methodsPane.setExpanded(false);
         methodsPane.setMaxHeight(250);
         methodsPane.getStyleClass().add("titled-pane");
@@ -327,31 +362,16 @@ public class ClassBox extends StackPane
                 String type = result.getKey().toLowerCase();
                 String name = result.getValue().toLowerCase();
                 //String typeName = type + " " + name;    
-                String updateModel   = baseController.AddMethodListener(className, name, type);   
+                String updateModel = baseController.AddMethodListener(className, name, type);   
                 if (updateModel == "good")
                 {
                     Update();   //updates view if model is successfully updated.
-                    /*
-                     * when method is added to model:
-                     * - pull methods from each class
-                     * -    if parameters in method,
-                     *          pull its parameters
-                     */         
-
                 } else {
                     showError(updateModel);
                 }
-            // result.ifPresent(method -> {
-            //     String modelUpdated baseController.AddMethodListener(className, name, type);
-
-            //     //update model
-            //     TitledPane newMethodPane = createNewMethod(method);
-            //     methodsList.getItems().add(newMethodPane);
-            // });
-        }});
+            }
+        });
         
-
-
         // HARD CODED SPACING OF TITLE AND BUTTON
         HBox methodsTitleBox = new HBox(139);// spacing between objects
         methodsTitleBox.setAlignment(Pos.CENTER_LEFT);
@@ -398,14 +418,23 @@ public class ClassBox extends StackPane
         addParamsButton.getStyleClass().add("transparent-button");
         // when pressed, open dialog for user input
         addParamsButton.setOnAction(e -> {
-            TextInputDialog dialog = new TextInputDialog();
-            dialog.setTitle("Add Parameter:");
-            dialog.setHeaderText("Enter the Parameter type and name");
-            dialog.setContentText("Parameter:");
-            Optional<String> result = dialog.showAndWait();
-            result.ifPresent(param -> {
-                params.add(param);
-            });
+            Pair<String, String> userInput = createInputDialogs("Parameters");
+
+            if(userInput != null){
+                String type = userInput.getKey().toLowerCase();
+                String name = userInput.getValue().toLowerCase();
+                //String typeName = type + " " + name;    
+                String result = baseController.AddParameterListener(className, methodName, type, name);   
+                if (result == "good")
+                {
+                    Update();   //updates view if model is successfully updated.
+                } else {
+                    ClassBox.showError(result);
+                }
+            } else {    //prints to terminal that user canceled dialog box for adding field
+                System.out.println("Dialog was canceled");
+            }
+
         });
 
         HBox titleBox = new HBox(90);
@@ -452,7 +481,7 @@ public class ClassBox extends StackPane
                     Update();   //updates view if model is successfully updated.
                 } else {
                     ClassBox.showError(result);
-        }
+                }
             } else {    //prints to terminal that user canceled dialog box for adding field
                 System.out.println("Dialog was canceled");
             }

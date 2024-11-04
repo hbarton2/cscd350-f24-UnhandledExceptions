@@ -11,6 +11,8 @@ import com.unhandledexceptions.View.ClassBox;
 import com.unhandledexceptions.View.RelationLine;
 
 import javafx.application.Platform;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Menu;
@@ -161,7 +163,9 @@ public class mainDiagramController
         //new ClassBox(baseController, className, boxWidth, boxHeight, controller);
         anchorPane.getChildren().add(classBox);
 
-        classBox.setOnMouseClicked(event -> event.consume());
+        classBox.setOnMouseClicked(event -> {
+                event.consume();
+            });
         // setup mouse drag
         classBox.getDragBox().setOnMousePressed(event -> {
                 classBox.toFront();
@@ -347,15 +351,6 @@ public class mainDiagramController
             event.consume();
         }
     }
-
-    // ================================================================================================================================================================
-    // Method to handle the class box click(Not implemented, might be delete?)
-    // @Override
-    // public void onClassBoxClicked(ClassBox classBox) {
-    //     // TODO Auto-generated method stub
-    //     throw new UnsupportedOperationException("Unimplemented method 'onClassBoxClicked'");
-    // }
-
     // ================================================================================================================================================================
     // Method to handle the add class button
     

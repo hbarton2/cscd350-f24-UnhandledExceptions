@@ -15,6 +15,11 @@ public class BaseController
         this.data = data;
     }
 
+    public Data getData()
+    {
+        return this.data;
+    }
+
     /*
      * Our controller is responsible for handling the commands passed in from the CLI and grabbing data from the model to manipulate.
      * The controller is also responsible for returning the results of the commands to the CLI to be displayed to the user.
