@@ -23,18 +23,13 @@ public class RelationLine extends Polyline
     // type of relationship (Aggregation, Composition, Generalization, Realization)
     private String type;
 
-    // constructor for relationship line without type
+    // constructor for relationship line
     public RelationLine()
     {
         // toBack() moves the relationship line to the back of the canvas so it doesn't cover the classboxes
         toBack();
         // TODO: change this to take in the 4 types, not just hardcode the type
-        type = null;
-    }
-
-    // overloaded constructor for adding a type to a relationship
-    public RelationLine(String type) {
-        this.type = type;
+        type = "aggregation";
     }
 
     // saves the relationships between classes into the model using the controller
