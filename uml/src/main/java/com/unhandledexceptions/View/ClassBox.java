@@ -13,13 +13,20 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextInputDialog;
+
+import java.util.HashMap;
 import java.util.Optional;
 import com.unhandledexceptions.Controller.BaseController;
-import com.unhandledexceptions.Controller.ClassBoxEventHandler;
+import com.unhandledexceptions.Model.ClassItem;
+import com.unhandledexceptions.Model.FieldItem;
+import com.unhandledexceptions.Model.MethodItem;
+import com.unhandledexceptions.Model.ParameterItem;
+
 import javafx.scene.control.TitledPane;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -43,17 +50,13 @@ import javafx.scene.control.ButtonBar;
 public class ClassBox extends StackPane 
 {
     private String className;
-
     final double RANCHOR_VIEW_DISTANCE = 50; // Distance threshold for visibility
-
     private VBox dragBox;
-
     BaseController baseController;
+    private Rectangle[] ranchors = new Rectangle[4]; // Relationship anchors
 
-    
-
-    // Relationship anchors
-    private Rectangle[] ranchors = new Rectangle[4];
+    TitledPane methodsPane;
+    TitledPane fieldsPane;
 
     public ClassBox(BaseController baseController, String classNameIn, double boxWidth,
      double boxHeight)
@@ -65,7 +68,36 @@ public class ClassBox extends StackPane
 
     public void Update()
     {
-        //update
+        //rename class: NameClicked, renameClassLabel
+        //delete class: createDeleteButton
+
+        //get me
+        ClassItem classItem = baseController.getData().getClassItems().get(className);
+        if (classItem == null)
+        {
+            AnchorPane anchorPane = (AnchorPane) getParent();
+            anchorPane.getChildren().remove(this);
+            return;
+        }
+
+        //name
+        renameClassLabel(classItem.getName());
+        
+        //fields
+        clearFields();
+        HashMap<String, FieldItem> fieldItems = classItem.getFieldItems();
+        ObservableList<String> fields = FXCollections.observableArrayList(fieldItems.keySet());
+        addFields(fields);
+
+        //methods
+        clearMethods();
+        HashMap<String, MethodItem> methodItems = classItem.getMethodItems();
+        for (HashMap.Entry<String, MethodItem> methodItem : methodItems.entrySet())
+        {
+            HashMap<String, ParameterItem> parameterItems = methodItem.getValue().getParameters();
+            ObservableList<String> params = FXCollections.observableArrayList(parameterItems.keySet());
+            addMethod(methodItem.getKey(), params);
+        }
     }
 
     private void createClassBox(String classNameIn, double boxWidth, double boxHeight) {
@@ -167,6 +199,7 @@ public class ClassBox extends StackPane
             // parse result for either successful rename or failure
             if (modelUpdated == "good")
             {
+                this.className = newName;
                 Update();
             }
             else
@@ -176,6 +209,39 @@ public class ClassBox extends StackPane
         }
     }
 
+    private void FieldClicked(String oldName, Label className){
+        TextInputDialog input = new TextInputDialog();
+        input.setTitle("Rename Field");
+        input.setHeaderText("Enter the field name");
+        input.setContentText("Field name: ");
+
+        Button okButton = (Button) input.getDialogPane().lookupButton(ButtonType.OK);
+        okButton.setDisable(true);
+
+        input.getEditor().textProperty().addListener((observable, oldValue, newValue) -> {
+            okButton.setDisable(newValue.trim().isEmpty());
+        });
+
+        Optional<String> result = input.showAndWait();
+
+        if (result.isPresent()) {
+            String newName = result.get();
+            oldName = oldName.trim().toLowerCase();
+            newName = newName.trim().toLowerCase();
+    
+            String modelUpdated = baseController.RenameFieldListener(className.getText(), oldName, newName);
+            // parse result for either successful rename or failure
+            if (modelUpdated == "good")
+            {
+                Update();
+            }
+            else
+            {
+                showError(modelUpdated);
+            }
+        }
+    }
+    
     public String getClassName()
     {
         return this.className;
@@ -241,7 +307,7 @@ public class ClassBox extends StackPane
                 // parse result for either successful rename or failure
                 if (modelUpdated == "good")
                 {
-                    //anchorPane.getChildren().remove(classBox);
+                    Update();
                 }
                 else
                 {
@@ -292,22 +358,33 @@ public class ClassBox extends StackPane
 
     // ================================================================================================================================================================
     // method to rename a class box label
-    public static void renameClassLabel(String newName, ClassBox classBox) {
+    public void renameClassLabel(String newName) {
         // gets the label from the classBox object
-        Label nameLabel = (Label) classBox.lookup("#classNameLabel");
+        Label nameLabel = (Label) lookup("#classNameLabel");
 
         // if the label exists, rename
-        if (nameLabel != null) {
+        if (nameLabel != null)
             nameLabel.setText(newName);
-        } else {
-            // TODO not sure how to handle this, error?
-            System.out.println("Null label?");
-        }
+    }
+
+    public void clearMethods()
+    {
+        ListView<TitledPane> methodsList = (ListView<TitledPane>) methodsPane.getContent();
+        methodsList.getItems().clear();
+    }
+
+    public void addMethod(String methodName, ObservableList<String> params)
+    {
+        TitledPane newMethodPane = createNewMethod(methodName);  //create new box with list for params
+        ListView<TitledPane> methodsList = (ListView<TitledPane>) methodsPane.getContent(); //extract the list the new box goes on
+        methodsList.getItems().add(newMethodPane); //add box to extracted list
+        ListView<String> methodParamList = (ListView<String>) newMethodPane.getContent();//extract paramlistview from newMethodPane
+        methodParamList.setItems(params);
     }
 
     private TitledPane createMethodPane() {
         // Create TitledPane for methods
-        TitledPane methodsPane = new TitledPane();
+        methodsPane = new TitledPane();
         methodsPane.setExpanded(false);
         methodsPane.setMaxHeight(250);
         methodsPane.getStyleClass().add("titled-pane");
@@ -327,31 +404,16 @@ public class ClassBox extends StackPane
                 String type = result.getKey().toLowerCase();
                 String name = result.getValue().toLowerCase();
                 //String typeName = type + " " + name;    
-                String updateModel   = baseController.AddMethodListener(className, name, type);   
+                String updateModel = baseController.AddMethodListener(className, name, type);   
                 if (updateModel == "good")
                 {
                     Update();   //updates view if model is successfully updated.
-                    /*
-                     * when method is added to model:
-                     * - pull methods from each class
-                     * -    if parameters in method,
-                     *          pull its parameters
-                     */         
-
                 } else {
                     showError(updateModel);
                 }
-            // result.ifPresent(method -> {
-            //     String modelUpdated baseController.AddMethodListener(className, name, type);
-
-            //     //update model
-            //     TitledPane newMethodPane = createNewMethod(method);
-            //     methodsList.getItems().add(newMethodPane);
-            // });
-        }});
+            }
+        });
         
-
-
         // HARD CODED SPACING OF TITLE AND BUTTON
         HBox methodsTitleBox = new HBox(139);// spacing between objects
         methodsTitleBox.setAlignment(Pos.CENTER_LEFT);
@@ -376,8 +438,6 @@ public class ClassBox extends StackPane
     private TitledPane createNewMethod(String methodName) {
         TitledPane singleMethodPane = new TitledPane();
         singleMethodPane.setExpanded(false);
-        // instead of static setting height, increase and decrease based on # of
-        // methods/params/fields.
         singleMethodPane.setMaxWidth(225);
         singleMethodPane.setMaxHeight(150);
         singleMethodPane.getStyleClass().add("fields-title-box");
@@ -398,18 +458,35 @@ public class ClassBox extends StackPane
         addParamsButton.getStyleClass().add("transparent-button");
         // when pressed, open dialog for user input
         addParamsButton.setOnAction(e -> {
-            TextInputDialog dialog = new TextInputDialog();
-            dialog.setTitle("Add Parameter:");
-            dialog.setHeaderText("Enter the Parameter type and name");
-            dialog.setContentText("Parameter:");
-            Optional<String> result = dialog.showAndWait();
-            result.ifPresent(param -> {
-                params.add(param);
-            });
+            Pair<String, String> userInput = createInputDialogs("Parameters");
+
+            if(userInput != null){
+                String type = userInput.getKey().toLowerCase();
+                String name = userInput.getValue().toLowerCase();
+                //String typeName = type + " " + name;    
+                String result = baseController.AddParameterListener(className, methodName, type, name);   
+                if (result == "good")
+                {
+                    Update();   //updates view if model is successfully updated.
+                } else {
+                    ClassBox.showError(result);
+                }
+            } else {    //prints to terminal that user canceled dialog box for adding field
+                System.out.println("Dialog was canceled");
+            }
+
         });
 
         HBox titleBox = new HBox(90);
         Label singleMethodName = new Label(methodName);
+
+        singleMethodName.setOnMouseClicked(event -> {
+            if(event.getClickCount() == 2){
+                String oldName = singleMethodName.getText();
+                MethodClicked(oldName);
+            }
+        });
+
         titleBox.setAlignment(Pos.CENTER_LEFT);
         titleBox.getStyleClass().add("fields-title-box");
         titleBox.getChildren().addAll(singleMethodName, addParamsButton);
@@ -419,8 +496,20 @@ public class ClassBox extends StackPane
         return singleMethodPane;
     }
 
+    private void clearFields()
+    {
+        ListView<String> fieldsList = (ListView<String>) fieldsPane.getContent();
+        fieldsList.getItems().clear();
+    }
+
+    private void addFields(ObservableList<String> fields)
+    {
+        ListView<String> fieldsList = (ListView<String>) fieldsPane.getContent();
+        fieldsList.setItems(fields);
+    }
+
     private TitledPane createFieldPane() {
-        TitledPane fieldsPane = new TitledPane();
+        fieldsPane = new TitledPane();
         fieldsPane.setExpanded(false);
         fieldsPane.setMaxHeight(150);
         fieldsPane.getStyleClass().add("titled-pane");
@@ -445,14 +534,13 @@ public class ClassBox extends StackPane
             if(userInput != null){
                 String type = userInput.getKey().toLowerCase();
                 String name = userInput.getValue().toLowerCase();
-                //String typeName = type + " " + name;    
                 String result = baseController.AddFieldListener(className, name, type);   
                 if (result == "good")
                 {
                     Update();   //updates view if model is successfully updated.
                 } else {
                     ClassBox.showError(result);
-        }
+                }
             } else {    //prints to terminal that user canceled dialog box for adding field
                 System.out.println("Dialog was canceled");
             }
@@ -463,12 +551,52 @@ public class ClassBox extends StackPane
         // HARD CODED SPACING OF TITLE AND BUTTON
         HBox fieldsTitleBox = new HBox(160); // Add spacing between label and button
         Label fieldsLabel = new Label("Fields");
+        fieldsLabel.setId("fieldTitleBoxLabel");
+        fieldsLabel.setOnMouseClicked(event -> {
+            if(event.getClickCount() == 2){
+                String oldName = fieldsLabel.getText();
+                FieldClicked(oldName, fieldsLabel);
+            }
+        });
         fieldsTitleBox.setAlignment(Pos.CENTER_LEFT); // Align items to the left
         fieldsTitleBox.getStyleClass().add("fields-title-box");
         fieldsTitleBox.getChildren().addAll(fieldsLabel, addFieldButton);
         fieldsPane.setGraphic(fieldsTitleBox);
 
         return fieldsPane;
+    }
+
+    private void MethodClicked(String oldName){
+        TextInputDialog input = new TextInputDialog();
+        input.setTitle("Rename Method");
+        input.setHeaderText("Enter the method name");
+        input.setContentText("Method name: ");
+
+        Button okButton = (Button) input.getDialogPane().lookupButton(ButtonType.OK);
+        okButton.setDisable(true);
+
+        input.getEditor().textProperty().addListener((observable, oldValue, newValue) -> {
+            okButton.setDisable(newValue.trim().isEmpty());
+        });
+
+        Optional<String> result = input.showAndWait();
+
+        if (result.isPresent()) {
+            String newName = result.get();
+            oldName = oldName.trim().toLowerCase();
+            newName = newName.trim().toLowerCase();
+    
+            String modelUpdated = baseController.RenameMethodListener(className, oldName, newName);
+            // parse result for either successful rename or failure
+            if (modelUpdated == "good")
+            {
+                Update();
+            }
+            else
+            {
+                showError(modelUpdated);
+            }
+        }
     }
 
     public Pair<String, String> createInputDialogs(String promptName) {
