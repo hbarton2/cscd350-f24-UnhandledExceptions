@@ -14,7 +14,9 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextInputDialog;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Optional;
 import com.unhandledexceptions.Controller.BaseController;
 import com.unhandledexceptions.Model.ClassItem;
@@ -54,16 +56,22 @@ public class ClassBox extends StackPane
     private VBox dragBox;
     BaseController baseController;
     private Rectangle[] ranchors = new Rectangle[4]; // Relationship anchors
-
+    AnchorPane anchorPane;
     TitledPane methodsPane;
     TitledPane fieldsPane;
 
-    public ClassBox(BaseController baseController, String classNameIn, double boxWidth,
+    public ClassBox(AnchorPane anchorPane, BaseController baseController, String classNameIn, double boxWidth,
      double boxHeight)
     {
+        this.anchorPane = anchorPane;
         this.baseController = baseController;
         this.className = classNameIn;
         createClassBox(classNameIn, boxWidth, boxHeight);
+    }
+
+    public void Remove(AnchorPane anchorPane)
+    {
+        anchorPane.getChildren().remove(this);
     }
 
     public void Update()
@@ -75,6 +83,24 @@ public class ClassBox extends StackPane
         ClassItem classItem = baseController.getData().getClassItems().get(className);
         if (classItem == null)
         {
+            //remove any relationlines
+            List<RelationLine> nodesToRemove = new ArrayList<>();
+            for (Node node : anchorPane.getChildren()) {
+                if(node instanceof RelationLine) {
+                    RelationLine line = (RelationLine) node;
+                    if (line.getC1().equals(this) || line.getC2().equals(this)) {
+                        nodesToRemove.add(line);
+                    }
+                }
+            }
+
+            // remove the lines
+            for (RelationLine line : nodesToRemove)
+            {
+                line.Remove();
+            }
+
+
             AnchorPane anchorPane = (AnchorPane) getParent();
             anchorPane.getChildren().remove(this);
             return;
@@ -158,7 +184,7 @@ public class ClassBox extends StackPane
 
         // ranchors (relationship anchors)
         for (int i = 0; i < 4; i++) {
-            ranchors[i] = new Rectangle(10, 10);
+            ranchors[i] = new Rectangle(15, 15);
             ranchors[i].setFill(Color.BLACK);
         }
 

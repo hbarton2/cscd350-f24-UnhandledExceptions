@@ -49,7 +49,7 @@ public class RelationshipItem
 
         // if the relationship already exists, we return a message that the relationship already exists
         if(relationships.containsKey(key)){
-            return "Relationship already exists";
+            relationships.get(key).setType(type);
         }
 
         // creating the relationship object

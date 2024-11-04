@@ -1,5 +1,6 @@
 package com.unhandledexceptions.Controller;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -11,8 +12,6 @@ import com.unhandledexceptions.View.ClassBox;
 import com.unhandledexceptions.View.RelationLine;
 
 import javafx.application.Platform;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Menu;
@@ -78,8 +77,13 @@ public class mainDiagramController
     @FXML public void newMenuClick()
     {
         data.Clear();
-        anchorPane.getChildren().removeIf(node -> 
-        node instanceof ClassBox || node instanceof RelationLine);
+
+        ArrayList<Node> children = new ArrayList<>();
+        
+        for (Node child : anchorPane.getChildren())
+                children.add(child);
+        
+        anchorPane.getChildren().removeAll(children);
     }
 
     @FXML public void openRecentMenuClick()
@@ -143,9 +147,10 @@ public class mainDiagramController
 
             if (source != null && dest != null)
             {
-                RelationLine rLine = new RelationLine();
+                RelationLine rLine = new RelationLine(baseController, anchorPane);
                 rLine.setStart(source, sourceLoc);
                 rLine.setEnd(dest, destLoc);
+                rLine.setType(entry.getValue().getType());
                 anchorPane.getChildren().add(rLine);
                 
                 Platform.runLater(new Runnable() {
@@ -159,7 +164,7 @@ public class mainDiagramController
 
     @FXML public ClassBox addClass(String className)
     {
-        ClassBox classBox = new ClassBox(baseController, className, boxWidth, boxHeight);
+        ClassBox classBox = new ClassBox(anchorPane, baseController, className, boxWidth, boxHeight);
         //new ClassBox(baseController, className, boxWidth, boxHeight, controller);
         anchorPane.getChildren().add(classBox);
 
@@ -272,10 +277,10 @@ public class mainDiagramController
         {
             //user is not dragging around a relation line and has clicked the background
             //addclass
-            ClassBox classBox = onAddClassClicked();
-            if (classBox == null) return;
-            classBox.setLayoutX(event.getSceneX() / scaleTransform.getX());
-            classBox.setLayoutY(event.getSceneY() / scaleTransform.getY());
+            //ClassBox classBox = onAddClassClicked();
+            //if (classBox == null) return;
+            //classBox.setLayoutX(event.getSceneX() / scaleTransform.getX());
+            //classBox.setLayoutY(event.getSceneY() / scaleTransform.getY());
         }
 
     }
@@ -285,7 +290,7 @@ public class mainDiagramController
     {
         if (placingRelation == null)
         {
-            RelationLine line = new RelationLine();
+            RelationLine line = new RelationLine(baseController, anchorPane);
             line.setStart(classBox, index);
             
             line.Update(scaleTransform, event);
@@ -379,7 +384,6 @@ public class mainDiagramController
             return null;
         }
     }
-
 
     public void onDeleteButtonClicked(ClassBox classBox, String className) {
         // Pass className to method and attempt to delete
