@@ -147,7 +147,7 @@ public class ClassBox extends StackPane
 
         // ranchors (relationship anchors)
         for (int i = 0; i < 4; i++) {
-            ranchors[i] = new Rectangle(10, 10);
+            ranchors[i] = new Rectangle(15, 15);
             ranchors[i].setFill(Color.BLACK);
         }
 

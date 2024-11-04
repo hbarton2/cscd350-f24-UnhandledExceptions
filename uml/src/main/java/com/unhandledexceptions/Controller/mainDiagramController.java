@@ -143,7 +143,7 @@ public class mainDiagramController
 
             if (source != null && dest != null)
             {
-                RelationLine rLine = new RelationLine();
+                RelationLine rLine = new RelationLine(anchorPane);
                 rLine.setStart(source, sourceLoc);
                 rLine.setEnd(dest, destLoc);
                 anchorPane.getChildren().add(rLine);
@@ -272,10 +272,10 @@ public class mainDiagramController
         {
             //user is not dragging around a relation line and has clicked the background
             //addclass
-            ClassBox classBox = onAddClassClicked();
-            if (classBox == null) return;
-            classBox.setLayoutX(event.getSceneX() / scaleTransform.getX());
-            classBox.setLayoutY(event.getSceneY() / scaleTransform.getY());
+            //ClassBox classBox = onAddClassClicked();
+            //if (classBox == null) return;
+            //classBox.setLayoutX(event.getSceneX() / scaleTransform.getX());
+            //classBox.setLayoutY(event.getSceneY() / scaleTransform.getY());
         }
 
     }
@@ -285,7 +285,7 @@ public class mainDiagramController
     {
         if (placingRelation == null)
         {
-            RelationLine line = new RelationLine();
+            RelationLine line = new RelationLine(anchorPane);
             line.setStart(classBox, index);
             
             line.Update(scaleTransform, event);
@@ -372,7 +372,6 @@ public class mainDiagramController
             return null;
         }
     }
-
 
     public void onDeleteButtonClicked(ClassBox classBox, String className) {
         // Pass className to method and attempt to delete
