@@ -97,12 +97,17 @@ public class ClassBox extends StackPane
 
         //methods
         clearMethods();
-        HashMap<String, MethodItem> methodItems = classItem.getMethodItems();
-        for (HashMap.Entry<String, MethodItem> methodItem : methodItems.entrySet())
+        HashMap<String, MethodItem> methodItems = classItem.getMethodItems();   //Hashmap <String, FieldItem>
+        for (HashMap.Entry<String, MethodItem> methodItem : methodItems.entrySet()) 
+        //methodItem.getValue() -> MethodItem(String methodName, String type)
+        //
         {
             HashMap<String, ParameterItem> parameterItems = methodItem.getValue().getParameters();
-            ObservableList<String> params = FXCollections.observableArrayList(parameterItems.keySet());
-            addMethod(methodItem.getKey(), params);
+            ObservableList<String> params = FXCollections.observableArrayList();
+            for (ParameterItem parameterItem : parameterItems.values()) {
+                params.add(parameterItem.toString());
+            }
+            addMethod(methodItem.getKey(), methodItem.getValue().getType() , params);
         }
     }
 
@@ -379,9 +384,9 @@ public class ClassBox extends StackPane
         methodsList.getItems().clear();
     }
 
-    public void addMethod(String methodName, ObservableList<String> params)
+    public void addMethod(String methodName, String methodType, ObservableList<String> params)
     {
-        TitledPane newMethodPane = createNewMethod(methodName);  //create new box with list for params
+        TitledPane newMethodPane = createNewMethod(methodName, methodType);  //create new box with list for params
         ListView<TitledPane> methodsList = (ListView<TitledPane>) methodsPane.getContent(); //extract the list the new box goes on
         methodsList.getItems().add(newMethodPane); //add box to extracted list
         ListView<String> methodParamList = (ListView<String>) newMethodPane.getContent();//extract paramlistview from newMethodPane
@@ -441,9 +446,9 @@ public class ClassBox extends StackPane
         return methodsPane;
     }
 
-    private TitledPane createNewMethod(String methodName) {
+    private TitledPane createNewMethod(String methodName, String methodType) {
         TitledPane singleMethodPane = new TitledPane();
-        singleMethodPane.setExpanded(false);
+        singleMethodPane.setExpanded(true);
         singleMethodPane.setMaxWidth(225);
         singleMethodPane.setMaxHeight(150);
         singleMethodPane.getStyleClass().add("fields-title-box");
@@ -483,8 +488,9 @@ public class ClassBox extends StackPane
 
         });
 
-        HBox titleBox = new HBox(90);
+        HBox titleBox = new HBox(30);
         Label singleMethodName = new Label(methodName);
+        Label singleMethodType = new Label(methodType);
 
         singleMethodName.setOnMouseClicked(event -> {
             if(event.getClickCount() == 2){
@@ -495,7 +501,7 @@ public class ClassBox extends StackPane
 
         titleBox.setAlignment(Pos.CENTER_LEFT);
         titleBox.getStyleClass().add("fields-title-box");
-        titleBox.getChildren().addAll(singleMethodName, addParamsButton);
+        titleBox.getChildren().addAll(singleMethodName, singleMethodType, addParamsButton);
         singleMethodPane.setGraphic(titleBox);
         ;
 
@@ -604,6 +610,7 @@ public class ClassBox extends StackPane
             }
         }
     }
+    
 
     public Pair<String, String> createInputDialogs(String promptName) {
         Dialog<Pair<String, String>> dialog = new Dialog<>();
