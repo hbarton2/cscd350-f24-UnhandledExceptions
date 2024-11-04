@@ -20,6 +20,12 @@ public class Data
 		//constructor
 	}
 
+	public void Clear()
+	{
+		classItems.clear();
+		relationshipItems.clear();
+	}
+
 	public HashMap<String, ClassItem> getClassItems()
 	{
         return this.classItems;

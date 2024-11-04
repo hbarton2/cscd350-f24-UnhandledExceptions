@@ -1,20 +1,21 @@
 package com.unhandledexceptions.Model;
 
 import java.util.HashMap;
-import java.util.Scanner;
 
 public class ClassItem {
-    Scanner kb = new Scanner(System.in);
     String name;
 
     // Names of FieldItem/MethodItem are keys to Map<k,v>
     private HashMap<String, FieldItem> fieldItems;
     private HashMap<String, MethodItem> methodItems;
+    private double x, y;
 
     public ClassItem() {} //blank constructor for IO serialization
 
     private ClassItem(final String classItemName) {
         this.name = classItemName;
+        this.x = 0;
+        this.y = 0;
 
         // initializes Maps
         this.fieldItems = new HashMap<String, FieldItem>();
@@ -32,7 +33,7 @@ public class ClassItem {
         if (!(classItems.containsKey(name))) {
             ClassItem createdClass = new ClassItem(name);
             classItems.put(createdClass.getName(), createdClass);
-            return "Class \"" + createdClass.getName() + "\" created.";
+            return "good";
         } else {
             // if classItemName is already in use in the classItemList that's passed in.
             return "Class name must be unique.";
@@ -47,6 +48,26 @@ public class ClassItem {
     // made public for IO serialization
     public void setName(String name) {
         this.name = name;
+    }
+
+    public double getX()
+    {
+        return this.x;
+    }
+
+    public void setX(double x)
+    {
+        this.x = x;
+    }
+
+    public double getY()
+    {
+        return this.y;
+    }
+
+    public void setY(double y)
+    {
+        this.y = y;
     }
 
     public HashMap<String, FieldItem> getFieldItems() {
@@ -69,8 +90,8 @@ public class ClassItem {
     // check that the newClassItemName is available to use
 
     public static String renameClassItem(final HashMap<String, ClassItem> classItemList,
-         HashMap<String, RelationshipItem> relationships, final String newClassItemName,
-            final String oldClassItemName) {
+         HashMap<String, RelationshipItem> relationships, final String oldClassItemName,
+            final String newClassItemName) {
         if (classItemList == null) {
             throw new IllegalArgumentException("classItemList cannot be null");
         }
@@ -90,8 +111,6 @@ public class ClassItem {
             if (!classItemList.containsKey(newClassItemName.toLowerCase().trim())) {
                 // sets the classItem Object that is stored in the value associated with the Map
                 // for the key oldClassItemName to be newClassItemName
-                // gets the old class name from map
-                String oldName = ((ClassItem) classItemList.get(oldClassItemName)).getName();
                 // sets the new class name without updating the key in the map
                 ((ClassItem) classItemList.get(oldClassItemName)).setName(newClassItemName);
                 // ClassItem temp = new ClassItem(newClassItemName);
@@ -128,7 +147,7 @@ public class ClassItem {
                     }
                 }
 
-                return oldName + " class renamed to \"" + newClassItemName + "\"";
+                return "good";
             } else {
                 // displayed if newClassItemName is already a key in the HashMap
                 return newClassItemName + " is already in use.";
@@ -166,7 +185,7 @@ public class ClassItem {
             // it should, it gets removed.
             relationships.entrySet().removeIf(entry -> entry.getKey().contains(classItemName));
 
-            return classItemName + " and corresponding relationships have been removed.";
+            return "good";
         } else {
             return "No class with name \"" + classItemName + "\" exists.";
         }
@@ -223,7 +242,7 @@ public class ClassItem {
         classItem.getMethodItems().put(methodName, newMethod);
 
         // return successful add of method
-        return "Method name: " + methodName + " successfully added.";
+        return "good";
     }
 
     // method to remove a method from class
@@ -246,7 +265,7 @@ public class ClassItem {
         classItem.getMethodItems().remove(methodName);
 
         // return successful removal of method
-        return "Method name: " + methodName + " successfully removed";
+        return "good";
     }
 
     public static String renameMethod(ClassItem classItem, String oldName, String newName) {
@@ -279,12 +298,35 @@ public class ClassItem {
             classItem.getMethodItems().put(newName, newMethod);
 
             // return success
-            return "Method name: " + oldName + " successfully changed to " + newName;
+            return "good";
         } else {
             // invalid method name, return failure
             return "Method name: " + oldName + " does not exist.";
         }
 
+    }
+
+    public static String retypeMethod(ClassItem classItem, String methodName, String newType){
+        // preconditions
+        if (newType == null || newType.isBlank()) {
+            return "Method names cannot be null or blank.";
+        }
+         newType = newType.trim();
+ 
+         // check if the method name is a valid key
+         if (classItem.getMethodItems().containsKey(methodName)) {
+            
+            MethodItem newMethod = classItem.getMethodItems().get(methodName);
+
+            // changes the type of the method
+            newMethod.setType(newType);
+            
+             // return success
+             return "good";
+         } else {
+             // invalid method name, return failure
+             return "Method name: " + methodName + " does not exist.";
+         }
     }
 
     public static String addField(ClassItem classItem, String type, String fieldName) {
@@ -309,7 +351,7 @@ public class ClassItem {
         // add new field item to map
         classItem.getFieldItems().put(fieldName, newField);
 
-        return fieldName + " was successfully added to " + classItem.getName();
+        return "good";
     }
 
     public static String removeField(ClassItem classItem, String fieldName) {
@@ -323,10 +365,8 @@ public class ClassItem {
 
         // check if field exists
         if (!classItem.getFieldItems().containsKey(fieldName)) {
-            return "Field name: " + fieldName + " does not exist.";
+            return "good";
         }
-
-
 
         // remove field from map
         classItem.getFieldItems().remove(fieldName);
@@ -363,7 +403,7 @@ public class ClassItem {
             // add new field item into map
             classItem.getFieldItems().put(newName, newField);
 
-            return "Field name: " + oldName + " successfully changed to " + newName;
+            return "good";
         } else {
             return "Field name: " + oldName + " does not exist";
         }
@@ -372,5 +412,4 @@ public class ClassItem {
     public String toString() {
         return this.name;
     }
-
 };

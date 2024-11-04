@@ -15,6 +15,11 @@ public class BaseController
         this.data = data;
     }
 
+    public Data getData()
+    {
+        return this.data;
+    }
+
     /*
      * Our controller is responsible for handling the commands passed in from the CLI and grabbing data from the model to manipulate.
      * The controller is also responsible for returning the results of the commands to the CLI to be displayed to the user.
@@ -56,6 +61,11 @@ public class BaseController
         return RelationshipItem.removeRelationship(data.getRelationshipItems(), source, destination);
     }
 
+    public String PlaceRelationshipListener(String source, String dest, int sourceInt, int destInt)
+    {
+        return RelationshipItem.placeRelation(data.getRelationshipItems(), source, dest, sourceInt, destInt);
+    }
+
     public String AddFieldListener(String className, String type, String name)
     {
         return ClassItem.addField(data.getClassItems().get(className), type, name);
@@ -84,6 +94,10 @@ public class BaseController
     public String RenameMethodListener(String className, String oldName, String newName)
     {
         return ClassItem.renameMethod(data.getClassItems().get(className), oldName, newName);
+    }
+
+    public String RetypeMethodListener(String className, String methodName, String newType){
+        return ClassItem.retypeMethod(data.getClassItems().get(className), methodName, newType);
     }
 
     public String AddParameterListener(String className, String methodName, String type, String name)

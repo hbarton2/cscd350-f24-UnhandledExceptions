@@ -26,7 +26,7 @@ public class RelationshipItemTests {
   @Test
   public void testAddRelationship() {
     // proper return stating the relationship was created succesfully 
-    assertEquals("Relationship created successfully", RelationshipItem.addRelationship(classMap, relationshipMap, "class1", "class2", "composition"));
+    assertEquals("good", RelationshipItem.addRelationship(classMap, relationshipMap, "class1", "class2", "composition"));
     // ensures that the map has the correct key
     assertTrue(relationshipMap.containsKey("class1_class2"));
     // ensures that the map has the correct relationship object
@@ -68,7 +68,7 @@ public class RelationshipItemTests {
     // create class3
     ClassItem.addClassItem(classMap, "class3");
     // make relationship with class1 and class3
-    assertEquals("Relationship created successfully", RelationshipItem.addRelationship(classMap, relationshipMap, "class1", "class3", "aggregation"));
+    assertEquals("good", RelationshipItem.addRelationship(classMap, relationshipMap, "class1", "class3", "aggregation"));
     assertTrue(relationshipMap.containsKey("class1_class3"));
   }
 
@@ -78,7 +78,7 @@ public class RelationshipItemTests {
     // create relationship
     RelationshipItem.addRelationship(classMap, relationshipMap, "class1", "class2", "composition");
     // remove relationship
-    assertEquals("Relationship has been removed", RelationshipItem.removeRelationship(relationshipMap, "class1", "class2"));
+    assertEquals("good", RelationshipItem.removeRelationship(relationshipMap, "class1", "class2"));
     // ensure that the map does not have the key
     assertFalse(relationshipMap.containsKey("class1_class2"));
   }

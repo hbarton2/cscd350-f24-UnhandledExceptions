@@ -48,15 +48,15 @@
       <menus>
         <Menu mnemonicParsing="false" text="File">
           <items>
-            <MenuItem mnemonicParsing="false" text="New" />
+            <MenuItem fx:id="newMenu" mnemonicParsing="false" onAction="#newMenuClick" text="New" />
                   <SeparatorMenuItem mnemonicParsing="false" />
-            <MenuItem mnemonicParsing="false" onAction="#addClass" text="Open…" />
-            <Menu mnemonicParsing="false" text="Open Recent" />
+            <MenuItem fx:id="openMenu" mnemonicParsing="false" onAction="#openMenuClick" text="Open…" />
+            <Menu fx:id="openRecentMenu" mnemonicParsing="false" onAction="#openRecentMenuClick" text="Open Recent" />
             <SeparatorMenuItem mnemonicParsing="false" />
-            <MenuItem mnemonicParsing="false" text="Save" />
-            <MenuItem mnemonicParsing="false" text="Save As…" />
+            <MenuItem fx:id="saveMenu" mnemonicParsing="false" onAction="#saveMenuClick" text="Save" />
+            <MenuItem fx:id="saveAsMenu" mnemonicParsing="false" onAction="#saveAsMenuClick" text="Save As…" />
             <SeparatorMenuItem mnemonicParsing="false" />
-            <MenuItem mnemonicParsing="false" onAction="#quit" text="Quit" />
+            <MenuItem fx:id="quitMenu" mnemonicParsing="false" onAction="#quitMenuClick" text="Quit" />
           </items>
         </Menu>
         <Menu mnemonicParsing="false" text="Help">
@@ -65,8 +65,8 @@
             <MenuItem mnemonicParsing="false" text="About" />
           </items>
         </Menu>
-            <Menu disable="true" mnemonicParsing="false" onAction="#addClass" text="|" />
-            <Menu fx:id="addClassMenu" mnemonicParsing="false" onAction="#addClass" text="Add Class">
+            <Menu disable="true" mnemonicParsing="false" onAction="#onAddClassClicked" text="|" />
+            <Menu fx:id="addClassMenu" mnemonicParsing="false" onAction="#onAddClassClicked" text="Add Class">
                <items>
                   <CustomMenuItem mnemonicParsing="false" text="Unspecified Action" />
                </items></Menu>
