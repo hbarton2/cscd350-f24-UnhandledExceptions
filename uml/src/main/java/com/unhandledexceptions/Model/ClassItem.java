@@ -409,6 +409,30 @@ public class ClassItem {
         }
     }
 
+    public static String retypeField(ClassItem classItem, String fieldName, String newType) {
+        // preconditions
+        if (fieldName == null || fieldName.isBlank() || newType == null || newType.isBlank()) {
+            return "Field names cannot be null or blank";
+        }
+
+        // trim to remove any leading or trailing whitespace
+        newType = newType.trim();
+
+        // if the old field exists change it
+        if (classItem.getFieldItems().containsKey(fieldName)) {
+            // copy old field object
+            FieldItem Field = classItem.getFieldItems().get(fieldName);
+
+            // set field objects type to new type
+            Field.setType(newType);
+
+            return "good";
+        } else {
+            return "Field name: " + fieldName + " does not exist";
+        }
+    }
+
+
     public String toString() {
         return this.name;
     }
