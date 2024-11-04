@@ -15,3 +15,7 @@ EX: ...\cscd350-f24-UnhandledExceptions\uml>
 Build the project with: mvn clean install
 
 Run the project with: mvn exec:java
+
+Note: If you wish to run the programm in CLI or GUI straight from the terminal, you can include one of the following flags:
+--cli OR --gui
+EX: mvn exec:java --gui
