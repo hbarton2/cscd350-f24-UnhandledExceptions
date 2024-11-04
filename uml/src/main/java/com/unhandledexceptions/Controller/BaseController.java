@@ -81,6 +81,11 @@ public class BaseController
         return ClassItem.renameField(data.getClassItems().get(className), oldName, newName);
     }
 
+    public String RetypeFieldListener(String className, String fieldName, String newType)
+    {
+        return ClassItem.retypeField(data.getClassItems().get(className), fieldName, newType);
+    }
+
     public String AddMethodListener(String className, String name, String type)
     {
         return ClassItem.addMethod(data.getClassItems().get(className), name, type);

@@ -478,6 +478,7 @@ public class ClassBox extends StackPane
                 String result = baseController.AddParameterListener(className, methodName, type, name);   
                 if (result == "good")
                 {
+
                     Update();   //updates view if model is successfully updated.
                 } else {
                     ClassBox.showError(result);
@@ -533,58 +534,97 @@ public class ClassBox extends StackPane
         fieldsPane.setExpanded(false);
         fieldsPane.setMaxHeight(150);
         fieldsPane.getStyleClass().add("titled-pane");
+    
         ListView<String> fieldsList = new ListView<>();
-        fieldsList.getStyleClass().add("list-view"); // Apply CSS class for the fields ListView
-
-        // The TitledPane requires a ListView as content, and the ListView requires an
-        // ObservableList.
+        fieldsList.getStyleClass().add("list-view");
+    
+        // ObservableList to hold field names
         ObservableList<String> fields = FXCollections.observableArrayList();
         fieldsList.setItems(fields);
-
-        // TODO: fix issue where setting content here causes the list to be able to be
-        // expanded without items in it. set after an item is added?
-        fieldsPane.setContent(fieldsList); //
-
+    
         // Create the button for adding fields
         Button addFieldButton = new Button("+");
         addFieldButton.getStyleClass().add("transparent-button");
         addFieldButton.setOnAction(e -> {
             Pair<String, String> userInput = createInputDialogs("Field");
-
-            if(userInput != null){
+    
+            if (userInput != null) {
                 String type = userInput.getKey().toLowerCase();
                 String name = userInput.getValue().toLowerCase();
-                String result = baseController.AddFieldListener(className, name, type);   
-                if (result == "good")
-                {
-                    Update();   //updates view if model is successfully updated.
-                } else {
-                    ClassBox.showError(result);
+                if (!type.isBlank() && !name.isBlank()) {
+                    // Update your model with the new field
+                    baseController.AddFieldListener(className, type, name);
+                    Update();
                 }
-            } else {    //prints to terminal that user canceled dialog box for adding field
+            } else {
                 System.out.println("Dialog was canceled");
             }
-
         });
+        
+        // Enable double-click renaming for items in the ListView
+        fieldsList.setOnMouseClicked(event -> {
+            if (event.getClickCount() == 2) { // Detect double-click
+                String selectedItem = fieldsList.getSelectionModel().getSelectedItem();
+                if (selectedItem != null) {
+                    // Split the selected item to get old name and type
+                    String[] parts = selectedItem.split(" "); // Assuming the format is "name - type"
+                    if (parts.length == 2) {
+                        String oldFieldName = parts[1].trim();
 
+                        // Create input dialog to get new name and type
+                        Pair<String, String> userInput = createInputDialogs("Field");
+
+                        if (userInput != null) {
+                            String newFieldName = userInput.getValue().toLowerCase();
+                            String newFieldType = userInput.getKey().toLowerCase();
+
+                            // Call UpdateField to update the model
+                            UpdateField(oldFieldName, newFieldName, newFieldType);
+                        } else {
+                            System.out.println("Dialog was canceled");
+                        }
+                    }
+                }
+            }
+        });
+    
         // Create an HBox to hold the fields label and the add button
-        // HARD CODED SPACING OF TITLE AND BUTTON
         HBox fieldsTitleBox = new HBox(160); // Add spacing between label and button
         Label fieldsLabel = new Label("Fields");
         fieldsLabel.setId("fieldTitleBoxLabel");
-        fieldsLabel.setOnMouseClicked(event -> {
-            if(event.getClickCount() == 2){
-                String oldName = fieldsLabel.getText();
-                FieldClicked(oldName, fieldsLabel);
-            }
-        });
         fieldsTitleBox.setAlignment(Pos.CENTER_LEFT); // Align items to the left
         fieldsTitleBox.getStyleClass().add("fields-title-box");
         fieldsTitleBox.getChildren().addAll(fieldsLabel, addFieldButton);
         fieldsPane.setGraphic(fieldsTitleBox);
-
+    
+        fieldsPane.setContent(fieldsList); // Set the content of the TitledPane
+    
         return fieldsPane;
     }
+    
+    private void UpdateField(String oldFieldName, String newFieldName, String newFieldType) {
+        // Validate input for new field name and type
+        if (newFieldName.isBlank() || newFieldType.isBlank()) {
+            ClassBox.showError("Field name and type cannot be empty.");
+            return;
+        }
+    
+        // Attempt to rename the field
+        String resultName = baseController.RenameFieldListener(className, oldFieldName, newFieldName);
+        // Attempt to change the field type
+        String resultType = baseController.RetypeFieldListener(className, newFieldName, newFieldType);
+    
+        // Check the results for both operations
+        if ("good".equals(resultName) && "good".equals(resultType)) {
+            Update(); // Update the UI if both updates succeeded
+        } else {
+            // Show the appropriate error message based on which operation failed
+            String errorMessage = !resultName.equals("good") ? resultName : resultType;
+            ClassBox.showError(errorMessage);
+        }
+    }
+    
+    
 
     private void MethodNameClicked(String oldName){
         TextInputDialog input = new TextInputDialog();
