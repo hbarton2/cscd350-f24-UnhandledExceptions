@@ -79,7 +79,7 @@ public class ClassItemTests {
   @Test
   public void testRenameClassItem() {
     // rename the class testerclass
-    ClassItem.renameClassItem(classMap, relationshipMap, "newclass", "testerclass");
+    ClassItem.renameClassItem(classMap, relationshipMap, "testerclass", "newclass");
 
     // make sure testerclass isn't in classMap anymore
     assertFalse(classMap.containsKey("testerclass"));
@@ -96,7 +96,7 @@ public class ClassItemTests {
     RelationshipItem.addRelationship(classMap, relationshipMap, "testclass", "testerclass", "composition");
 
     // rename the testclass
-    ClassItem.renameClassItem(classMap, relationshipMap, "newclass", "testclass");
+    ClassItem.renameClassItem(classMap, relationshipMap, "testclass", "newclass");
 
     // make sure the relationship is updated
     assertTrue(relationshipMap.containsKey("newclass_testerclass"));
@@ -106,7 +106,7 @@ public class ClassItemTests {
   @Test
   public void testRenameClassItemNoClassExists() {
     // rename a class that does not exist
-    assertEquals("blahblahblah does not exist.", ClassItem.renameClassItem(classMap, relationshipMap, "newclass", "blahblahblah"));
+    assertEquals("blahblahblah does not exist.", ClassItem.renameClassItem(classMap, relationshipMap, "blahblahblah", "newclass"));
   }
 
   // tests to see what happens when you rename a class to a name that already exists
@@ -116,7 +116,7 @@ public class ClassItemTests {
     ClassItem.addClassItem(classMap, "testclass");
 
     // rename the class to a name that already exists
-    assertEquals("testerclass is already in use.", ClassItem.renameClassItem(classMap, relationshipMap, "testerclass", "testclass"));
+    assertEquals("testerclass is already in use.", ClassItem.renameClassItem(classMap, relationshipMap, "testclass", "testerclass"));
   }
 
 
