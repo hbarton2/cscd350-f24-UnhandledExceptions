@@ -357,6 +357,13 @@ public class mainDiagramController
     public ClassBox onAddClassClicked() {
         // displays dialog box prompting for class name
         String className = ClassBox.classNameDialog();
+
+        // Check if className is null or blank
+        if (className == null || className.trim().isEmpty()) {
+            System.out.println("Class name cannot be null or blank.");
+            return null;
+        }
+
         // gets the result of adding the class
         String result = baseController.AddClassListener(className);
         // parse result for either successful rename or failure
