@@ -154,6 +154,50 @@ public class MethodItem {
 		}
 	}
 
+	public static String renameParameter(MethodItem methodItem, String oldParamName, String newParamName){
+		// preconditions
+		if (oldParamName == null || newParamName == null || oldParamName.isBlank() || newParamName.isBlank()) {
+			throw new IllegalArgumentException("Parameter name cannot be null or blank");
+		}
+
+		newParamName = newParamName.trim();
+
+		if(methodItem.getParameters().containsKey(oldParamName)){
+			
+			ParameterItem newParam = methodItem.getParameter(oldParamName);
+
+			newParam.setParameterName(newParamName);
+
+			methodItem.getParameters().remove(oldParamName);
+
+			methodItem.getParameters().put(newParamName, newParam);
+			
+			//return successfull rename message
+			return "good";
+		} else {
+			// methodItem does not contain a method with that name.
+			return "RENAMEParameter: " + oldParamName + " does not exist.";
+		}
+	}
+	public static String retypeParameter(MethodItem methodItem, String paramName, String newParamType){
+		// preconditions
+		if (paramName == null || newParamType == null || paramName.isBlank() || newParamType.isBlank()) {
+			throw new IllegalArgumentException("Parameter name cannot be null or blank");
+		}
+		newParamType = newParamType.trim();
+
+		System.out.println(methodItem.getParameters().keySet());
+
+		if(methodItem.getParameters().containsKey(paramName)){
+
+			methodItem.getParameter(paramName).setType(newParamType);
+
+			return "good";
+		} else {
+			return "RETYPEParameter: " + paramName + " does not exist.";
+		}
+	}
+
 	// function to print the method and its parameters to a string
 	@Override
 	public String toString() {
