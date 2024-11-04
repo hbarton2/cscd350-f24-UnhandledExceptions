@@ -86,7 +86,13 @@ public class ClassBox extends StackPane
         //fields
         clearFields();
         HashMap<String, FieldItem> fieldItems = classItem.getFieldItems();
-        ObservableList<String> fields = FXCollections.observableArrayList(fieldItems.keySet());
+        ObservableList<String> fields = FXCollections.observableArrayList();
+        
+        // Add each FieldItem's toString() result to the fields list
+        for (FieldItem fieldItem : fieldItems.values()) {
+            fields.add(fieldItem.toString());
+        }
+
         addFields(fields);
 
         //methods
