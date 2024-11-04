@@ -18,6 +18,7 @@ import java.util.HashMap;
 import java.util.Optional;
 import com.unhandledexceptions.Controller.BaseController;
 import com.unhandledexceptions.Model.ClassItem;
+import com.unhandledexceptions.Model.FieldItem;
 import com.unhandledexceptions.Model.MethodItem;
 import com.unhandledexceptions.Model.ParameterItem;
 
@@ -25,6 +26,7 @@ import javafx.scene.control.TitledPane;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -54,6 +56,7 @@ public class ClassBox extends StackPane
     private Rectangle[] ranchors = new Rectangle[4]; // Relationship anchors
 
     TitledPane methodsPane;
+    TitledPane fieldsPane;
 
     public ClassBox(BaseController baseController, String classNameIn, double boxWidth,
      double boxHeight)
@@ -72,13 +75,19 @@ public class ClassBox extends StackPane
         ClassItem classItem = baseController.getData().getClassItems().get(className);
         if (classItem == null)
         {
-            
+            AnchorPane anchorPane = (AnchorPane) getParent();
+            anchorPane.getChildren().remove(this);
+            return;
         }
 
         //name
         renameClassLabel(classItem.getName());
         
         //fields
+        clearFields();
+        HashMap<String, FieldItem> fieldItems = classItem.getFieldItems();
+        ObservableList<String> fields = FXCollections.observableArrayList(fieldItems.keySet());
+        addFields(fields);
 
         //methods
         clearMethods();
@@ -233,7 +242,6 @@ public class ClassBox extends StackPane
         }
     }
     
-
     public String getClassName()
     {
         return this.className;
@@ -299,7 +307,7 @@ public class ClassBox extends StackPane
                 // parse result for either successful rename or failure
                 if (modelUpdated == "good")
                 {
-                    //anchorPane.getChildren().remove(classBox);
+                    Update();
                 }
                 else
                 {
@@ -471,6 +479,14 @@ public class ClassBox extends StackPane
 
         HBox titleBox = new HBox(90);
         Label singleMethodName = new Label(methodName);
+
+        singleMethodName.setOnMouseClicked(event -> {
+            if(event.getClickCount() == 2){
+                String oldName = singleMethodName.getText();
+                MethodClicked(oldName);
+            }
+        });
+
         titleBox.setAlignment(Pos.CENTER_LEFT);
         titleBox.getStyleClass().add("fields-title-box");
         titleBox.getChildren().addAll(singleMethodName, addParamsButton);
@@ -480,8 +496,20 @@ public class ClassBox extends StackPane
         return singleMethodPane;
     }
 
+    private void clearFields()
+    {
+        ListView<String> fieldsList = (ListView<String>) fieldsPane.getContent();
+        fieldsList.getItems().clear();
+    }
+
+    private void addFields(ObservableList<String> fields)
+    {
+        ListView<String> fieldsList = (ListView<String>) fieldsPane.getContent();
+        fieldsList.setItems(fields);
+    }
+
     private TitledPane createFieldPane() {
-        TitledPane fieldsPane = new TitledPane();
+        fieldsPane = new TitledPane();
         fieldsPane.setExpanded(false);
         fieldsPane.setMaxHeight(150);
         fieldsPane.getStyleClass().add("titled-pane");
@@ -536,6 +564,39 @@ public class ClassBox extends StackPane
         fieldsPane.setGraphic(fieldsTitleBox);
 
         return fieldsPane;
+    }
+
+    private void MethodClicked(String oldName){
+        TextInputDialog input = new TextInputDialog();
+        input.setTitle("Rename Method");
+        input.setHeaderText("Enter the method name");
+        input.setContentText("Method name: ");
+
+        Button okButton = (Button) input.getDialogPane().lookupButton(ButtonType.OK);
+        okButton.setDisable(true);
+
+        input.getEditor().textProperty().addListener((observable, oldValue, newValue) -> {
+            okButton.setDisable(newValue.trim().isEmpty());
+        });
+
+        Optional<String> result = input.showAndWait();
+
+        if (result.isPresent()) {
+            String newName = result.get();
+            oldName = oldName.trim().toLowerCase();
+            newName = newName.trim().toLowerCase();
+    
+            String modelUpdated = baseController.RenameMethodListener(className, oldName, newName);
+            // parse result for either successful rename or failure
+            if (modelUpdated == "good")
+            {
+                Update();
+            }
+            else
+            {
+                showError(modelUpdated);
+            }
+        }
     }
 
     public Pair<String, String> createInputDialogs(String promptName) {
