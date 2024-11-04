@@ -1,22 +1,28 @@
+package com.unhandledexceptions.Model;
+
 import java.util.HashMap;
 
 public class MethodItem {
 	private String methodName;
+	// return type for the method
+	private String type;
 	// hash map to store ParamterItem's with their name as the key
 	private HashMap<String, ParameterItem> parameters;
 
 	public MethodItem() {} //blank constructor for IO serialization
 
-	public MethodItem(String methodName) {
+	public MethodItem(String methodName, String type) {
 		// preconditions
-		if (methodName == null || methodName.isBlank()) {
-			throw new IllegalArgumentException("Method name cannot be null or blank - constructor");
+		if (methodName == null || methodName.isBlank() || type == null || type.isBlank()) {
+			throw new IllegalArgumentException("Method name or type cannot be null or blank - constructor");
 		}
 
 		// strip input to remove any leading or trailing whitespace
 		methodName.trim();
+		type.trim();
 
 		this.methodName = methodName;
+		this.type = type;
 		// initialize hash map
 		this.parameters = new HashMap<>();
 	}
@@ -35,6 +41,14 @@ public class MethodItem {
 		this.methodName = newName;
 	}
 
+	public String getType() {
+		return this.type;
+	}
+	
+	public void setType(String newType) {
+		this.type = newType;
+	}
+
 	public HashMap<String, ParameterItem> getParameters() {
 		return this.parameters;
 	}
@@ -44,7 +58,7 @@ public class MethodItem {
 	}
 
 	// function to add a new parameter to the hash map
-	public String addParameter(String type, String parameterName) {
+	public static String addParameter(MethodItem methodItem, String type, String parameterName) {
 		// preconditions
 		if (parameterName == null || parameterName.isBlank()) {
 			throw new IllegalArgumentException("Parameter name cannot be null or blank");
@@ -54,7 +68,7 @@ public class MethodItem {
 		parameterName = parameterName.trim();
 
 		// check if the parameter already exists
-		if (parameters.containsKey(parameterName)) {
+		if (methodItem.getParameters().containsKey(parameterName)) {
 			// return failure message
 			return "Parameter name: " + parameterName + " already in use.";
 		}
@@ -64,14 +78,14 @@ public class MethodItem {
 			// create parameter object
 			ParameterItem parameter = new ParameterItem(type, parameterName);
 			// insert new parameter item into map
-			parameters.put(parameterName, parameter);
+			methodItem.getParameters().put(parameterName, parameter);
 
 		} catch (IllegalArgumentException e) {
 			return e.getMessage();
 		}
 
 		// return successful add of parameter
-		return "Parameter: " + type + " " + parameterName + " successfully added.";
+		return "good";
 	}
 
 	// getter to retrieve a parameter from the map
@@ -80,7 +94,7 @@ public class MethodItem {
 	}
 
 	// function to remove a parameter from the map
-	public String removeParameter(String type, String parameterName) {
+	public static String removeParameter(MethodItem methodItem, String type, String parameterName) {
 		// preconditions
 		if (parameterName == null || parameterName.isBlank()) {
 			throw new IllegalArgumentException("Parameter name cannot be null or blank");
@@ -90,20 +104,20 @@ public class MethodItem {
 		parameterName = parameterName.trim();
 
 		// check if the parameter exists in the map
-		if (!parameters.containsKey(parameterName)) {
+		if (!methodItem.getParameters().containsKey(parameterName)) {
 			// return failure (parameter not in map)
 			return "Parameter: " + type + " " + parameterName + " does not exist";
 		}
 
 		// remove parameter from map
-		parameters.remove(parameterName);
+		methodItem.getParameters().remove(parameterName);
 
 		// return successful remove message
-		return "Parameter: " + type + " " + parameterName + " removed successfully.";
+		return "good";
 	}
 
 	// function to change a parameter name
-	public String changeParameter(String oldType, String oldName, String newType, String newName) {
+	public static String changeParameter(MethodItem methodItem, String oldType, String oldName, String newType, String newName) {
 		// preconditions
 		if (oldName == null || newName == null || oldName.isBlank() || newName.isBlank()) {
 			throw new IllegalArgumentException("Parameter name cannot be null or blank");
@@ -115,28 +129,72 @@ public class MethodItem {
 
 		// check if the new name is valid or is already attached to another
 		// ParameterItem
-		if (parameters.containsKey(newName)) {
+		if (methodItem.getParameters().containsKey(newName)) {
 			// return failure message for new name already in use
 			return "New Parameter name: " + newName + " already in use.";
 		}
 
 		// check if the parameter exists in the map
-		if (parameters.containsKey(oldName)) {
+		if (methodItem.getParameters().containsKey(oldName)) {
 
 			// delete old entry in map
-			parameters.remove(oldName);
+			methodItem.getParameters().remove(oldName);
 
 			// create new parameter object
 			ParameterItem newParam = new ParameterItem(newType, newName);
 
 			// add new parameter back to map
-			parameters.put(newName, newParam);
+			methodItem.getParameters().put(newName, newParam);
 
 			// return successful rename message
-			return "Parameter: " + oldType + " " + oldName + " successfully changed to: " + newType + " " + newName;
+			return "good";
 		} else {
 			// old name key does not exist in map
 			return "Parameter: " + oldType + " " + oldName + " does not exist.";
+		}
+	}
+
+	public static String renameParameter(MethodItem methodItem, String oldParamName, String newParamName){
+		// preconditions
+		if (oldParamName == null || newParamName == null || oldParamName.isBlank() || newParamName.isBlank()) {
+			throw new IllegalArgumentException("Parameter name cannot be null or blank");
+		}
+
+		newParamName = newParamName.trim();
+
+		if(methodItem.getParameters().containsKey(oldParamName)){
+			
+			ParameterItem newParam = methodItem.getParameter(oldParamName);
+
+			newParam.setParameterName(newParamName);
+
+			methodItem.getParameters().remove(oldParamName);
+
+			methodItem.getParameters().put(newParamName, newParam);
+			
+			//return successfull rename message
+			return "good";
+		} else {
+			// methodItem does not contain a method with that name.
+			return "RENAMEParameter: " + oldParamName + " does not exist.";
+		}
+	}
+	public static String retypeParameter(MethodItem methodItem, String paramName, String newParamType){
+		// preconditions
+		if (paramName == null || newParamType == null || paramName.isBlank() || newParamType.isBlank()) {
+			throw new IllegalArgumentException("Parameter name cannot be null or blank");
+		}
+		newParamType = newParamType.trim();
+
+		System.out.println(methodItem.getParameters().keySet());
+
+		if(methodItem.getParameters().containsKey(paramName)){
+
+			methodItem.getParameter(paramName).setType(newParamType);
+
+			return "good";
+		} else {
+			return "RETYPEParameter: " + paramName + " does not exist.";
 		}
 	}
 
@@ -145,6 +203,7 @@ public class MethodItem {
 	public String toString() {
 		StringBuilder out = new StringBuilder();
 		out.append("Method: ");
+		out.append(type + " ");
 		out.append(methodName);
 		out.append(" Parameters: ");
 		// out.append(parameters.keySet());

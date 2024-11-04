@@ -1,3 +1,5 @@
+package com.unhandledexceptions.Model;
+
 public class FieldItem
 {
 	private String fieldName;
@@ -41,3 +43,4 @@ public class FieldItem
 		return this.type + " " + this.fieldName;
 	}
 }
+

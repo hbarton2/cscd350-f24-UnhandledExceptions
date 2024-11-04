@@ -1,10 +1,21 @@
+package com.unhandledexceptions.View;
+
+import java.io.IOException;
 import java.util.HashMap;
+
+import com.unhandledexceptions.Model.ClassItem;
+import com.unhandledexceptions.Model.FieldItem;
+import com.unhandledexceptions.Model.MethodItem;
+import com.unhandledexceptions.Model.RelationshipItem;
+import jline.console.ConsoleReader;
+import com.unhandledexceptions.Controller.BaseController;
 public class UI
 {
 	// hashmap of commands and usages for the help and for displaying usage to user if input is wrong
 	private static final HashMap<String, String> commandSyntax = new HashMap<>();
 
 	static {
+		commandSyntax.put("help", "help");
 		commandSyntax.put("v", "v [classname]");
 		commandSyntax.put("view", "view [classname]");
 		commandSyntax.put("save", "save [filename]");
@@ -12,25 +23,29 @@ public class UI
 		commandSyntax.put("addclass", "addclass [classname]");
 		commandSyntax.put("removeclass", "removeclass [classname]");
 		commandSyntax.put("renameclass", "renameclass [classname] [newclassname]");
-		commandSyntax.put("addrelation", "addrelation [sourceclassname] [destinationclassname]");
+		commandSyntax.put("addrelation", "addrelation [sourceclassname] [destinationclassname] [type]");
 		commandSyntax.put("removerelation", "removerelation [sourceclassname] [destinationclassname]");
 		commandSyntax.put("addfield", "addfield [classname] [type] [fieldname]");
 		commandSyntax.put("removefield", "removefield [classname] [fieldname]");
 		commandSyntax.put("renamefield", "renamefield [classname] [fieldname] [newfieldname]");
-		commandSyntax.put("addmethod", "addmethod [classname] [methodname]");
+		commandSyntax.put("addmethod", "addmethod [classname] [methodname] [returnType]");
 		commandSyntax.put("removemethod", "removemethod [classname] [methodname]");
 		commandSyntax.put("renamemethod", "renamemethod [classname] [methodname] [newmethodname]");
 		commandSyntax.put("addparameter", "addparameter [classname] [methodname] [parametertype] [parametername]");
 		commandSyntax.put("removeparameter", "removeparameter [classname] [methodname] [parametertype] [parametername]");
 		commandSyntax.put("changeparameter", "changeparameter [classname] [methodname] [parametertype] [parametername] "
 						+ "[newparametertype] [newparametername]");
-		commandSyntax.put("edit", "edit [classname]");
 	}
 
 	// nicer way to get syntax strings
 	public static String CommandSyntax(String command)
 	{
 		return commandSyntax.get(command);
+	}
+
+	public static HashMap<String, String> getCommands()
+	{
+		return commandSyntax;
 	}
 
 	/*
@@ -68,7 +83,7 @@ public class UI
 		result.append("\nClass: ").append(classItem.toString()).append("\nFields:\n");
 		
 		//prints list of fields indented to read easier
-		for (HashMap.Entry<String, FieldItem> entry : classItem.fieldItems.entrySet()) 
+		for (HashMap.Entry<String, FieldItem> entry : classItem.getFieldItems().entrySet()) 
 		{
 			result.append("\t" + entry.getValue().toString()).append("\n");
 		}
@@ -77,7 +92,7 @@ public class UI
 		
 		//methods
 		StringBuilder sb = new StringBuilder();
-		for (HashMap.Entry<String, MethodItem> entry : classItem.methodItems.entrySet()) {
+		for (HashMap.Entry<String, MethodItem> entry : classItem.getMethodItems().entrySet()) {
 			//adding a tab to the beginning of each method
 			sb.append("\t").append(entry.getValue().toString()).append("\n"); 
 		}
@@ -196,6 +211,89 @@ public class UI
 		System.out.println("Parameter: Firstly, type in the name of the class the parameter belongs to");
 		System.out.println("then, type in the name of the paramater you want to add/delete/rename\n");
 		*/
+	}
+
+	/*
+		EditClass takes a class name and a reader, and allows the user to add fields and methods to the class. The controller is passed as well to send data to the model.
+		The point of it is that it is a menu that displays when adding a class, to make filling out class details easier for the user.
+		This outputs a display, that's why it's in the view package, and uses the controller to update the model.
+	*/
+	public static void editClass(String className, ConsoleReader reader, BaseController controller) {
+		try{
+			// Add fields to the class via this loop
+			while (true) {
+				System.out.println("Add field: [type] [name] to add a field, `next` to move on to methods, or `exit` to exit");
+				String result = reader.readLine().trim();
+				// Exit this loop if the user types "exit" and goes to adding methods
+				if (result.toLowerCase().length() == 0) {
+					return;
+				} else if (result.toLowerCase().equals("exit")) {
+					return;
+				} else if (result.toLowerCase().equals("next")) {
+					break;
+				}
+				// splitting between type and name
+				// input[0] = type and input[1] = name
+				String[] input = result.split(" ");
+				if (input.length != 2) return;
+				// Send data to controller and print the output the controller sends back
+				System.out.println(controller.AddFieldListener(className, input[0], input[1]));
+			}
+			
+			// Add methods to the class via this loop
+			// same basic structure as adding fields
+			while (true) {
+				System.out.println("Add method: [methodName] [returnType] to add a method, or `exit` to exit");
+				String result = reader.readLine().trim();
+				String[] split = result.split(" ");
+				// Exiting this loop exits creating a class
+				if (result.toLowerCase().length() == 0) {
+					return;
+				} else if (result.toLowerCase().equals("exit")) {
+					break;
+				}
+				// result should be the method name
+				// passing to controller to add a method
+				// split[0] = name, split[1] = type
+				System.out.println(controller.AddMethodListener(className, split[0], split[1]));
+				// another menu after adding a method to add parameters
+				String res = editMethod(className, split[0], reader, controller);
+				if (res.equals("exit")) return;
+			}
+	}catch(IOException e){
+		e.printStackTrace();
+	}
+
+	}
+
+	/*
+	 * editMethod takes the classname and methodname to specify the method, reader from editClass, and the same controller to manipulate data.
+	 * The point of it is to add parameters to a method the same way we add methods and fields to a class.
+	 * This is private because editClass() is the only method that uses this in the program.
+	 */
+	private static String editMethod(String className, String methodName, ConsoleReader reader, BaseController controller) {
+		try{
+			while (true) {
+				System.out.println("Add parameter to " + methodName + ": [type] [name] to add a parameter or `exit` to exit");
+				String result = reader.readLine().trim();
+				// exiting this loop returns back to the add methods portion of editClass
+				if (result.toLowerCase().length() == 0) {
+					break;
+				} else if (result.toLowerCase().equals("exit")) {
+					return "exit";
+				}
+
+				String[] input = result.split(" ");
+				// input[0] = type and input[1] = name
+				if (input.length != 2) return "done";
+				// send input to controller to manipulate data
+				System.out.println(controller.AddParameterListener(className, methodName, input[0], input[1]));
+			}
+			return "done";
+		}catch(IOException e){
+			e.printStackTrace();
+			return "error reading input";
+		}
 	}
 	
 	/*
