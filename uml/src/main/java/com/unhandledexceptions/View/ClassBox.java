@@ -489,6 +489,35 @@ public class ClassBox extends StackPane
 
         });
 
+         // Enable double-click renaming for items in the ListView
+         methodParamList.setOnMouseClicked(event -> {
+            if (event.getClickCount() == 2) { // Detect double-click
+                String selectedItem = methodParamList.getSelectionModel().getSelectedItem();
+                if (selectedItem != null) {
+                    // Split the selected item to get old name and type
+                    String[] parts = selectedItem.split(" "); // Assuming the format is "name - type"
+                    if (parts.length == 2) {
+                        String oldParamType = parts[0].trim();
+                        String oldParamName = parts[1].trim();
+
+                        // Create input dialog to get new name and type
+                        Pair<String, String> userInput = createInputDialogs("Field");
+
+                        if (userInput != null) {
+                            String newParamName = userInput.getValue().toLowerCase();
+                            String newParamType = userInput.getKey().toLowerCase();
+
+                            // Call UpdateField to update the model
+                            UpdateParam(methodName, newParamName, oldParamName, newParamType);
+                        } else {
+                            System.out.println("Dialog was canceled");
+                        }
+                    }
+                }
+            }
+        });
+    
+
         HBox titleBox = new HBox(30);
         Label singleMethodName = new Label(methodName);
         Label singleMethodType = new Label(methodType);
@@ -516,6 +545,28 @@ public class ClassBox extends StackPane
         return singleMethodPane;
     }
 
+    private void UpdateParam(String methodName, String newParamName, String oldParamName, String newParamType) {
+        // Validate input for new field name and type
+        if (newParamName.isBlank() || newParamName.isBlank()) {
+            ClassBox.showError("Field name and type cannot be empty.");
+            return;
+        }
+    
+        // Attempt to rename the field
+        String resultType = baseController.RetypeParameterListener(className, methodName, oldParamName, newParamType);
+        // Attempt to change the field type
+        String resultName = baseController.RenameParameterListener(className, methodName,newParamName, oldParamName);
+        //String resultType = baseController.RetypeFieldListener(className, newParamName, newParamType);
+    
+        // Check the results for both operations
+        if ("good".equals(resultName) && "good".equals(resultType)) {
+            Update(); // Update the UI if both updates succeeded
+        } else {
+            // Show the appropriate error message based on which operation failed
+            String errorMessage = !resultName.equals("good") ? resultName : resultType;
+            ClassBox.showError(errorMessage);
+        }
+    }
    
     private void clearFields()
     {

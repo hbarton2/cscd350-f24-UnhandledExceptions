@@ -123,4 +123,16 @@ public class BaseController
         MethodItem methodItem = data.getClassItems().get(className).getMethodItems().get(methodName);
         return MethodItem.changeParameter(methodItem, oldType, oldName, newType, newName);
     }
+
+    public String RenameParameterListener(String className, String methodName, String newName, String oldName)
+    {
+        MethodItem methodItem = data.getClassItems().get(className).getMethodItems().get(methodName);
+        return MethodItem.renameParameter(methodItem, oldName, newName);
+    }
+
+    public String RetypeParameterListener(String className, String methodName, String oldParamName, String newParamType)
+    {
+        MethodItem methodItem = data.getClassItems().get(className).getMethodItems().get(methodName);
+        return MethodItem.retypeParameter(methodItem, oldParamName, newParamType);
+    }
 }
