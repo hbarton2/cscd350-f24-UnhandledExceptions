@@ -176,6 +176,40 @@ public class ClassBox extends StackPane
         }
     }
 
+    private void FieldClicked(String oldName, Label className){
+        TextInputDialog input = new TextInputDialog();
+        input.setTitle("Rename Field");
+        input.setHeaderText("Enter the field name");
+        input.setContentText("Field name: ");
+
+        Button okButton = (Button) input.getDialogPane().lookupButton(ButtonType.OK);
+        okButton.setDisable(true);
+
+        input.getEditor().textProperty().addListener((observable, oldValue, newValue) -> {
+            okButton.setDisable(newValue.trim().isEmpty());
+        });
+
+        Optional<String> result = input.showAndWait();
+
+        if (result.isPresent()) {
+            String newName = result.get();
+            oldName = oldName.trim().toLowerCase();
+            newName = newName.trim().toLowerCase();
+    
+            String modelUpdated = baseController.RenameFieldListener(className.getText(), oldName, newName);
+            // parse result for either successful rename or failure
+            if (modelUpdated == "good")
+            {
+                Update();
+            }
+            else
+            {
+                showError(modelUpdated);
+            }
+        }
+    }
+    
+
     public String getClassName()
     {
         return this.className;
@@ -376,8 +410,6 @@ public class ClassBox extends StackPane
     private TitledPane createNewMethod(String methodName) {
         TitledPane singleMethodPane = new TitledPane();
         singleMethodPane.setExpanded(false);
-        // instead of static setting height, increase and decrease based on # of
-        // methods/params/fields.
         singleMethodPane.setMaxWidth(225);
         singleMethodPane.setMaxHeight(150);
         singleMethodPane.getStyleClass().add("fields-title-box");
@@ -445,7 +477,6 @@ public class ClassBox extends StackPane
             if(userInput != null){
                 String type = userInput.getKey().toLowerCase();
                 String name = userInput.getValue().toLowerCase();
-                //String typeName = type + " " + name;    
                 String result = baseController.AddFieldListener(className, name, type);   
                 if (result == "good")
                 {
@@ -463,6 +494,13 @@ public class ClassBox extends StackPane
         // HARD CODED SPACING OF TITLE AND BUTTON
         HBox fieldsTitleBox = new HBox(160); // Add spacing between label and button
         Label fieldsLabel = new Label("Fields");
+        fieldsLabel.setId("fieldTitleBoxLabel");
+        fieldsLabel.setOnMouseClicked(event -> {
+            if(event.getClickCount() == 2){
+                String oldName = fieldsLabel.getText();
+                FieldClicked(oldName, fieldsLabel);
+            }
+        });
         fieldsTitleBox.setAlignment(Pos.CENTER_LEFT); // Align items to the left
         fieldsTitleBox.getStyleClass().add("fields-title-box");
         fieldsTitleBox.getChildren().addAll(fieldsLabel, addFieldButton);
@@ -470,6 +508,18 @@ public class ClassBox extends StackPane
 
         return fieldsPane;
     }
+    /*
+     *  // Create and style the class name label
+        Label classNameLabel = new Label(className);
+        classNameLabel.setId("classNameLabel");
+        classNameLabel.getStyleClass().add("class-name-label"); // Add CSS class for the class name label
+        classNameLabel.setOnMouseClicked(event -> {  //"rename" event
+            if (event.getClickCount() == 2) {
+                String oldName = classNameLabel.getText();
+                NameClicked(oldName, classNameLabel);
+            }
+        });
+     */
 
     public Pair<String, String> createInputDialogs(String promptName) {
         Dialog<Pair<String, String>> dialog = new Dialog<>();
