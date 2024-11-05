@@ -9,10 +9,17 @@ public class BaseController
 {
     // our controller gets passed in a data object for storage from the CLI which gets passed a data object from main
     Data data;
+    UndoRedo ur;    
 
     public BaseController(Data data)
     {
         this.data = data;
+        ur = new UndoRedo();
+    }
+
+    public UndoRedo getUndoRedo()
+    {
+        return this.ur;
     }
 
     public Data getData()
