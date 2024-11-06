@@ -5,3 +5,6 @@ Pattern 1: Singleton
 
 Pattern 2: Singleton
   GUI.java: 13
+
+Pattern 3: Model View Controller
+  The whole project
