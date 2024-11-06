@@ -10,7 +10,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
-public class GUI extends Application
+public final class GUI extends Application
 {
     //unsure how we'll implement data yet. I believe it will be in each scenes controller.
     Data data;

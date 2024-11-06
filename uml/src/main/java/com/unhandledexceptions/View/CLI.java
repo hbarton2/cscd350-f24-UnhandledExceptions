@@ -9,7 +9,7 @@ import jline.console.ConsoleReader;
 import com.unhandledexceptions.Controller.CommandCompleter;
 import java.io.IOException;
 
-public class CLI 
+public final class CLI 
 {
 	BaseController controller;
 	Data data;

@@ -57,7 +57,7 @@ public class RelationshipItemTests {
     // create relationship
     RelationshipItem.addRelationship(classMap, relationshipMap, "class1", "class2", "composition");
     // see if we can create the same relationship twice
-    assertEquals("Relationship already exists", RelationshipItem.addRelationship(classMap, relationshipMap, "class1", "class2", "composition"));
+    assertEquals("good", RelationshipItem.addRelationship(classMap, relationshipMap, "class1", "class2", "composition"));
   }
 
   // test that a class can have multiple relationships

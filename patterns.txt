@@ -1,0 +1,7 @@
+Design Patterns Document
+
+Pattern 1: Singleton
+  CLI.java: 12
+
+Pattern 2: Singleton
+  GUI.java: 13
