@@ -235,7 +235,9 @@ public class ClassItem {
         }
 
         // create a new method object with the method name
-        MethodItem newMethod = new MethodItem(methodName, returnType);
+        // MethodItem newMethod = new MethodItem(methodName, returnType);
+        MethodItem newMethod = UMLObjectFactory.createUMLObject(UMLObjectFactory.ObjectType.METHODITEM, methodName,
+                returnType);
 
         // insert new method item into map
         classItem.getMethodItems().put(methodName, newMethod);
@@ -345,7 +347,8 @@ public class ClassItem {
         }
 
         // create new field item object
-        FieldItem newField = new FieldItem(fieldName, type);
+        // FieldItem newField = new FieldItem(fieldName, type);
+        FieldItem newField = UMLObjectFactory.createUMLObject(UMLObjectFactory.ObjectType.FIELDITEM, fieldName, type);
 
         // add new field item to map
         classItem.getFieldItems().put(fieldName, newField);

@@ -77,7 +77,9 @@ public class MethodItem implements UMLObject {
 		try {
 
 			// create parameter object
-			ParameterItem parameter = new ParameterItem(type, parameterName);
+			// ParameterItem parameter = new ParameterItem(type, parameterName);
+			ParameterItem parameter = UMLObjectFactory.createUMLObject(UMLObjectFactory.ObjectType.PARAMETERITEM,
+					parameterName, type);
 			// insert new parameter item into map
 			methodItem.getParameters().put(parameterName, parameter);
 

@@ -8,3 +8,7 @@ Pattern 2: Singleton
 
 Pattern 3: Model View Controller
   The whole project
+
+Pattern 4: Factory
+  UMLOBject.java, UMLObjectFactory.java, ClassItem.java (239,350), MethodItem.java (81)
+  Justification: Decouples the creation of new Method, Field, and Parameter objects from related classes, standardizes getters and setters for type and name
