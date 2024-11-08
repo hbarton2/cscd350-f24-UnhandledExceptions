@@ -94,19 +94,19 @@ public class ClassBoxBuilder {
         ClassBox classBox = new ClassBox(anchorPane, baseController, className, boxWidth, boxHeight, ranchors);
         classBox.getChildren().add(setup());    //adds VBox that is holding all of the content to the classBox
         HBox nameAndDelete = classBox.nameAndDelete(this.className);    //creates nameAndDelete part
-        VBox box = (VBox) classBox.lookup("#contentBox");   //grabs container VBox that holds the panes
-        classBox.setDragBox(box);   //sets dragBox in the classBox that is used for dragging.
+        VBox contentBox = (VBox) classBox.lookup("#contentBox");   //grabs container VBox that holds the panes
+        classBox.setDragBox(contentBox);   //sets dragBox in the classBox that is used for dragging.
 
-        box.getChildren().add(nameAndDelete);   //adds the nameAndDelete HBbox to the VBox container
+        contentBox.getChildren().add(nameAndDelete);   //adds the nameAndDelete HBbox to the VBox container
 
         if (fields) {   //if we call the withFieldPane method we will add the fieldpane to the VBox
             TitledPane fieldPane = classBox.createFieldPane();    
-            box.getChildren().add(fieldPane);
+            contentBox.getChildren().add(fieldPane);
         }
 
         if (methods) {  //if we call the withMethodPane method we will add the methodPane to the VBox
             TitledPane methodPane = classBox.createMethodPane();
-            box.getChildren().add(methodPane);
+            contentBox.getChildren().add(methodPane);
         }
         
         return classBox;    //returns the classBox
