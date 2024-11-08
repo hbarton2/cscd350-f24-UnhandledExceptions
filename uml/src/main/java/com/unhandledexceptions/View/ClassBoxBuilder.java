@@ -77,7 +77,7 @@ public class ClassBoxBuilder {
             for (Rectangle r : ranchors)
                 r.setVisible(true);
         });
-        return vbase;
+        return vbase;   //returns vbase to be added as a child to a classBox, setting the contents of the classbox object
     }
 
     public ClassBoxBuilder withFieldPane() {
@@ -92,7 +92,7 @@ public class ClassBoxBuilder {
 
     public ClassBox build() {
         ClassBox classBox = new ClassBox(anchorPane, baseController, className, boxWidth, boxHeight, ranchors);
-        classBox.getChildren().add(setup());    //sets up classbox with initial structure and styling
+        classBox.getChildren().add(setup());    //adds VBox that is holding all of the content to the classBox
         HBox nameAndDelete = classBox.nameAndDelete(this.className);    //creates nameAndDelete part
         VBox box = (VBox) classBox.lookup("#contentBox");   //grabs container VBox that holds the panes
         classBox.setDragBox(box);   //sets dragBox in the classBox that is used for dragging.
