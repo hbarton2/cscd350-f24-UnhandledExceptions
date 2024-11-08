@@ -9,17 +9,31 @@ import jline.console.ConsoleReader;
 import com.unhandledexceptions.Controller.CommandCompleter;
 import java.io.IOException;
 
-public class CLI 
+public final class CLI 
 {
 	BaseController controller;
 	Data data;
-  // Scanner scanner = new Scanner(System.in);
+  private static CLI instance;
 
-	// constructor for the CLI. takes in the data model and creates a new controller from the data
-	public CLI(Data data)
+	// private constructor for the CLI. takes in the data model and creates a new controller from the data
+	private CLI(Data data)
 	{
 		this.data = data;
 		this.controller = new BaseController(data);
+	}
+
+	/**
+	 * This method is used to get the instance of the CLI class.
+	 * If there isn't an instance created, it will create one and if there is already an instance, it returns it. 
+	 * 
+	 * @param Data the data object to store data into the model.
+	 * @return The instance of the CLI. 
+	 */
+	public static CLI getInstance(Data data) {
+		if (instance == null) {
+			instance = new CLI(data);
+		}
+		return instance;
 	}
 
 	private void print(String line)

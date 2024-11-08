@@ -17,7 +17,8 @@ public class Main
 		{
             if (arg.equals("--cli")) 
 			{
-				CLI cli = new CLI(new Data());
+				// this is how to construct the CLI in the singleton pattern, ensures there is only one instance.
+				CLI cli = CLI.getInstance(new Data());
 				while (true)
 					cli.Run();
 			}
@@ -33,7 +34,8 @@ public class Main
 		String input = scanner.nextLine().toLowerCase();
 		if (input.equals("cli") || input.equals("c"))
 		{
-			CLI cli = new CLI(new Data());
+			// this is how to construct the CLI in the singleton pattern, ensures there is only one instance.
+			CLI cli = CLI.getInstance(new Data());
 			while (true)
 				cli.Run();
 		}

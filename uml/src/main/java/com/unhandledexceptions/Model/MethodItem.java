@@ -2,14 +2,15 @@ package com.unhandledexceptions.Model;
 
 import java.util.HashMap;
 
-public class MethodItem {
+public class MethodItem implements UMLObject {
 	private String methodName;
 	// return type for the method
 	private String type;
 	// hash map to store ParamterItem's with their name as the key
 	private HashMap<String, ParameterItem> parameters;
 
-	public MethodItem() {} //blank constructor for IO serialization
+	public MethodItem() {
+	} // blank constructor for IO serialization
 
 	public MethodItem(String methodName, String type) {
 		// preconditions
@@ -28,12 +29,12 @@ public class MethodItem {
 	}
 
 	// getter to retrieve method name
-	public String getMethodName() {
+	public String getName() {
 		return this.methodName;
 	}
 
 	// setter to set method name
-	public void setMethodName(String newName) {
+	public void setName(String newName) {
 		if (newName == null || newName.isBlank()) {
 			return;
 		}
@@ -44,7 +45,7 @@ public class MethodItem {
 	public String getType() {
 		return this.type;
 	}
-	
+
 	public void setType(String newType) {
 		this.type = newType;
 	}
@@ -76,7 +77,9 @@ public class MethodItem {
 		try {
 
 			// create parameter object
-			ParameterItem parameter = new ParameterItem(type, parameterName);
+			// ParameterItem parameter = new ParameterItem(type, parameterName);
+			ParameterItem parameter = UMLObjectFactory.createUMLObject(UMLObjectFactory.ObjectType.PARAMETERITEM,
+					parameterName, type);
 			// insert new parameter item into map
 			methodItem.getParameters().put(parameterName, parameter);
 
@@ -117,7 +120,8 @@ public class MethodItem {
 	}
 
 	// function to change a parameter name
-	public static String changeParameter(MethodItem methodItem, String oldType, String oldName, String newType, String newName) {
+	public static String changeParameter(MethodItem methodItem, String oldType, String oldName, String newType,
+			String newName) {
 		// preconditions
 		if (oldName == null || newName == null || oldName.isBlank() || newName.isBlank()) {
 			throw new IllegalArgumentException("Parameter name cannot be null or blank");
@@ -154,7 +158,7 @@ public class MethodItem {
 		}
 	}
 
-	public static String renameParameter(MethodItem methodItem, String oldParamName, String newParamName){
+	public static String renameParameter(MethodItem methodItem, String oldParamName, String newParamName) {
 		// preconditions
 		if (oldParamName == null || newParamName == null || oldParamName.isBlank() || newParamName.isBlank()) {
 			throw new IllegalArgumentException("Parameter name cannot be null or blank");
@@ -162,24 +166,25 @@ public class MethodItem {
 
 		newParamName = newParamName.trim();
 
-		if(methodItem.getParameters().containsKey(oldParamName)){
-			
+		if (methodItem.getParameters().containsKey(oldParamName)) {
+
 			ParameterItem newParam = methodItem.getParameter(oldParamName);
 
-			newParam.setParameterName(newParamName);
+			newParam.setName(newParamName);
 
 			methodItem.getParameters().remove(oldParamName);
 
 			methodItem.getParameters().put(newParamName, newParam);
-			
-			//return successfull rename message
+
+			// return successfull rename message
 			return "good";
 		} else {
 			// methodItem does not contain a method with that name.
 			return "RENAMEParameter: " + oldParamName + " does not exist.";
 		}
 	}
-	public static String retypeParameter(MethodItem methodItem, String paramName, String newParamType){
+
+	public static String retypeParameter(MethodItem methodItem, String paramName, String newParamType) {
 		// preconditions
 		if (paramName == null || newParamType == null || paramName.isBlank() || newParamType.isBlank()) {
 			throw new IllegalArgumentException("Parameter name cannot be null or blank");
@@ -188,7 +193,7 @@ public class MethodItem {
 
 		System.out.println(methodItem.getParameters().keySet());
 
-		if(methodItem.getParameters().containsKey(paramName)){
+		if (methodItem.getParameters().containsKey(paramName)) {
 
 			methodItem.getParameter(paramName).setType(newParamType);
 
