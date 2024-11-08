@@ -8,6 +8,7 @@ import com.unhandledexceptions.View.GUI;
 import com.unhandledexceptions.Model.Data;
 
 public class SingletonTests {
+  // Test that only one instance is created
   @Test
   public void testCLISingleton() {
     // Get the first instance of CLI
@@ -19,6 +20,7 @@ public class SingletonTests {
     assertSame(instance1, instance2, "CLI instances are not the same");
   }
 
+  // Test that the instance is not null
   @Test
   public void testCLINotNull() {
     // Get the instance of CLI
@@ -26,5 +28,6 @@ public class SingletonTests {
 
     // Assert that the instance is not null
     assertNotNull(instance, "CLI instance is null");
-    }
+  }
+
 }

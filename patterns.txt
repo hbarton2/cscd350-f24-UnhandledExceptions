@@ -2,13 +2,11 @@ Design Patterns Document
 
 Pattern 1: Singleton
   CLI.java: 12
+  Justification: The CLI has an instance of itself with a getInstance and a private constructor, ensuring that only one instance of the object can be created.
 
-Pattern 2: Singleton
-  GUI.java: 13
-
-Pattern 3: Model View Controller
+Pattern 2: Model View Controller
   The whole project
 
-Pattern 4: Factory
+Pattern 3: Factory
   UMLOBject.java, UMLObjectFactory.java, ClassItem.java (239,350), MethodItem.java (81)
   Justification: Decouples the creation of new Method, Field, and Parameter objects from related classes, standardizes getters and setters for type and name
