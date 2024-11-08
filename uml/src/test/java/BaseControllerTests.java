@@ -128,7 +128,7 @@ public class BaseControllerTests {
     String result = baseController.AddFieldListener("testclass", "int", "testField");
     assertEquals("good", result);
     // ensure that the field was added to the class in the data object and the name wasn't changed
-    assertTrue(data.getClassItems().get("testclass").getFieldItems().get("testfield").getFieldName().equals("testField"));
+    assertTrue(data.getClassItems().get("testclass").getFieldItems().get("testfield").getName().equals("testField"));
     // ensure the field type is correct
     assertEquals("int", data.getClassItems().get("testclass").getFieldItems().get("testField").getType());
   }
