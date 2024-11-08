@@ -1,7 +1,7 @@
 Design Patterns Document
 
 Pattern 1: Singleton
-  CLI.java: 12
+  CLI.java: 12, (16-37)
   Justification: The CLI has an instance of itself with a getInstance and a private constructor, ensuring that only one instance of the object can be created.
 
 Pattern 2: Model View Controller
