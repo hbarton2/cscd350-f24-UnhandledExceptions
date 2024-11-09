@@ -9,7 +9,7 @@ import com.unhandledexceptions.Model.ClassItem;
 import com.unhandledexceptions.Model.Data;
 import com.unhandledexceptions.Model.RelationshipItem;
 import com.unhandledexceptions.View.ClassBox;
-import com.unhandledexceptions.View.ClassBoxBuilder;
+import com.unhandledexceptions.View.ClassBoxBasicBuilder;
 import com.unhandledexceptions.View.RelationLine;
 
 import javafx.application.Platform;
@@ -18,7 +18,6 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Menu;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
 import javafx.scene.Node;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.transform.Scale;
@@ -167,11 +166,11 @@ public class mainDiagramController
     @FXML public ClassBox addClass(String className)
     {
         //creates a classBoxBuilder calls adds the panes we need, then builds it.
-        ClassBoxBuilder classBoxBuilder = new ClassBoxBuilder(anchorPane, baseController, className, boxWidth, boxHeight);
+        ClassBoxBasicBuilder classBoxBuilder = new ClassBoxBasicBuilder(anchorPane, baseController, className, boxWidth, boxHeight);
         classBoxBuilder.withFieldPane();
         classBoxBuilder.withMethodPane();
         ClassBox classBox = classBoxBuilder.build();
-        //new ClassBox(baseController, className, boxWidth, boxHeight, controller);
+       
         anchorPane.getChildren().add(classBox);
 
         classBox.setOnMouseClicked(event -> {
