@@ -10,7 +10,8 @@ public class ClassItem {
     private HashMap<String, MethodItem> methodItems;
     private double x, y;
 
-    public ClassItem() {} //blank constructor for IO serialization
+    public ClassItem() {
+    } // blank constructor for IO serialization
 
     private ClassItem(final String classItemName) {
         this.name = classItemName;
@@ -22,14 +23,15 @@ public class ClassItem {
         this.methodItems = new HashMap<String, MethodItem>();
     }
 
-
-    //Used for tester methods and unit tests currently.
+    // Used for tester methods and unit tests currently.
     public static String addClassItem(final HashMap<String, ClassItem> classItems, final String classItemName) {
         String name = classItemName.toLowerCase().trim();// forces all classes to be in lower case and trims all leading
                                                          // and trailing "space" (refernce .trim() Java API for space
                                                          // definition).
-        /*if the classItemList does not already have a class named classItemName, we
-         create a new ClassItem and add it to the HashMap*/
+        /*
+         * if the classItemList does not already have a class named classItemName, we
+         * create a new ClassItem and add it to the HashMap
+         */
         if (!(classItems.containsKey(name))) {
             ClassItem createdClass = new ClassItem(name);
             classItems.put(createdClass.getName(), createdClass);
@@ -50,23 +52,19 @@ public class ClassItem {
         this.name = name;
     }
 
-    public double getX()
-    {
+    public double getX() {
         return this.x;
     }
 
-    public void setX(double x)
-    {
+    public void setX(double x) {
         this.x = x;
     }
 
-    public double getY()
-    {
+    public double getY() {
         return this.y;
     }
 
-    public void setY(double y)
-    {
+    public void setY(double y) {
         this.y = y;
     }
 
@@ -90,7 +88,7 @@ public class ClassItem {
     // check that the newClassItemName is available to use
 
     public static String renameClassItem(final HashMap<String, ClassItem> classItemList,
-         HashMap<String, RelationshipItem> relationships, final String oldClassItemName,
+            HashMap<String, RelationshipItem> relationships, final String oldClassItemName,
             final String newClassItemName) {
         if (classItemList == null) {
             throw new IllegalArgumentException("classItemList cannot be null");
@@ -117,14 +115,15 @@ public class ClassItem {
                 classItemList.put(newClassItemName.toLowerCase().trim(), classItemList.remove(oldClassItemName));
 
                 // need to update relationships to reflect the new class name in the keys
-                // go through all relationships and update the keys that contain the old class name
+                // go through all relationships and update the keys that contain the old class
+                // name
                 // the keys are source_destination
                 for (HashMap.Entry<String, RelationshipItem> entry : relationships.entrySet()) {
                     String key = entry.getKey();
                     if (key.contains(oldClassItemName)) {
                         // split the key into source and destination
                         String[] split = key.split("_");
-                        if (split[0].equals(oldClassItemName)){
+                        if (split[0].equals(oldClassItemName)) {
                             // create a new key with the new class name
                             String newKey = newClassItemName + "_" + split[1];
                             // get the relationship object
@@ -133,8 +132,7 @@ public class ClassItem {
                             relationships.remove(key);
                             // add the relationship with the new key
                             relationships.put(newKey, relationship);
-                        }
-                        else {
+                        } else {
                             // create a new key with the new class name
                             String newKey = split[0] + "_" + newClassItemName;
                             // get the relationship object
@@ -165,7 +163,7 @@ public class ClassItem {
      * corresponding to the deleted class
      */
     public static String removeClassItem(final HashMap<String, ClassItem> classItems,
-        HashMap<String, RelationshipItem> relationships, final String classItemName) {
+            HashMap<String, RelationshipItem> relationships, final String classItemName) {
         // precondition checking
 
         if (classItems == null) {
@@ -193,21 +191,22 @@ public class ClassItem {
     }
 
     /*
-    // Check if the new name to be used is available (not a duplicate name), if
-    // duplicate, display message.
-    // private static boolean checkValidNewName(final Map<String, ClassItem>
-    private static boolean checkValidNewName(final HashMap<String, ClassItem> classItemList, final String newClassItemName) {
-        if (newClassItemName == null || newClassItemName.isBlank()){
-            System.out.println("Name cannot be blank.");
-           return false;
-       }
-
-        if(!(classItemList.containsKey(newClassItemName))) //if the name is not
-        return true;
-        System.out.println("\"" + newClassItemName + "\" is already in use." );
-        return false;
-    }
-    */
+     * // Check if the new name to be used is available (not a duplicate name), if
+     * // duplicate, display message.
+     * // private static boolean checkValidNewName(final Map<String, ClassItem>
+     * private static boolean checkValidNewName(final HashMap<String, ClassItem>
+     * classItemList, final String newClassItemName) {
+     * if (newClassItemName == null || newClassItemName.isBlank()){
+     * System.out.println("Name cannot be blank.");
+     * return false;
+     * }
+     * 
+     * if(!(classItemList.containsKey(newClassItemName))) //if the name is not
+     * return true;
+     * System.out.println("\"" + newClassItemName + "\" is already in use." );
+     * return false;
+     * }
+     */
     // checks if the oldClassItem is a class already contained in the Map passed in.
     // displays error message when false.
     // private static boolean checkValidOldName(final Map<String, ClassItem>
@@ -236,7 +235,9 @@ public class ClassItem {
         }
 
         // create a new method object with the method name
-        MethodItem newMethod = new MethodItem(methodName, returnType);
+        // MethodItem newMethod = new MethodItem(methodName, returnType);
+        MethodItem newMethod = UMLObjectFactory.createUMLObject(UMLObjectFactory.ObjectType.METHODITEM, methodName,
+                returnType);
 
         // insert new method item into map
         classItem.getMethodItems().put(methodName, newMethod);
@@ -289,7 +290,7 @@ public class ClassItem {
             MethodItem newMethod = classItem.getMethodItems().get(oldName);
 
             // set new method name
-            newMethod.setMethodName(newName);
+            newMethod.setName(newName);
 
             // remove old method from map
             classItem.getMethodItems().remove(oldName);
@@ -306,27 +307,27 @@ public class ClassItem {
 
     }
 
-    public static String retypeMethod(ClassItem classItem, String methodName, String newType){
+    public static String retypeMethod(ClassItem classItem, String methodName, String newType) {
         // preconditions
         if (newType == null || newType.isBlank()) {
             return "Method names cannot be null or blank.";
         }
-         newType = newType.trim();
- 
-         // check if the method name is a valid key
-         if (classItem.getMethodItems().containsKey(methodName)) {
-            
+        newType = newType.trim();
+
+        // check if the method name is a valid key
+        if (classItem.getMethodItems().containsKey(methodName)) {
+
             MethodItem newMethod = classItem.getMethodItems().get(methodName);
 
             // changes the type of the method
             newMethod.setType(newType);
-            
-             // return success
-             return "good";
-         } else {
-             // invalid method name, return failure
-             return "Method name: " + methodName + " does not exist.";
-         }
+
+            // return success
+            return "good";
+        } else {
+            // invalid method name, return failure
+            return "Method name: " + methodName + " does not exist.";
+        }
     }
 
     public static String addField(ClassItem classItem, String type, String fieldName) {
@@ -337,7 +338,7 @@ public class ClassItem {
 
         fieldName = fieldName.toLowerCase().trim();
         // types can be uppercase for example: String name
-        //type = type.toLowerCase().trim();
+        // type = type.toLowerCase().trim();
         type = type.trim();
 
         // check if field already exists
@@ -346,7 +347,8 @@ public class ClassItem {
         }
 
         // create new field item object
-        FieldItem newField = new FieldItem(fieldName, type);
+        // FieldItem newField = new FieldItem(fieldName, type);
+        FieldItem newField = UMLObjectFactory.createUMLObject(UMLObjectFactory.ObjectType.FIELDITEM, fieldName, type);
 
         // add new field item to map
         classItem.getFieldItems().put(fieldName, newField);
@@ -358,7 +360,7 @@ public class ClassItem {
         // preconditions
         if (fieldName == null || fieldName.isBlank()) {
             return "Field name cannot be null or blank";
-        }   
+        }
 
         // trim leading and trailing whitespace
         fieldName = fieldName.trim();
@@ -398,7 +400,7 @@ public class ClassItem {
             classItem.getFieldItems().remove(oldName);
 
             // set field objects name to new name
-            newField.setFieldName(newName);
+            newField.setName(newName);
 
             // add new field item into map
             classItem.getFieldItems().put(newName, newField);
@@ -431,7 +433,6 @@ public class ClassItem {
             return "Field name: " + fieldName + " does not exist";
         }
     }
-
 
     public String toString() {
         return this.name;
