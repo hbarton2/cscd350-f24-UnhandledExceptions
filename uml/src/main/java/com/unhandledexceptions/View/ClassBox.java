@@ -61,12 +61,13 @@ public class ClassBox extends StackPane
     TitledPane fieldsPane;
 
     public ClassBox(AnchorPane anchorPane, BaseController baseController, String classNameIn, double boxWidth,
-     double boxHeight)
+     double boxHeight, Rectangle[] ranchors)
     {
         this.anchorPane = anchorPane;
         this.baseController = baseController;
         this.className = classNameIn;
-        createClassBox(classNameIn, boxWidth, boxHeight);
+        this.ranchors = ranchors;
+        // createClassBox(classNameIn, boxWidth, boxHeight);
     }
 
     public void Remove(AnchorPane anchorPane)
@@ -137,86 +138,11 @@ public class ClassBox extends StackPane
         }
     }
 
-    private void createClassBox(String classNameIn, double boxWidth, double boxHeight) {
-        //TODO: change this when we rename class
-        this.className = classNameIn;
 
-        // create structure with boxes
-        VBox vbase = new VBox();
-        vbase.setSpacing(10);
-        vbase.setAlignment(Pos.CENTER);
-        // vbase.setStyle("-fx-background-color: lightblue;"); < debugging
-        HBox hbase = new HBox();
-        hbase.setSpacing(10);
-        hbase.setAlignment(Pos.CENTER);
-        // hbase.setStyle("-fx-background-color: red;"); < debugging
-
-        // Create a VBox to hold the class name label and the TitledPanes
-        VBox vbox = new VBox();
-        dragBox = vbox;
-        vbox.setSpacing(10); // Set spacing between components
-        vbox.setAlignment(Pos.CENTER); // Center align the contents of the VBox
-        vbox.getStyleClass().add("class-box");
-
-        HBox nameAndLink = new HBox();
-        nameAndLink.setAlignment(Pos.CENTER_LEFT);
-
-        // Create and style the class name label
-        Label classNameLabel = new Label(className);
-        classNameLabel.setId("classNameLabel");
-        classNameLabel.getStyleClass().add("class-name-label"); // Add CSS class for the class name label
-        classNameLabel.setOnMouseClicked(event -> {  //"rename" event
-            if (event.getClickCount() == 2) {
-                String oldName = classNameLabel.getText();
-                NameClicked(oldName, classNameLabel);
-            }
-        });
-
-        Region spacer = new Region();
-        HBox.setHgrow(spacer, Priority.ALWAYS);
-
-        Button deleteButton = createDeleteButton();
-
-        nameAndLink.getChildren().addAll(classNameLabel, spacer, deleteButton);
-
-        TitledPane fieldsPane = createFieldPane();
-        TitledPane methodsPane = createMethodPane();
-
-        // ranchors (relationship anchors)
-        for (int i = 0; i < 4; i++) {
-            ranchors[i] = new Rectangle(15, 15);
-            ranchors[i].setFill(Color.BLACK);
-        }
-
-        // structure
-        vbase.getChildren().addAll(ranchors[0], hbase, ranchors[2]);
-        hbase.getChildren().addAll(ranchors[3], vbox, ranchors[1]);
-
-        // Add the components to the VBox
-        vbox.getChildren().addAll(nameAndLink, fieldsPane, methodsPane);
-
-        // Add the VBox to the classBox
-        getChildren().add(vbase);
-
-        // ranchor visibility
-        vbase.setOnMouseEntered(event -> {
-            for (Rectangle r : ranchors)
-                r.setVisible(true);
-        });
-        vbase.setOnMouseExited(event -> {
-            for (Rectangle r : ranchors)
-                r.setVisible(false);
-        });
-
-        vbox.setOnMouseEntered(event -> {
-            for (Rectangle r : ranchors)
-                r.setVisible(false);
-        });
-        vbox.setOnMouseExited(event -> {
-            for (Rectangle r : ranchors)
-                r.setVisible(true);
-        });
+    public void setDragBox(VBox dragBox){
+        this.dragBox = dragBox;
     }
+
 
     private void NameClicked(String oldName, Label className) {
 
@@ -244,6 +170,30 @@ public class ClassBox extends StackPane
                 showError(modelUpdated);
             }
         }
+    }
+
+    public HBox nameAndDelete(String className){
+        HBox hbox = new HBox();
+        hbox.setAlignment(Pos.CENTER_LEFT);
+
+        // Create and style the class name label
+        Label classNameLabel = new Label(className);
+        classNameLabel.setId("classNameLabel");
+        classNameLabel.getStyleClass().add("class-name-label"); // Add CSS class for the class name label
+        classNameLabel.setOnMouseClicked(event -> {  //"rename" event
+            if (event.getClickCount() == 2) {
+                String oldName = classNameLabel.getText();
+                NameClicked(oldName, classNameLabel);
+            }
+        });
+
+        Region spacer = new Region();
+        HBox.setHgrow(spacer, Priority.ALWAYS);
+
+        Button deleteButton = createDeleteButton();
+
+        hbox.getChildren().addAll(classNameLabel, spacer, deleteButton);
+        return hbox;
     }
 
     private void FieldClicked(String oldName, Label className){
@@ -315,7 +265,7 @@ public class ClassBox extends StackPane
     // method to create a delete button, sets the action to call
     // the controller to delete the class
     // action will also call an alert box to warn user
-    private Button createDeleteButton() {
+    public Button createDeleteButton() {
         // create a button with an image
         Button deleteButton = new Button();
         ImageView deleteImage = new ImageView("/images/trash-can-icon.png");
@@ -419,7 +369,7 @@ public class ClassBox extends StackPane
         methodParamList.setItems(params);
     }
 
-    private TitledPane createMethodPane() {
+    public TitledPane createMethodPane() {
         // Create TitledPane for methods
         methodsPane = new TitledPane();
         methodsPane.setExpanded(false);
@@ -606,7 +556,7 @@ public class ClassBox extends StackPane
         fieldsList.setItems(fields);
     }
 
-    private TitledPane createFieldPane() {
+    public TitledPane createFieldPane() {
         fieldsPane = new TitledPane();
         fieldsPane.setExpanded(false);
         fieldsPane.setMaxHeight(150);

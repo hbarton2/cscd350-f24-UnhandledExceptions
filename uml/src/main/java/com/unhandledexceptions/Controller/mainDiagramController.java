@@ -9,6 +9,7 @@ import com.unhandledexceptions.Model.ClassItem;
 import com.unhandledexceptions.Model.Data;
 import com.unhandledexceptions.Model.RelationshipItem;
 import com.unhandledexceptions.View.ClassBox;
+import com.unhandledexceptions.View.ClassBoxBasicBuilder;
 import com.unhandledexceptions.View.RelationLine;
 
 import javafx.application.Platform;
@@ -164,8 +165,12 @@ public class mainDiagramController
 
     @FXML public ClassBox addClass(String className)
     {
-        ClassBox classBox = new ClassBox(anchorPane, baseController, className, boxWidth, boxHeight);
-        //new ClassBox(baseController, className, boxWidth, boxHeight, controller);
+        //creates a classBoxBuilder calls adds the panes we need, then builds it.
+        ClassBoxBasicBuilder classBoxBuilder = new ClassBoxBasicBuilder(anchorPane, baseController, className, boxWidth, boxHeight);
+        classBoxBuilder.withFieldPane();
+        classBoxBuilder.withMethodPane();
+        ClassBox classBox = classBoxBuilder.build();
+       
         anchorPane.getChildren().add(classBox);
 
         classBox.setOnMouseClicked(event -> {
