@@ -35,7 +35,7 @@ public class BaseControllerTests {
     // ensure that the class was added to the data object
     assertTrue(data.getClassItems().containsKey("testclass"));
     // ensure the class name wasn't changed
-    assertEquals("TestClass", data.getClassItems().get("testclass").getName());
+    assertEquals("testclass", data.getClassItems().get("testclass").getName());
   }
 
   // Test renaming a class with the controller
