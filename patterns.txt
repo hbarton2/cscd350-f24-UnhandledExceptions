@@ -10,3 +10,8 @@ Pattern 2: Model View Controller
 Pattern 3: Factory
   UMLOBject.java, UMLObjectFactory.java, ClassItem.java (239,350), MethodItem.java (81)
   Justification: Decouples the creation of new Method, Field, and Parameter objects from related classes, standardizes getters and setters for type and name
+
+Pattern 4: Builder
+  ClassBoxBuilderInterface(entire interface), ClassBoxBuilder(entire class), mainDiagramController(169-172)
+  Justification: The Interface allows for other builders to be created which could customize the ClassBox object and components as they wanted.
+    We placed the file in /View as it creates ClassBox objects to be displayed in the GUI.
