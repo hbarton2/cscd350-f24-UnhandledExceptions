@@ -5,6 +5,10 @@ import java.io.File;
 
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import javafx.stage.FileChooser;
+import javafx.stage.Stage;
+
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -14,10 +18,18 @@ public class Data
 {
 	private HashMap<String, ClassItem> classItems = new HashMap<>();
 	private HashMap<String, RelationshipItem> relationshipItems = new HashMap<>();
+	FileChooser fileChooser = new FileChooser();
+	private String currentPath = "";
 
 	public Data()
 	{
-		//constructor
+		//filers for file types
+		fileChooser.getExtensionFilters().add(
+			new FileChooser.ExtensionFilter("JSON Files", "*.json")
+		);
+
+		//initial directory
+		fileChooser.setInitialDirectory(new File(System.getProperty("user.dir")));
 	}
 
 	public void Clear()
@@ -45,6 +57,41 @@ public class Data
 	{
         this.relationshipItems = relationshipItems;
     }
+
+	public void Save(Stage stage)
+	{
+		//gui save
+		if (currentPath.equals(""))
+			SaveAs(stage);
+		else
+			Save(currentPath);
+	}
+
+	public void SaveAs(Stage stage)
+	{
+		//gui save as
+		File selectedFile = fileChooser.showSaveDialog(stage);
+
+		//check it
+		if (selectedFile != null)
+		{
+			currentPath = selectedFile.getAbsolutePath();
+			Save(currentPath);
+		}
+	}
+
+	public void Load(Stage stage)
+	{
+		//gui load
+		File selectedFile = fileChooser.showOpenDialog(stage);
+
+		//check it
+		if (selectedFile != null)
+		{
+			currentPath = selectedFile.getAbsolutePath();
+			Load(currentPath);
+		}
+	}
 
 	/*
 	 * uses jackson api for serialization
@@ -81,7 +128,7 @@ public class Data
 	* with more time, will figure out how to split it up and deploy it from here.
 	*/
 	public String Load(String filepath)
-	{		
+	{
 		HashMap<String, Object> items =  new HashMap<>();
 
 		try
