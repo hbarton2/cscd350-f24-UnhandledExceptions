@@ -6,6 +6,7 @@ import java.util.HashMap;
 import com.unhandledexceptions.Model.ClassItem;
 import com.unhandledexceptions.Model.RelationshipItem;
 import com.unhandledexceptions.Model.Data;
+import com.unhandledexceptions.Model.Data.Memento;
 
 public class MementoTests {
 
@@ -27,7 +28,8 @@ public class MementoTests {
     data.setRelationshipItems(relationships);
 
     // Test the constructor creates a Memento object
-    Memento testMemento = new Memento(data, data.getClassItems(), data.getRelationshipItems());
+    // data.new because Memento is nested in Data.java
+    Memento testMemento = data.new Memento(data, data.getClassItems(), data.getRelationshipItems());
 
     // Verify the memento stores the correct state
     assertEquals(data.getClassItems(), testMemento.getClassItems());

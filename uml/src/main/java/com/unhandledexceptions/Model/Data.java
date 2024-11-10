@@ -110,4 +110,26 @@ public class Data
 
 		return "successfully loaded " + filepath;
 	}
+
+	public class Memento {
+		// These fields are final because they should NOT be changed, we are saving "snapshots" as objects.
+		private final Data data;
+		private final HashMap<String, ClassItem> classItemsMap;
+		private final HashMap<String, RelationshipItem> relationshipItems;
+
+		public Memento(Data data, HashMap<String, ClassItem> classItems, HashMap<String, RelationshipItem> relationshipItems) {
+			this.data = data;
+			this.classItemsMap = classItems;
+			this.relationshipItems = relationshipItems;
+		}
+
+		public HashMap<String, ClassItem> getClassItems() {
+			return classItemsMap;
+		}
+
+		public HashMap<String, RelationshipItem> getRelationshipItems() {
+			return relationshipItems;
+		}
+
+	}
 };
