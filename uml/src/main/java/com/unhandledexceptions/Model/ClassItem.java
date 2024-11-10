@@ -1,9 +1,12 @@
 package com.unhandledexceptions.Model;
 
 import java.util.HashMap;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 
 public class ClassItem {
     String name;
+    private PropertyChangeSupport support;
 
     // Names of FieldItem/MethodItem are keys to Map<k,v>
     private HashMap<String, FieldItem> fieldItems;
@@ -21,6 +24,7 @@ public class ClassItem {
         // initializes Maps
         this.fieldItems = new HashMap<String, FieldItem>();
         this.methodItems = new HashMap<String, MethodItem>();
+        this.support = new PropertyChangeSupport(this);
     }
 
     // Used for tester methods and unit tests currently.
@@ -35,6 +39,8 @@ public class ClassItem {
         if (!(classItems.containsKey(name))) {
             ClassItem createdClass = new ClassItem(name);
             classItems.put(createdClass.getName(), createdClass);
+            createdClass.support.firePropertyChange("classItem", null, createdClass);
+            System.out.println("Support fired add class");
             return "good";
         } else {
             // if classItemName is already in use in the classItemList that's passed in.
@@ -145,6 +151,8 @@ public class ClassItem {
                     }
                 }
 
+                classItemList.get(newClassItemName).support.firePropertyChange("name", oldClassItemName, newClassItemName);
+                System.out.println("Support fired name change");
                 return "good";
             } else {
                 // displayed if newClassItemName is already a key in the HashMap
@@ -177,7 +185,10 @@ public class ClassItem {
         // the mapping for the key from the map.
         // .remove returns the previous value associated with the key, or null if it did
         // not exist.
-        if (classItems.remove(classItemName) != null) {
+        if (classItems.containsKey(classItemName)) {
+            classItems.get(classItemName).support.firePropertyChange("removeBox", classItemName, null);
+            classItems.remove(classItemName);
+            //classItems.remove(classItemName) != null
             // need to delete relationships corresponding to ClassItem that got removed
             // this goes through all entries and if the key contains the class name, which
             // it should, it gets removed.
@@ -241,6 +252,8 @@ public class ClassItem {
 
         // insert new method item into map
         classItem.getMethodItems().put(methodName, newMethod);
+        classItem.support.firePropertyChange(methodName, returnType, newMethod);
+
 
         // return successful add of method
         return "good";
@@ -264,6 +277,7 @@ public class ClassItem {
 
         // remove method item from hash map
         classItem.getMethodItems().remove(methodName);
+        classItem.support.firePropertyChange(methodName, classItem, methodName);
 
         // return successful removal of method
         return "good";
@@ -297,6 +311,7 @@ public class ClassItem {
 
             // add new method item to class
             classItem.getMethodItems().put(newName, newMethod);
+            classItem.support.firePropertyChange(oldName, newName, newMethod);
 
             // return success
             return "good";
@@ -321,6 +336,7 @@ public class ClassItem {
 
             // changes the type of the method
             newMethod.setType(newType);
+            classItem.support.firePropertyChange(methodName, newType, newMethod); // fire property change
 
             // return success
             return "good";
@@ -352,6 +368,7 @@ public class ClassItem {
 
         // add new field item to map
         classItem.getFieldItems().put(fieldName, newField);
+        classItem.support.firePropertyChange(fieldName, type, newField);
 
         return "good";
     }
@@ -372,6 +389,7 @@ public class ClassItem {
 
         // remove field from map
         classItem.getFieldItems().remove(fieldName);
+        classItem.support.firePropertyChange(fieldName, classItem, fieldName);
 
         return "Field name: " + fieldName + " successfully removed.";
     }
@@ -404,6 +422,7 @@ public class ClassItem {
 
             // add new field item into map
             classItem.getFieldItems().put(newName, newField);
+            classItem.support.firePropertyChange(oldName, newName, newField);
 
             return "good";
         } else {
@@ -427,6 +446,7 @@ public class ClassItem {
 
             // set field objects type to new type
             Field.setType(newType);
+            classItem.support.firePropertyChange(fieldName, newType, Field);
 
             return "good";
         } else {
@@ -437,4 +457,13 @@ public class ClassItem {
     public String toString() {
         return this.name;
     }
+
+    public void addPropertyChangeListener(PropertyChangeListener listener) {
+        support.addPropertyChangeListener(listener);
+    }
+
+    public void removePropertyChangeListener(PropertyChangeListener listener) {
+        support.removePropertyChangeListener(listener);
+    }
+
 };

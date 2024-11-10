@@ -14,6 +14,8 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextInputDialog;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -49,7 +51,7 @@ import javafx.scene.control.ButtonBar;
  */
 
 
-public class ClassBox extends StackPane 
+public class ClassBox extends StackPane implements PropertyChangeListener
 {
     private String className;
     final double RANCHOR_VIEW_DISTANCE = 50; // Distance threshold for visibility
@@ -59,20 +61,28 @@ public class ClassBox extends StackPane
     AnchorPane anchorPane;
     TitledPane methodsPane;
     TitledPane fieldsPane;
+    private ClassItem classItem;
 
     public ClassBox(AnchorPane anchorPane, BaseController baseController, String classNameIn, double boxWidth,
-     double boxHeight, Rectangle[] ranchors)
+     double boxHeight, Rectangle[] ranchors, ClassItem classItem)
     {
         this.anchorPane = anchorPane;
         this.baseController = baseController;
         this.className = classNameIn;
         this.ranchors = ranchors;
+        this.classItem = classItem;
+        classItem.addPropertyChangeListener(this);
         // createClassBox(classNameIn, boxWidth, boxHeight);
     }
 
     public void Remove(AnchorPane anchorPane)
     {
         anchorPane.getChildren().remove(this);
+    }
+
+    public AnchorPane getAnchorPane()
+    {
+        return this.anchorPane;
     }
 
     public void Update()
@@ -82,8 +92,10 @@ public class ClassBox extends StackPane
 
         //get me
         ClassItem classItem = baseController.getData().getClassItems().get(className);
+        System.out.println("ClassBox Update: " + className);
         if (classItem == null)
         {
+            System.out.println("this far??");
             //remove any relationlines
             List<RelationLine> nodesToRemove = new ArrayList<>();
             for (Node node : anchorPane.getChildren()) {
@@ -102,7 +114,7 @@ public class ClassBox extends StackPane
             }
 
 
-            AnchorPane anchorPane = (AnchorPane) getParent();
+            AnchorPane anchorPane = this.getAnchorPane();
             anchorPane.getChildren().remove(this);
             return;
         }
@@ -163,7 +175,7 @@ public class ClassBox extends StackPane
             if (modelUpdated == "good")
             {
                 this.className = newName;
-                Update();
+                //Update();
             }
             else
             {
@@ -220,7 +232,7 @@ public class ClassBox extends StackPane
             // parse result for either successful rename or failure
             if (modelUpdated == "good")
             {
-                Update();
+                //Update();
             }
             else
             {
@@ -294,7 +306,7 @@ public class ClassBox extends StackPane
                 // parse result for either successful rename or failure
                 if (modelUpdated == "good")
                 {
-                    Update();
+                    //Update();
                 }
                 else
                 {
@@ -350,8 +362,10 @@ public class ClassBox extends StackPane
         Label nameLabel = (Label) lookup("#classNameLabel");
 
         // if the label exists, rename
-        if (nameLabel != null)
+        if (nameLabel != null){
+            this.className = newName;
             nameLabel.setText(newName);
+        }
     }
 
     public void clearMethods()
@@ -394,7 +408,7 @@ public class ClassBox extends StackPane
                 String updateModel = baseController.AddMethodListener(className, name, type);   
                 if (updateModel == "good")
                 {
-                    Update();   //updates view if model is successfully updated.
+                   // Update();   //updates view if model is successfully updated.
                 } else {
                     showError(updateModel);
                 }
@@ -455,7 +469,7 @@ public class ClassBox extends StackPane
                 if (result == "good")
                 {
 
-                    Update();   //updates view if model is successfully updated.
+                    //Update();   //updates view if model is successfully updated.
                 } else {
                     ClassBox.showError(result);
                 }
@@ -536,7 +550,7 @@ public class ClassBox extends StackPane
     
         // Check the results for both operations
         if ("good".equals(resultName) && "good".equals(resultType)) {
-            Update(); // Update the UI if both updates succeeded
+            //Update(); // Update the UI if both updates succeeded
         } else {
             // Show the appropriate error message based on which operation failed
             String errorMessage = !resultName.equals("good") ? resultName : resultType;
@@ -581,7 +595,7 @@ public class ClassBox extends StackPane
                 if (!type.isBlank() && !name.isBlank()) {
                     // Update your model with the new field
                     baseController.AddFieldListener(className, type, name);
-                    Update();
+                    //Update();
                 }
             } else {
                 System.out.println("Dialog was canceled");
@@ -643,7 +657,7 @@ public class ClassBox extends StackPane
     
         // Check the results for both operations
         if ("good".equals(resultName) && "good".equals(resultType)) {
-            Update(); // Update the UI if both updates succeeded
+            //Update(); // Update the UI if both updates succeeded
         } else {
             // Show the appropriate error message based on which operation failed
             String errorMessage = !resultName.equals("good") ? resultName : resultType;
@@ -677,7 +691,7 @@ public class ClassBox extends StackPane
             // parse result for either successful rename or failure
             if (modelUpdated == "good")
             {
-                Update();
+                //Update();
             }
             else
             {
@@ -709,7 +723,7 @@ public class ClassBox extends StackPane
             // parse result for either successful rename or failure
             if (modelUpdated == "good")
             {
-                Update();
+               // Update();
             }
             else
             {
@@ -834,6 +848,32 @@ public class ClassBox extends StackPane
             // return null if the label does not exist
             return null;
         }
+    }
+
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        System.out.println("Source: " + evt.getSource());
+        switch(evt.getPropertyName()) {
+            case "classItem":
+                Update();
+                break;
+            case "name":
+                System.out.println("Name changed");
+                renameClassLabel((String) evt.getNewValue());
+                break;
+            case "field":
+                Update();
+                break;
+            case "method":
+                Update();
+                break;
+            case "removeBox":
+                Remove(anchorPane);
+                break;
+            default:
+                break;
+        }
+        
     }
 
 }
