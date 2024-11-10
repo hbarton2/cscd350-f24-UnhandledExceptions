@@ -111,6 +111,11 @@ public class Data
 		return "successfully loaded " + filepath;
 	}
 
+	/*
+	 * This object is used to store the state of our Data class.
+	 * These objects will be stored in a stack in our caretaker class.
+	 * Data is the originator because we are storing snapshots of Data object.
+	 */
 	public class Memento {
 		// These fields are final because they should NOT be changed, we are saving "snapshots" as objects.
 		private final Data data;
