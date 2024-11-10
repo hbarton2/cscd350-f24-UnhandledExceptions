@@ -4,21 +4,26 @@ import com.unhandledexceptions.Model.ClassItem;
 import com.unhandledexceptions.Model.MethodItem;
 import com.unhandledexceptions.Model.Data;
 import com.unhandledexceptions.Model.RelationshipItem;
+import com.unhandledexceptions.Model.Data.Memento;
+import java.util.function.Supplier;
 
 public class BaseController
 {
     // our controller gets passed in a data object for storage from the CLI which gets passed a data object from main
     Data data;
+    Caretaker careTaker;
 
     public BaseController(Data data)
     {
         this.data = data;
+        careTaker = new Caretaker(data);
     }
 
     public Data getData()
     {
         return this.data;
     }
+   
 
     /*
      * Our controller is responsible for handling the commands passed in from the CLI and grabbing data from the model to manipulate.
@@ -28,10 +33,31 @@ public class BaseController
      */
 
     // Example: The addClass is only taking a string file name from the CLI input.
+    public String withMemento(Supplier<String> action){
+        careTaker.saveState();  // Save the current state
+        String result = action.get();  // Perform the action
+
+        // If the action is unsuccessful, undo the last saved state
+        if (!result.equals("good")) {
+            careTaker.removeLast();
+        }
+
+        return result;
+    }
+
     public String AddClassListener(String newName)
     {
         // We take the input and use data to manipulate the class item hashmap in data, then pass in the user input, and this returns a message back to the CLI.
-        return ClassItem.addClassItem(data.getClassItems(), newName);
+        /*
+         * create memento
+         * try to add class
+         * if good 
+         *  save memento in caretaker history
+         *  return good message
+         * if bad
+         *  return bad message
+         */
+        return withMemento(() -> ClassItem.addClassItem(data.getClassItems(), newName));
     }
 
     public String RemoveClassListener(String name)
