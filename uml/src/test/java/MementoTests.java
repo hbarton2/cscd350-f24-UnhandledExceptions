@@ -3,6 +3,8 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
+
+import com.unhandledexceptions.Controller.Caretaker;
 import com.unhandledexceptions.Model.ClassItem;
 import com.unhandledexceptions.Model.RelationshipItem;
 import com.unhandledexceptions.Model.Data;
@@ -104,7 +106,34 @@ public class MementoTests {
     assertFalse(data.getClassItems().containsKey("class3"));
   }
 
-  // test saveState()
+  // test saveState() in caretaker
+  @Test
+  public void saveStateTest() {
+    Data data = new Data();
+    Caretaker caretaker = new Caretaker(data);
+
+    HashMap<String, ClassItem> classes = new HashMap<>();
+    HashMap<String, RelationshipItem> relationships = new HashMap<>();
+    
+    // create classes and relationships for memento
+    ClassItem.addClassItem(classes, "class1");
+    ClassItem.addClassItem(classes, "class2");
+    RelationshipItem.addRelationship(classes, relationships, "class1", "class2", "compisition");
+
+    // set the maps in data
+    data.setClassItems(classes);
+    data.setRelationshipItems(relationships);
+
+    // Test that the caretaker puts a memento in its undo stack
+    caretaker.saveState();
+
+    // Test that the undo stack has a memento in it
+    assertFalse(caretaker.getUndoStack().isEmpty());
+    // peek() returns the top of the stack without removing it
+    assertTrue(caretaker.getUndoStack().peek() instanceof Memento);
+  }
+
+
   // test undo()
   // test redo()
   // test if there is nothing in the redo stack when we redo.
