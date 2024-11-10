@@ -104,4 +104,11 @@ public class MementoTests {
     assertFalse(data.getClassItems().containsKey("class3"));
   }
 
+  // test saveState()
+  // test undo()
+  // test redo()
+  // test if there is nothing in the redo stack when we redo.
+  // test if there is nothing in the undo stack when we undo.
+  
+
 }
