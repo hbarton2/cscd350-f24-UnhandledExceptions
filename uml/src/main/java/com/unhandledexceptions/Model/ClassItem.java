@@ -12,7 +12,6 @@ public class ClassItem {
     private HashMap<String, FieldItem> fieldItems;
     private HashMap<String, MethodItem> methodItems;
     private double x, y;
-    private static boolean gui = true;
 
     public ClassItem() {
     } // blank constructor for IO serialization
@@ -151,6 +150,7 @@ public class ClassItem {
                     }
                 }
 
+                classItemList.get(newClassItemName).support.firePropertyChange("name", oldClassItemName, newClassItemName);
                 return "good";
             } else {
                 // displayed if newClassItemName is already a key in the HashMap
@@ -250,7 +250,7 @@ public class ClassItem {
 
         // insert new method item into map
         classItem.getMethodItems().put(methodName, newMethod);
-        classItem.support.firePropertyChange(methodName, returnType, newMethod);
+        classItem.support.firePropertyChange("method", returnType, newMethod);
 
 
         // return successful add of method
@@ -275,7 +275,7 @@ public class ClassItem {
 
         // remove method item from hash map
         classItem.getMethodItems().remove(methodName);
-        classItem.support.firePropertyChange(methodName, classItem, methodName);
+        classItem.support.firePropertyChange("method", classItem, methodName);
 
         // return successful removal of method
         return "good";
@@ -309,7 +309,7 @@ public class ClassItem {
 
             // add new method item to class
             classItem.getMethodItems().put(newName, newMethod);
-            classItem.support.firePropertyChange(oldName, newName, newMethod);
+            classItem.support.firePropertyChange("method", oldName, newName);
 
             // return success
             return "good";
@@ -334,7 +334,7 @@ public class ClassItem {
 
             // changes the type of the method
             newMethod.setType(newType);
-            classItem.support.firePropertyChange(methodName, newType, newMethod); // fire property change
+            classItem.support.firePropertyChange("method", newType, newMethod); // fire property change
 
             // return success
             return "good";
@@ -366,7 +366,7 @@ public class ClassItem {
 
         // add new field item to map
         classItem.getFieldItems().put(fieldName, newField);
-        classItem.support.firePropertyChange(fieldName, type, newField);
+        classItem.support.firePropertyChange("field", type, newField);
 
         return "good";
     }
@@ -387,7 +387,7 @@ public class ClassItem {
 
         // remove field from map
         classItem.getFieldItems().remove(fieldName);
-        classItem.support.firePropertyChange(fieldName, classItem, fieldName);
+        classItem.support.firePropertyChange("field", classItem, fieldName);
 
         return "Field name: " + fieldName + " successfully removed.";
     }
@@ -420,7 +420,7 @@ public class ClassItem {
 
             // add new field item into map
             classItem.getFieldItems().put(newName, newField);
-            classItem.support.firePropertyChange(oldName, newName, newField);
+            classItem.support.firePropertyChange("field", newName, newField);
 
             return "good";
         } else {
@@ -444,7 +444,7 @@ public class ClassItem {
 
             // set field objects type to new type
             Field.setType(newType);
-            classItem.support.firePropertyChange(fieldName, newType, Field);
+            classItem.support.firePropertyChange("field", newType, Field);
 
             return "good";
         } else {
