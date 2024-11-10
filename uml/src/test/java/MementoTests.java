@@ -174,6 +174,30 @@ public class MementoTests {
     assertTrue(data.getClassItems().containsKey("class2"));
     assertTrue(data.getRelationshipItems().containsKey("class1_class2"));
   }
+
+  //test that removeLast() method only removes the last object pushed to the history.
+  @Test
+  public void removeLastTest(){
+    Caretaker careTaker = new Caretaker(data);
+    
+    //current stack is empty
+    assertTrue(careTaker.getUndoStack().isEmpty());
+
+    //pushes memento onto the stack
+    careTaker.saveState(); 
+    Memento mementoState1 = careTaker.getUndoStack().peek();
+    assertTrue(!careTaker.getUndoStack().isEmpty());  //assert that the state was saved in the stack
+
+    //pushes memento onto the stack
+    careTaker.saveState(); 
+    Memento mementoState2 = careTaker.getUndoStack().peek(); //saves the object that is pushed onto the stack
+
+    // assert that the removeLast only removes the latest state pushed to it.
+    assertEquals(mementoState2, careTaker.removeLast()); 
+    // assert that the stack now has the original state on top.
+    assertEquals(mementoState1, careTaker.getUndoStack().peek()); 
+    
+  }
   
   
 
