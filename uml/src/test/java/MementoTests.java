@@ -169,9 +169,39 @@ public class MementoTests {
     assertFalse(caretaker.getRedoStack().isEmpty());
     assertTrue(caretaker.getRedoStack().peek() instanceof Memento);
   }
+
+  // test if there is nothing in the undo stack when we undo.
+  @Test
+  public void undoNothingTest() {
+    Data data = new Data();
+    Caretaker caretaker = new Caretaker(data);
+
+    HashMap<String, ClassItem> classes = new HashMap<>();
+    HashMap<String, RelationshipItem> relationships = new HashMap<>();
+    
+    // create classes and relationships for memento
+    ClassItem.addClassItem(classes, "class1");
+    ClassItem.addClassItem(classes, "class2");
+    RelationshipItem.addRelationship(classes, relationships, "class1", "class2", "compisition");
+
+    // set the maps in data
+    data.setClassItems(classes);
+    data.setRelationshipItems(relationships);
+
+    // undo the change but there isn't anything to undo
+    caretaker.undo();
+
+    // check the redo stack in caretaker to make sure we have nothing in it
+    assertTrue(caretaker.getRedoStack().isEmpty());
+
+    // make sure the state has NOT changed
+    assertTrue(data.getClassItems().containsKey("class1"));
+    assertTrue(data.getClassItems().containsKey("class2"));
+    assertTrue(data.getRelationshipItems().containsKey("class1_class2"));
+  }
   // test redo()
   // test if there is nothing in the redo stack when we redo.
-  // test if there is nothing in the undo stack when we undo.
+  
   
 
 }
