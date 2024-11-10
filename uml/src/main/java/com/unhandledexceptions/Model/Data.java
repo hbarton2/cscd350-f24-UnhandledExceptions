@@ -124,8 +124,9 @@ public class Data
 		private final HashMap<String, RelationshipItem> relationshipItems;
 
 		public Memento(HashMap<String, ClassItem> classItems, HashMap<String, RelationshipItem> relationshipItems) {
-			this.classItemsMap = classItems;
-			this.relationshipItems = relationshipItems;
+			// we need to create a deep copy of the classItems and relationshipItems so that the memento object is independent of the Data object
+			this.classItemsMap = new HashMap<>(classItems);
+			this.relationshipItems = new HashMap<>(relationshipItems);
 		}
 
 		public HashMap<String, ClassItem> getClassItems() {
@@ -138,11 +139,27 @@ public class Data
 
 	}
 
-	/*
+	/**
 	 * This method creates a new memento object.
 	 * It is used by the caretaker class to save the state of the Data object.
+	 * 
+	 * @return the memento object
 	 */
 	public Memento createMemento() {
 		return new Memento(classItems, relationshipItems);
 	}
+
+	/**
+	 * This method restores the state of the Data object from a memento object.
+	 * It is used by the caretaker class to restore the state of the Data object.
+	 * 
+	 * @param memento the memento object to restore the data from
+	 */
+
+	public void restoreFromMemento(Memento memento) {
+		this.setClassItems(memento.getClassItems());
+		this.setRelationshipItems(memento.getRelationshipItems());
+	}
+
+
 };
