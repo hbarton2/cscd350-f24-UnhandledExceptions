@@ -40,6 +40,16 @@ public class Caretaker {
         }
     }
 
+    // redo the last undo
+    public void redo() {
+        if (!redoStack.isEmpty()) {
+            // move the "redo" to the "undo"
+            undoStack.push(this.data.createMemento());
+            // restore the state of the Data object from the redo
+            this.data.restoreFromMemento(redoStack.pop());
+        }
+    }
+
     // getters for the stacks
     // ONLY for testing, I don't see a reason we need to call these outside of unit tests
     public Stack<Memento> getUndoStack() {
