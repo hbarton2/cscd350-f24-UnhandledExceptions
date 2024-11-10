@@ -134,7 +134,7 @@ public class mainDiagramController
             ClassBox classBox = addClass(entry.getKey());
             classBox.setLayoutX(entry.getValue().getX());
             classBox.setLayoutY(entry.getValue().getY());
-            classBox.Update();
+            //classBox.Update(classBox);
         }
 
         //load relationships
@@ -166,7 +166,7 @@ public class mainDiagramController
     @FXML public ClassBox addClass(String className)
     {
         //creates a classBoxBuilder calls adds the panes we need, then builds it.
-        ClassBoxBasicBuilder classBoxBuilder = new ClassBoxBasicBuilder(anchorPane, baseController, className, boxWidth, boxHeight);
+        ClassBoxBasicBuilder classBoxBuilder = new ClassBoxBasicBuilder(anchorPane, baseController, className, boxWidth, boxHeight, data.getClassItems().get(className));
         classBoxBuilder.withFieldPane();
         classBoxBuilder.withMethodPane();
         ClassBox classBox = classBoxBuilder.build();
@@ -379,6 +379,7 @@ public class mainDiagramController
         // parse result for either successful rename or failure
         if (result == "good")
         {
+            //adds classbox to the view
             ClassBox classBox = addClass(className);
             classBox.Update();
             return classBox;
