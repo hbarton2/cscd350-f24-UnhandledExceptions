@@ -29,9 +29,24 @@ public class Caretaker {
         redoStack.clear(); // Clear redo stack whenever a new state is saved
     }
 
+    // undo the last action
+    // if the undo stack is empty we do nothing since there isn't a state we can undo
+    public void undo() {
+        if (!undoStack.isEmpty()) {
+            // move the "undo" to the "redo"
+            redoStack.push(this.data.createMemento());
+            // restore the state of the Data object from the redo
+            this.data.restoreFromMemento(undoStack.pop());
+        }
+    }
+
     // getters for the stacks
     // ONLY for testing, I don't see a reason we need to call these outside of unit tests
     public Stack<Memento> getUndoStack() {
-        return undoStack;
+        return this.undoStack;
+    }
+
+    public Stack<Memento> getRedoStack() {
+        return this.redoStack;
     }
 }
