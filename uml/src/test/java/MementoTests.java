@@ -1,8 +1,7 @@
 // testing imports
 import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import java.util.HashMap;
 
 import com.unhandledexceptions.Controller.Caretaker;
 import com.unhandledexceptions.Model.ClassItem;
@@ -12,23 +11,20 @@ import com.unhandledexceptions.Model.Data.Memento;
 
 public class MementoTests {
 
+  private Data data;
+
+  // Setup the data object with some class items and a relationship item
+  @BeforeEach
+  public void setup() {
+    this.data = new Data();
+    ClassItem.addClassItem(data.getClassItems(), "class1");
+    ClassItem.addClassItem(data.getClassItems(), "class2");
+    RelationshipItem.addRelationship(data.getClassItems(), data.getRelationshipItems(), "class1", "class2", "compisition");
+  }
+
   // Test that a memento was properly created
   @Test
   public void mementoConstructorTest() {
-    // create hashmaps for relationships and classes and Data 
-    Data data = new Data();
-    HashMap<String, ClassItem> classes = new HashMap<>();
-    HashMap<String, RelationshipItem> relationships = new HashMap<>();
-    
-    // create classes and relationships for memento
-    ClassItem.addClassItem(classes, "class1");
-    ClassItem.addClassItem(classes, "class2");
-    RelationshipItem.addRelationship(classes, relationships, "class1", "class2", "compisition");
-
-    // set the maps in data
-    data.setClassItems(classes);
-    data.setRelationshipItems(relationships);
-
     // Test the constructor creates a Memento object
     // data.new because Memento is nested in Data.java
     Memento testMemento = data.new Memento(data.getClassItems(), data.getRelationshipItems());
@@ -46,23 +42,10 @@ public class MementoTests {
   // Test that a memento was properly created in Data.java
   @Test
   public void createMementoTest() {
-    Data data = new Data();
-    HashMap<String, ClassItem> classes = new HashMap<>();
-    HashMap<String, RelationshipItem> relationships = new HashMap<>();
-    
-    // create classes and relationships for memento
-    ClassItem.addClassItem(classes, "class1");
-    ClassItem.addClassItem(classes, "class2");
-    RelationshipItem.addRelationship(classes, relationships, "class1", "class2", "compisition");
-
-    // set the maps in data
-    data.setClassItems(classes);
-    data.setRelationshipItems(relationships);
-
-    // Test the constructor creates a Memento object
-    // data.new because Memento is nested in Data.java
+    // create memento object to test against
     Memento testMemento = data.new Memento(data.getClassItems(), data.getRelationshipItems());
 
+    // create a memento object using createMemento()
     Memento memento = data.createMemento();
 
     // test the memento created from createMemento() is the same as the one created in the constructor
@@ -73,28 +56,11 @@ public class MementoTests {
   // Test that a memento was properly restored
   @Test
   public void restoreFromMementoTest() {
-    Data data = new Data();
-    HashMap<String, ClassItem> classes = new HashMap<>();
-    HashMap<String, RelationshipItem> relationships = new HashMap<>();
-    
-    // create classes and relationships for memento
-    ClassItem.addClassItem(classes, "class1");
-    ClassItem.addClassItem(classes, "class2");
-    RelationshipItem.addRelationship(classes, relationships, "class1", "class2", "compisition");
-
-    // set the maps in data
-    data.setClassItems(classes);
-    data.setRelationshipItems(relationships);
-
-    // Test the constructor creates a Memento object
-    // data.new because Memento is nested in Data.java
+    // create memento object to test with
     Memento testMemento = data.new Memento(data.getClassItems(), data.getRelationshipItems());
 
     // create a new class to change the state of data
-    ClassItem.addClassItem(classes, "class3");
-
-    // set the maps in data
-    data.setClassItems(classes);
+    ClassItem.addClassItem(data.getClassItems(), "class3");
     
     // Make sure data contains class3 now.
     assertTrue(data.getClassItems().containsKey("class3"));
@@ -109,20 +75,8 @@ public class MementoTests {
   // test saveState() in caretaker
   @Test
   public void saveStateTest() {
-    Data data = new Data();
+    // create a caretaker object
     Caretaker caretaker = new Caretaker(data);
-
-    HashMap<String, ClassItem> classes = new HashMap<>();
-    HashMap<String, RelationshipItem> relationships = new HashMap<>();
-    
-    // create classes and relationships for memento
-    ClassItem.addClassItem(classes, "class1");
-    ClassItem.addClassItem(classes, "class2");
-    RelationshipItem.addRelationship(classes, relationships, "class1", "class2", "compisition");
-
-    // set the maps in data
-    data.setClassItems(classes);
-    data.setRelationshipItems(relationships);
 
     // Test that the caretaker puts a memento in its undo stack
     caretaker.saveState();
@@ -136,20 +90,8 @@ public class MementoTests {
   // test undo()
   @Test
   public void undoTest() {
-    Data data = new Data();
+    // create a caretaker object
     Caretaker caretaker = new Caretaker(data);
-
-    HashMap<String, ClassItem> classes = new HashMap<>();
-    HashMap<String, RelationshipItem> relationships = new HashMap<>();
-    
-    // create classes and relationships for memento
-    ClassItem.addClassItem(classes, "class1");
-    ClassItem.addClassItem(classes, "class2");
-    RelationshipItem.addRelationship(classes, relationships, "class1", "class2", "compisition");
-
-    // set the maps in data
-    data.setClassItems(classes);
-    data.setRelationshipItems(relationships);
 
     // caretaker saves the state
     caretaker.saveState();
@@ -173,20 +115,8 @@ public class MementoTests {
   // test if there is nothing in the undo stack when we undo.
   @Test
   public void undoNothingTest() {
-    Data data = new Data();
+    // create a caretaker object
     Caretaker caretaker = new Caretaker(data);
-
-    HashMap<String, ClassItem> classes = new HashMap<>();
-    HashMap<String, RelationshipItem> relationships = new HashMap<>();
-    
-    // create classes and relationships for memento
-    ClassItem.addClassItem(classes, "class1");
-    ClassItem.addClassItem(classes, "class2");
-    RelationshipItem.addRelationship(classes, relationships, "class1", "class2", "compisition");
-
-    // set the maps in data
-    data.setClassItems(classes);
-    data.setRelationshipItems(relationships);
 
     // undo the change but there isn't anything to undo
     caretaker.undo();
@@ -203,20 +133,8 @@ public class MementoTests {
   // test redo()
   @Test
   public void redoTest() {
-    Data data = new Data();
+    // create a caretaker object
     Caretaker caretaker = new Caretaker(data);
-
-    HashMap<String, ClassItem> classes = new HashMap<>();
-    HashMap<String, RelationshipItem> relationships = new HashMap<>();
-    
-    // create classes and relationships for memento
-    ClassItem.addClassItem(classes, "class1");
-    ClassItem.addClassItem(classes, "class2");
-    RelationshipItem.addRelationship(classes, relationships, "class1", "class2", "compisition");
-
-    // set the maps in data
-    data.setClassItems(classes);
-    data.setRelationshipItems(relationships);
 
     // caretaker saves the state
     caretaker.saveState();
@@ -245,20 +163,8 @@ public class MementoTests {
   // test if there is nothing in the redo stack when we redo.
   @Test
   public void redoNothingTest() {
-    Data data = new Data();
+    // create a caretaker object
     Caretaker caretaker = new Caretaker(data);
-
-    HashMap<String, ClassItem> classes = new HashMap<>();
-    HashMap<String, RelationshipItem> relationships = new HashMap<>();
-    
-    // create classes and relationships for memento
-    ClassItem.addClassItem(classes, "class1");
-    ClassItem.addClassItem(classes, "class2");
-    RelationshipItem.addRelationship(classes, relationships, "class1", "class2", "compisition");
-
-    // set the maps in data
-    data.setClassItems(classes);
-    data.setRelationshipItems(relationships);
 
     // redo the change but there isn't anything to redo
     caretaker.redo();
