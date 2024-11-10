@@ -6,12 +6,13 @@ import java.beans.PropertyChangeSupport;
 
 public class ClassItem {
     String name;
-    private PropertyChangeSupport support;
+    private final PropertyChangeSupport support = new PropertyChangeSupport(this);
 
     // Names of FieldItem/MethodItem are keys to Map<k,v>
     private HashMap<String, FieldItem> fieldItems;
     private HashMap<String, MethodItem> methodItems;
     private double x, y;
+    private static boolean gui = true;
 
     public ClassItem() {
     } // blank constructor for IO serialization
@@ -24,7 +25,6 @@ public class ClassItem {
         // initializes Maps
         this.fieldItems = new HashMap<String, FieldItem>();
         this.methodItems = new HashMap<String, MethodItem>();
-        this.support = new PropertyChangeSupport(this);
     }
 
     // Used for tester methods and unit tests currently.
@@ -151,8 +151,6 @@ public class ClassItem {
                     }
                 }
 
-                classItemList.get(newClassItemName).support.firePropertyChange("name", oldClassItemName, newClassItemName);
-                System.out.println("Support fired name change");
                 return "good";
             } else {
                 // displayed if newClassItemName is already a key in the HashMap
