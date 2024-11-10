@@ -59,4 +59,9 @@ public class Caretaker {
     public Stack<Memento> getRedoStack() {
         return this.redoStack;
     }
+
+    //"delete" the top item on the stack, for when we save a state, but no changes are made after.
+    public Memento removeLast(){
+       return undoStack.pop();
+    }
 }
