@@ -29,6 +29,31 @@ public class RelationshipItem
         this.type = type;
     }
 
+    /**
+     * The point of this constructor is to make a deep copy object of a RelationshipItem.
+     * 
+     * @param relationship the relationship object to make a copy of
+     */
+
+    private RelationshipItem(RelationshipItem relationship)
+    {
+        this.source = relationship.source;
+        this.destination = relationship.destination;
+        this.type = relationship.type;
+        this.sourceLoc = relationship.sourceLoc;
+        this.destLoc = relationship.destLoc;
+    }
+
+    /**
+     * The method used to copy a relationshipItem
+     * 
+     * @param other the relationship item to be copied
+     * @return a relationshipItem object that is a copy of the parameter object passed in 
+     */
+    public static RelationshipItem copyRelationshipItem(RelationshipItem other) {
+        return new RelationshipItem(other);
+    }
+
     /* addRelationship takes a Map of relationships we currently have created from the main.java, String source and String destination.
      * The goal is to create a relationship object between the source and destination and store it in the map.
      * If the relationship already exists, we return a message that the relationship already exists.
