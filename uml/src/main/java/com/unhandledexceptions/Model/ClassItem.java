@@ -37,8 +37,9 @@ public class ClassItem implements PropertyChangeListener{
          * create a new ClassItem and add it to the HashMap
          */
         if (!(classItems.containsKey(name))) {
-            ClassItem createdClass = new ClassItem(name);
+            ClassItem createdClass = new ClassItem(classItemName.trim());
             classItems.put(createdClass.getName(), createdClass);
+            // fire support for added class item
             createdClass.support.firePropertyChange("classItem", null, createdClass);
             System.out.println("Support fired add class");
             return "good";
@@ -151,6 +152,7 @@ public class ClassItem implements PropertyChangeListener{
                     }
                 }
 
+                // fire support for renamed class item
                 classItemList.get(newClassItemName).support.firePropertyChange("name", oldClassItemName, newClassItemName);
                 return "good";
             } else {
@@ -260,6 +262,7 @@ public class ClassItem implements PropertyChangeListener{
         // add classItem as a listener to the new method for parameter changes
         newMethod.addPropertyChangeListener(classItem);
 
+        // fire support for added method item
         classItem.support.firePropertyChange("method", returnType, newMethod);
 
 
@@ -319,6 +322,7 @@ public class ClassItem implements PropertyChangeListener{
 
             // add new method item to class
             classItem.getMethodItems().put(newName, newMethod);
+            // fire support for renamed method item
             classItem.support.firePropertyChange("method", oldName, newName);
 
             // return success
@@ -344,6 +348,7 @@ public class ClassItem implements PropertyChangeListener{
 
             // changes the type of the method
             newMethod.setType(newType);
+            // fire support for retype method
             classItem.support.firePropertyChange("method", newType, newMethod); // fire property change
 
             // return success
@@ -376,6 +381,7 @@ public class ClassItem implements PropertyChangeListener{
 
         // add new field item to map
         classItem.getFieldItems().put(fieldName, newField);
+        // fire support for added field item
         classItem.support.firePropertyChange("field", type, newField);
 
         return "good";
@@ -397,6 +403,7 @@ public class ClassItem implements PropertyChangeListener{
 
         // remove field from map
         classItem.getFieldItems().remove(fieldName);
+        // fire support for removed field item
         classItem.support.firePropertyChange("field", classItem, fieldName);
 
         return "Field name: " + fieldName + " successfully removed.";
@@ -430,6 +437,7 @@ public class ClassItem implements PropertyChangeListener{
 
             // add new field item into map
             classItem.getFieldItems().put(newName, newField);
+            // fire support for renamed field item
             classItem.support.firePropertyChange("field", newName, newField);
 
             return "good";
@@ -454,6 +462,7 @@ public class ClassItem implements PropertyChangeListener{
 
             // set field objects type to new type
             Field.setType(newType);
+            // fire support for retype field item
             classItem.support.firePropertyChange("field", newType, Field);
 
             return "good";
@@ -466,6 +475,7 @@ public class ClassItem implements PropertyChangeListener{
         return this.name;
     }
 
+    // Property Change Listener methods
     public void addPropertyChangeListener(PropertyChangeListener listener) {
         support.addPropertyChangeListener(listener);
     }

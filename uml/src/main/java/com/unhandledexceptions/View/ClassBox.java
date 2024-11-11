@@ -61,7 +61,7 @@ public class ClassBox extends StackPane implements PropertyChangeListener
     AnchorPane anchorPane;
     TitledPane methodsPane;
     TitledPane fieldsPane;
-    private ClassItem classItem;
+    private ClassItem classItem; // ClassItem object associated with the ClassBox to add listeners
 
     public ClassBox(AnchorPane anchorPane, BaseController baseController, String classNameIn, double boxWidth,
      double boxHeight, Rectangle[] ranchors, ClassItem classItem)
@@ -90,49 +90,20 @@ public class ClassBox extends StackPane implements PropertyChangeListener
         //rename class: NameClicked, renameClassLabel
         //delete class: createDeleteButton
 
-        //get me
+        //get class item object
         ClassItem classItem = baseController.getData().getClassItems().get(className);
-        System.out.println("ClassBox Update: " + className);
         if (classItem == null)
         {
             removeRelationLines();
         }else{
+            //rename class
             renameClassLabel(classItem.getName());
+            //update fields
             updateFields();
+            //update methods
             updateMethods();
         }
 
-        //name
-        //renameClassLabel(classItem.getName());
-        
-        //fields
-        // clearFields();
-        // HashMap<String, FieldItem> fieldItems = classItem.getFieldItems();
-        // ObservableList<String> fields = FXCollections.observableArrayList();
-        
-        // // Add each FieldItem's toString() result to the fields list
-        // for (FieldItem fieldItem : fieldItems.values()) {
-        //     fields.add(fieldItem.toString());
-        // }
-
-        // addFields(fields);
-        //updateFields();
-
-        //methods
-        // clearMethods();
-        // HashMap<String, MethodItem> methodItems = classItem.getMethodItems();   //Hashmap <String, FieldItem>
-        // for (HashMap.Entry<String, MethodItem> methodItem : methodItems.entrySet()) 
-        // //methodItem.getValue() -> MethodItem(String methodName, String type)
-        // //
-        // {
-        //     HashMap<String, ParameterItem> parameterItems = methodItem.getValue().getParameters();
-        //     ObservableList<String> params = FXCollections.observableArrayList();
-        //     for (ParameterItem parameterItem : parameterItems.values()) {
-        //         params.add(parameterItem.toString());
-        //     }
-        //     addMethod(methodItem.getKey(), methodItem.getValue().getType() , params);
-        // }
-        //updateMethods();
     }
 
     public void updateFields(){
@@ -162,14 +133,14 @@ public class ClassBox extends StackPane implements PropertyChangeListener
         // get the method items
         HashMap<String, MethodItem> methodItems = classItem.getMethodItems();   //Hashmap <String, FieldItem>
         for (HashMap.Entry<String, MethodItem> methodItem : methodItems.entrySet()) 
-        //methodItem.getValue() -> MethodItem(String methodName, String type)
-        //
         {
+            // get the parameters for each method
             HashMap<String, ParameterItem> parameterItems = methodItem.getValue().getParameters();
             ObservableList<String> params = FXCollections.observableArrayList();
             for (ParameterItem parameterItem : parameterItems.values()) {
                 params.add(parameterItem.toString());
             }
+            // add the method to the methods pane
             addMethod(methodItem.getKey(), methodItem.getValue().getType() , params);
         }
     }
@@ -220,7 +191,6 @@ public class ClassBox extends StackPane implements PropertyChangeListener
             if (modelUpdated == "good")
             {
                 this.className = newName;
-                //Update();
             }
             else
             {
@@ -275,11 +245,7 @@ public class ClassBox extends StackPane implements PropertyChangeListener
     
             String modelUpdated = baseController.RenameFieldListener(className.getText(), oldName, newName);
             // parse result for either successful rename or failure
-            if (modelUpdated == "good")
-            {
-                //Update();
-            }
-            else
+            if (!(modelUpdated == "good"))
             {
                 showError(modelUpdated);
             }
@@ -318,10 +284,10 @@ public class ClassBox extends StackPane implements PropertyChangeListener
         return null;
     }
 
-    // ================================================================================================================================================================
-    // method to create a delete button, sets the action to call
-    // the controller to delete the class
-    // action will also call an alert box to warn user
+    /* method to create a delete button, sets the action to call
+     * the controller to delete the class
+     * action will also call an alert box to warn user
+     */
     public Button createDeleteButton() {
         // create a button with an image
         Button deleteButton = new Button();
@@ -349,11 +315,7 @@ public class ClassBox extends StackPane implements PropertyChangeListener
                 // call controller delete passing this class box and the name
                 String modelUpdated = baseController.RemoveClassListener(className);
                 // parse result for either successful rename or failure
-                if (modelUpdated == "good")
-                {
-                    //Update();
-                }
-                else
+                if (!(modelUpdated == "good"))
                 {
                     showError(modelUpdated);
                 }
@@ -367,7 +329,6 @@ public class ClassBox extends StackPane implements PropertyChangeListener
         return deleteButton;
     }
 
-    // ================================================================================================================================================================
     // method to create a dialog box for user input of class name
     public static String classNameDialog() {
         // creates a dialog box for user input
@@ -399,8 +360,7 @@ public class ClassBox extends StackPane implements PropertyChangeListener
         }
         return null;
     }
-
-    // ================================================================================================================================================================
+    
     // method to rename a class box label
     public void renameClassLabel(String newName) {
         // gets the label from the classBox object
@@ -451,12 +411,10 @@ public class ClassBox extends StackPane implements PropertyChangeListener
                 String name = result.getValue().toLowerCase();
                 //String typeName = type + " " + name;    
                 String updateModel = baseController.AddMethodListener(className, name, type);   
-                if (updateModel == "good")
+                if (!(updateModel == "good"))
                 {
-                   // Update();   //updates view if model is successfully updated.
-                } else {
                     showError(updateModel);
-                }
+                } 
             }
         });
         
@@ -511,12 +469,9 @@ public class ClassBox extends StackPane implements PropertyChangeListener
                 String name = userInput.getValue().toLowerCase();
                 //String typeName = type + " " + name;    
                 String result = baseController.AddParameterListener(className, methodName, type, name);   
-                if (result == "good")
+                if (!(result == "good"))
                 {
-
-                    //Update();   //updates view if model is successfully updated.
-                } else {
-                    ClassBox.showError(result);
+                    showError(result);
                 }
             } else {    //prints to terminal that user canceled dialog box for adding field
                 System.out.println("Dialog was canceled");
@@ -640,7 +595,6 @@ public class ClassBox extends StackPane implements PropertyChangeListener
                 if (!type.isBlank() && !name.isBlank()) {
                     // Update your model with the new field
                     baseController.AddFieldListener(className, type, name);
-                    //Update();
                 }
             } else {
                 System.out.println("Dialog was canceled");
@@ -701,12 +655,9 @@ public class ClassBox extends StackPane implements PropertyChangeListener
         String resultType = baseController.RetypeFieldListener(className, newFieldName, newFieldType);
     
         // Check the results for both operations
-        if ("good".equals(resultName) && "good".equals(resultType)) {
-            //Update(); // Update the UI if both updates succeeded
-        } else {
-            // Show the appropriate error message based on which operation failed
+        if (!("good".equals(resultName)) || !("good".equals(resultType))) {
             String errorMessage = !resultName.equals("good") ? resultName : resultType;
-            ClassBox.showError(errorMessage);
+            showError(errorMessage);
         }
     }
     
@@ -734,14 +685,11 @@ public class ClassBox extends StackPane implements PropertyChangeListener
     
             String modelUpdated = baseController.RenameMethodListener(className, oldName, newName);
             // parse result for either successful rename or failure
-            if (modelUpdated == "good")
-            {
-                //Update();
-            }
-            else
+            if (!(modelUpdated == "good"))
             {
                 showError(modelUpdated);
             }
+            
         }
     }
 
@@ -768,12 +716,9 @@ public class ClassBox extends StackPane implements PropertyChangeListener
             // parse result for either successful rename or failure
             if (modelUpdated == "good")
             {
-               // Update();
-            }
-            else
-            {
                 showError(modelUpdated);
             }
+            
         }
     }
 
@@ -846,7 +791,6 @@ public class ClassBox extends StackPane implements PropertyChangeListener
     //     typeComboBox.setPromptText("Select Type");
     // }
 
-    // ================================================================================================================================================================
     // method to display an error message
     public static void showError(String errorMessage) {
         // create an alert box
@@ -895,28 +839,37 @@ public class ClassBox extends StackPane implements PropertyChangeListener
         }
     }
 
+    /*
+     * PropertyChangeListener method to listen for changes in the model and update
+     * Source is the classItem related to the classBox object
+     */
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
         System.out.println("Source: " + evt.getSource());
         switch(evt.getPropertyName()) {
             case "classItem":
+                //redraws the classbox
                 Update();
                 break;
             case "name":
-                System.out.println("Name changed");
+                //renames the label of the classbox
                 renameClassLabel((String) evt.getNewValue());
                 break;
             case "field":
+                //updates the titlepane for fields
                 updateFields();
                 break;
             case "method":
-                Update();
+                //updates the titlepane for methods
+                updateMethods();
                 break;
             case "removeBox":
+                //removes the classbox
                 Update();
                 break;
             case "parameterChange":
-                Update();
+                //updates the titlepane for methods which contains parameters
+                updateMethods();
                 break;
             default:
                 break;
