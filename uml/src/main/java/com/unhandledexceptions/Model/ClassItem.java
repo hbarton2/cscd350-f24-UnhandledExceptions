@@ -185,13 +185,18 @@ public class ClassItem implements PropertyChangeListener{
         // .remove returns the previous value associated with the key, or null if it did
         // not exist.
         if (classItems.containsKey(classItemName)) {
-            classItems.get(classItemName).support.firePropertyChange("removeBox", classItemName, null);
+            //retrive the classItem object to be removed
+            ClassItem classItem = classItems.get(classItemName);
+            //remove the item from the list
             classItems.remove(classItemName);
+            // fire support for deleted class item
+            classItem.support.firePropertyChange("removeBox", classItemName, null);
             //classItems.remove(classItemName) != null
             // need to delete relationships corresponding to ClassItem that got removed
             // this goes through all entries and if the key contains the class name, which
             // it should, it gets removed.
             relationships.entrySet().removeIf(entry -> entry.getKey().contains(classItemName));
+
 
             return "good";
         } else {

@@ -95,47 +95,71 @@ public class ClassBox extends StackPane implements PropertyChangeListener
         System.out.println("ClassBox Update: " + className);
         if (classItem == null)
         {
-            System.out.println("this far??");
-            //remove any relationlines
-            List<RelationLine> nodesToRemove = new ArrayList<>();
-            for (Node node : anchorPane.getChildren()) {
-                if(node instanceof RelationLine) {
-                    RelationLine line = (RelationLine) node;
-                    if (line.getC1().equals(this) || line.getC2().equals(this)) {
-                        nodesToRemove.add(line);
-                    }
-                }
-            }
-
-            // remove the lines
-            for (RelationLine line : nodesToRemove)
-            {
-                line.Remove();
-            }
-
-
-            AnchorPane anchorPane = this.getAnchorPane();
-            anchorPane.getChildren().remove(this);
-            return;
+            removeRelationLines();
+        }else{
+            renameClassLabel(classItem.getName());
+            updateFields();
+            updateMethods();
         }
 
         //name
-        renameClassLabel(classItem.getName());
+        //renameClassLabel(classItem.getName());
         
         //fields
-        clearFields();
-        HashMap<String, FieldItem> fieldItems = classItem.getFieldItems();
-        ObservableList<String> fields = FXCollections.observableArrayList();
+        // clearFields();
+        // HashMap<String, FieldItem> fieldItems = classItem.getFieldItems();
+        // ObservableList<String> fields = FXCollections.observableArrayList();
         
-        // Add each FieldItem's toString() result to the fields list
+        // // Add each FieldItem's toString() result to the fields list
+        // for (FieldItem fieldItem : fieldItems.values()) {
+        //     fields.add(fieldItem.toString());
+        // }
+
+        // addFields(fields);
+        //updateFields();
+
+        //methods
+        // clearMethods();
+        // HashMap<String, MethodItem> methodItems = classItem.getMethodItems();   //Hashmap <String, FieldItem>
+        // for (HashMap.Entry<String, MethodItem> methodItem : methodItems.entrySet()) 
+        // //methodItem.getValue() -> MethodItem(String methodName, String type)
+        // //
+        // {
+        //     HashMap<String, ParameterItem> parameterItems = methodItem.getValue().getParameters();
+        //     ObservableList<String> params = FXCollections.observableArrayList();
+        //     for (ParameterItem parameterItem : parameterItems.values()) {
+        //         params.add(parameterItem.toString());
+        //     }
+        //     addMethod(methodItem.getKey(), methodItem.getValue().getType() , params);
+        // }
+        //updateMethods();
+    }
+
+    public void updateFields(){
+        // get class item object
+        ClassItem classItem = baseController.getData().getClassItems().get(className);
+        // get the field items
+        HashMap<String, FieldItem> fieldItems = classItem.getFieldItems();
+        // get the field pane
+        ListView<String> fieldsList = (ListView<String>) fieldsPane.getContent();
+        // clear the fields list
+        clearFields();
+        // create a new observable list for the fields
+        ObservableList<String> fields = FXCollections.observableArrayList();
+        // add each field item to the fields list
         for (FieldItem fieldItem : fieldItems.values()) {
             fields.add(fieldItem.toString());
         }
+        // set the items in the fields list
+        fieldsList.setItems(fields);
+    }
 
-        addFields(fields);
-
-        //methods
+    public void updateMethods(){
+        // get class item object
+        ClassItem classItem = baseController.getData().getClassItems().get(className);
+        // clear existing methods
         clearMethods();
+        // get the method items
         HashMap<String, MethodItem> methodItems = classItem.getMethodItems();   //Hashmap <String, FieldItem>
         for (HashMap.Entry<String, MethodItem> methodItem : methodItems.entrySet()) 
         //methodItem.getValue() -> MethodItem(String methodName, String type)
@@ -148,6 +172,27 @@ public class ClassBox extends StackPane implements PropertyChangeListener
             }
             addMethod(methodItem.getKey(), methodItem.getValue().getType() , params);
         }
+    }
+
+    public void removeRelationLines(){
+         //remove any relationlines
+         List<RelationLine> nodesToRemove = new ArrayList<>();
+         for (Node node : anchorPane.getChildren()) {
+             if(node instanceof RelationLine) {
+                 RelationLine line = (RelationLine) node;
+                 if (line.getC1().equals(this) || line.getC2().equals(this)) {
+                     nodesToRemove.add(line);
+                 }
+             }
+         }
+         // remove the lines
+         for (RelationLine line : nodesToRemove)
+         {
+             line.Remove();
+         }
+
+         AnchorPane anchorPane = this.getAnchorPane();
+         anchorPane.getChildren().remove(this);
     }
 
 
@@ -862,13 +907,13 @@ public class ClassBox extends StackPane implements PropertyChangeListener
                 renameClassLabel((String) evt.getNewValue());
                 break;
             case "field":
-                Update();
+                updateFields();
                 break;
             case "method":
                 Update();
                 break;
             case "removeBox":
-                Remove(anchorPane);
+                Update();
                 break;
             case "parameterChange":
                 Update();
