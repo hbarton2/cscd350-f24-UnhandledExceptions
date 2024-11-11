@@ -870,6 +870,9 @@ public class ClassBox extends StackPane implements PropertyChangeListener
             case "removeBox":
                 Remove(anchorPane);
                 break;
+            case "parameterChange":
+                Update();
+                break;
             default:
                 break;
         }

@@ -1,10 +1,11 @@
 package com.unhandledexceptions.Model;
 
 import java.util.HashMap;
+import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 
-public class ClassItem {
+public class ClassItem implements PropertyChangeListener{
     String name;
     private final PropertyChangeSupport support = new PropertyChangeSupport(this);
 
@@ -250,6 +251,10 @@ public class ClassItem {
 
         // insert new method item into map
         classItem.getMethodItems().put(methodName, newMethod);
+
+        // add classItem as a listener to the new method for parameter changes
+        newMethod.addPropertyChangeListener(classItem);
+
         classItem.support.firePropertyChange("method", returnType, newMethod);
 
 
@@ -462,6 +467,11 @@ public class ClassItem {
 
     public void removePropertyChangeListener(PropertyChangeListener listener) {
         support.removePropertyChangeListener(listener);
+    }
+
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        support.firePropertyChange(evt.getPropertyName(), evt.getOldValue(), evt.getNewValue());
     }
 
 };
