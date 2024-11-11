@@ -34,9 +34,9 @@ public class Caretaker {
     public void undo() {
         if (!undoStack.isEmpty()) {
             // move the "undo" to the "redo"
-            redoStack.push(this.data.createMemento());
+            redoStack.push(undoStack.pop());
             // restore the state of the Data object from the redo
-            this.data.restoreFromMemento(undoStack.pop());
+            this.data.restoreFromMemento(undoStack.peek());
         }
     }
 

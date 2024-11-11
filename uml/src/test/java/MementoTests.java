@@ -102,6 +102,9 @@ public class MementoTests {
     // make sure the class got added in data for the new state
     assertTrue(data.getClassItems().containsKey("class3"));
 
+    // need to save the state because we added something
+    caretaker.saveState();
+
     // undo the change
     caretaker.undo();
 
@@ -144,6 +147,9 @@ public class MementoTests {
 
     // make sure the class got added in data for the new state
     assertTrue(data.getClassItems().containsKey("class3"));
+
+    // need to save the state because we added something
+    caretaker.saveState();
 
     // undo the change
     caretaker.undo();
