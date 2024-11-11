@@ -198,6 +198,29 @@ public class MementoTests {
     assertEquals(mementoState1, careTaker.getUndoStack().peek()); 
     
   }
+
+  // Testing the state of adding a field to a class, then undoing it
+  @Test
+  public void undoFieldTest() {
+    Caretaker caretaker = new Caretaker(data);
+
+    // save the state
+    caretaker.saveState();
+
+    // add a field to class1
+    ClassItem.addField(data.getClassItems().get("class1"), "String", "name");
+    // make sure a field was added
+    assertTrue(data.getClassItems().get("class1").getFieldItems().containsKey("name"));
+
+    // save the state
+    caretaker.saveState();
+
+    // undo the change
+    caretaker.undo();
+
+    // make sure the field was removed
+    assertFalse(data.getClassItems().get("class1").getFieldItems().containsKey("name"));
+  }
   
   
 
