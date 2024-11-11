@@ -23,7 +23,6 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.Node;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.transform.Scale;
-import javafx.stage.Stage;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
@@ -112,12 +111,12 @@ public class mainDiagramController
 
     public void saveMenuClick()
     {
-        data.Save((Stage) anchorPane.getScene().getWindow());
+        data.Save(anchorPane);
     }
 
     public void saveAsMenuClick()
     {
-        data.SaveAs((Stage) anchorPane.getScene().getWindow());
+        data.SaveAs(anchorPane);
     }
 
     public void openMenuClick()
@@ -125,7 +124,7 @@ public class mainDiagramController
         //clear all
         newMenuClick();
 
-        data.Load((Stage) anchorPane.getScene().getWindow());
+        data.Load(anchorPane);
 
         Load();
     }

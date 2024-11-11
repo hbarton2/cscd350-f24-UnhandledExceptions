@@ -1,11 +1,13 @@
 package com.unhandledexceptions.Model;
 
 import java.util.HashMap;
+import java.util.Objects;
 import java.io.File;
 
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import javafx.scene.layout.AnchorPane;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
@@ -18,7 +20,7 @@ public class Data
 {
 	private HashMap<String, ClassItem> classItems = new HashMap<>();
 	private HashMap<String, RelationshipItem> relationshipItems = new HashMap<>();
-	FileChooser fileChooser = new FileChooser();
+	private FileChooser fileChooser = new FileChooser();
 	private String currentPath = "";
 
 	public Data()
@@ -36,6 +38,16 @@ public class Data
 	{
 		classItems.clear();
 		relationshipItems.clear();
+	}
+
+	public String getCurrentPath()
+	{
+		return this.currentPath;
+	}
+	
+	public void setCurrentPath(String currentPath)
+	{
+		this.currentPath = currentPath;
 	}
 
 	public HashMap<String, ClassItem> getClassItems()
@@ -58,17 +70,20 @@ public class Data
         this.relationshipItems = relationshipItems;
     }
 
-	public void Save(Stage stage)
+	public String Save(AnchorPane anchorPane)
 	{
 		//gui save
 		if (currentPath.equals(""))
-			SaveAs(stage);
+			return SaveAs(anchorPane);
 		else
-			Save(currentPath);
+			return Save(currentPath);
 	}
 
-	public void SaveAs(Stage stage)
+	public String SaveAs(AnchorPane anchorPane)
 	{
+		//get stage for filechooser dialog
+		Stage stage = (Stage) anchorPane.getScene().getWindow();
+
 		//gui save as
 		File selectedFile = fileChooser.showSaveDialog(stage);
 
@@ -76,12 +91,17 @@ public class Data
 		if (selectedFile != null)
 		{
 			currentPath = selectedFile.getAbsolutePath();
-			Save(currentPath);
+			return Save(currentPath);
 		}
+
+		return "uh oh";
 	}
 
-	public void Load(Stage stage)
+	public String Load(AnchorPane anchorPane)
 	{
+		//get stage for filechooser dialog
+		Stage stage = (Stage) anchorPane.getScene().getWindow();
+
 		//gui load
 		File selectedFile = fileChooser.showOpenDialog(stage);
 
@@ -89,8 +109,10 @@ public class Data
 		if (selectedFile != null)
 		{
 			currentPath = selectedFile.getAbsolutePath();
-			Load(currentPath);
+			return Load(currentPath);
 		}
+
+		return "uh oh";
 	}
 
 	/*
@@ -157,4 +179,17 @@ public class Data
 
 		return "successfully loaded " + filepath;
 	}
+
+	@Override
+	public boolean equals(Object o) 
+	{
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+
+		Data data = (Data) o;
+
+		return this.classItems.toString().equals(data.classItems.toString()) &&
+			this.relationshipItems.toString().equals(data.relationshipItems.toString());
+	}
+
 };
