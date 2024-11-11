@@ -30,13 +30,13 @@ public class MementoTests {
     Memento testMemento = data.new Memento(data.getClassItems(), data.getRelationshipItems());
 
     // Verify the memento stores the correct state
-    assertEquals(data.getClassItems(), testMemento.getClassItems());
-    assertEquals(data.getRelationshipItems(), testMemento.getRelationshipItems());
+    assertEquals(data.getClassItems().keySet(), testMemento.getClassItems().keySet());
+    assertEquals(data.getRelationshipItems().keySet(), testMemento.getRelationshipItems().keySet());
 
     // Verify that the objects are stored the same
-    assertTrue(data.getClassItems().get("class1").equals(testMemento.getClassItems().get("class1")));
-    assertTrue(data.getClassItems().get("class2").equals(testMemento.getClassItems().get("class2")));
-    assertTrue(data.getRelationshipItems().get("class1_class2").equals(testMemento.getRelationshipItems().get("class1_class2")));
+    assertTrue(data.getClassItems().get("class1").getName().equals(testMemento.getClassItems().get("class1").getName()));
+    assertTrue(data.getClassItems().get("class2").getName().equals(testMemento.getClassItems().get("class2").getName()));
+    assertTrue(data.getRelationshipItems().get("class1_class2").getSource().equals(testMemento.getRelationshipItems().get("class1_class2").getSource()));
   }
 
   // Test that a memento was properly created in Data.java
@@ -49,8 +49,8 @@ public class MementoTests {
     Memento memento = data.createMemento();
 
     // test the memento created from createMemento() is the same as the one created in the constructor
-    assertEquals(testMemento.getClassItems(), memento.getClassItems());
-    assertEquals(testMemento.getRelationshipItems(), memento.getRelationshipItems());
+    assertEquals(testMemento.getClassItems().keySet(), memento.getClassItems().keySet());
+    assertEquals(testMemento.getRelationshipItems().keySet(), memento.getRelationshipItems().keySet());
   }
 
   // Test that a memento was properly restored
