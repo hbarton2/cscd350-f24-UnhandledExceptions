@@ -845,7 +845,6 @@ public class ClassBox extends StackPane implements PropertyChangeListener
      */
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
-        System.out.println("Source: " + evt.getSource());
         switch(evt.getPropertyName()) {
             case "classItem":
                 //redraws the classbox
