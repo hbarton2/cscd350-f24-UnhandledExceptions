@@ -7,7 +7,7 @@ import org.testfx.framework.junit5.Start;
 import org.testfx.api.FxToolkit;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.lang.classfile.Label;
+import javafx.scene.control.Label;
 
 //Project Imports
 import com.unhandledexceptions.Controller.BaseController;

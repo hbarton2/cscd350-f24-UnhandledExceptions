@@ -35,6 +35,8 @@ public class UI
 		commandSyntax.put("removeparameter", "removeparameter [classname] [methodname] [parametertype] [parametername]");
 		commandSyntax.put("changeparameter", "changeparameter [classname] [methodname] [parametertype] [parametername] "
 						+ "[newparametertype] [newparametername]");
+		commandSyntax.put("undo", "undo");
+		commandSyntax.put("redo", "redo");
 	}
 
 	// nicer way to get syntax strings
@@ -200,6 +202,10 @@ public class UI
 		System.out.println("\t- Removes a parameter from a method.");
 		System.out.println(UI.CommandSyntax("changeparameter"));
 		System.out.println("\t- Renames a parameter.\n");
+		System.out.println(UI.CommandSyntax("undo"));
+		System.out.println("\t- undo the last change you made.\n");
+		System.out.println(UI.CommandSyntax("redo"));
+		System.out.println("\t- redo the last undo you did.\n");
 
 		/*
 		System.out.println("UML Editor basics: \n");
