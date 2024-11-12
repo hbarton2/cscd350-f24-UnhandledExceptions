@@ -103,7 +103,7 @@ public class MementoTests {
     assertTrue(data.getClassItems().containsKey("class3"));
 
     // need to save the state because we added something
-    caretaker.saveState();
+    //caretaker.saveState();
 
     // undo the change
     caretaker.undo();
@@ -149,7 +149,7 @@ public class MementoTests {
     assertTrue(data.getClassItems().containsKey("class3"));
 
     // need to save the state because we added something
-    caretaker.saveState();
+    //caretaker.saveState();
 
     // undo the change
     caretaker.undo();
@@ -217,9 +217,6 @@ public class MementoTests {
     ClassItem.addField(data.getClassItems().get("class1"), "String", "name");
     // make sure a field was added
     assertTrue(data.getClassItems().get("class1").getFieldItems().containsKey("name"));
-
-    // save the state
-    caretaker.saveState();
 
     // undo the change
     caretaker.undo();
