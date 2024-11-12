@@ -15,3 +15,9 @@ Pattern 4: Builder
   ClassBoxBuilderInterface(entire interface), ClassBoxBuilder(entire class), mainDiagramController(169-172)
   Justification: The Interface allows for other builders to be created which could customize the ClassBox object and components as they wanted.
     We placed the file in /View as it creates ClassBox objects to be displayed in the GUI.
+
+Pattern 5: Memento
+  Caretaker.java (whole file), Data.java (115-171)
+  Justification: Our caretaker class handles storing memento objects and the undo and redo methods in the class.
+    The originator is our Data.java because both CLI and GUI pull from the Data to display.
+    The memento is a class nested in our originator since we are creating mementos from the states of data during runtime.

@@ -27,6 +27,30 @@ public class ClassItem implements PropertyChangeListener{
         this.methodItems = new HashMap<String, MethodItem>();
     }
 
+    /**
+     * The point of this constructor is to make a deep copy of a classItem, that way
+     * when we create a copy it is a completely new object, not a memory address reference
+     * 
+     * @param other a ClassItem object that you wish to copy
+     */
+    private ClassItem(ClassItem other){
+        this.name = other.name;
+        this.fieldItems = new HashMap<String, FieldItem>(other.fieldItems);
+        this.methodItems = new HashMap<String, MethodItem>(other.methodItems);
+        this.x = other.x;
+        this.y = other.y;
+    }
+
+    /**
+     * The copy method to make a new object that is a copy of a classItem.
+     * 
+     * @param other the ClassItem to be copied
+     * @return the copy object of the parameter other
+     */
+    public static ClassItem copyClassItem(ClassItem other) {
+        return new ClassItem(other);
+    }
+
     // Used for tester methods and unit tests currently.
     public static String addClassItem(final HashMap<String, ClassItem> classItems, final String classItemName) {
         String name = classItemName.toLowerCase().trim();// forces all classes to be in lower case and trims all leading

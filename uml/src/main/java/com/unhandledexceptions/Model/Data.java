@@ -1,6 +1,7 @@
 package com.unhandledexceptions.Model;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.io.File;
 
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -110,4 +111,64 @@ public class Data
 
 		return "successfully loaded " + filepath;
 	}
+
+	/*
+	 * This object is used to store the state of our Data class.
+	 * These objects will be stored in a stack in our caretaker class.
+	 * Data is the originator because we are storing snapshots of Data object.
+	 * Memento is nested in Data because it is only used by Data.
+	 * There are no setters because we can't change the state of a memento.
+	 */
+	public class Memento {
+		// These fields are final because they should NOT be changed, we are saving "snapshots" as objects.
+		private final HashMap<String, ClassItem> classItemsMap;
+		private final HashMap<String, RelationshipItem> relationshipItems;
+
+		public Memento(HashMap<String, ClassItem> classItems, HashMap<String, RelationshipItem> relationshipItems) {
+			// we need to create a deep copy of the classItems and relationshipItems so that the memento object is independent of the Data object
+			this.classItemsMap = new HashMap<>();
+			// create deep copies of everything in the classItem hashmap
+			for (Map.Entry<String, ClassItem> entry : classItems.entrySet()) {
+				this.classItemsMap.put(entry.getKey(), ClassItem.copyClassItem(entry.getValue()));
+			}
+			
+			this.relationshipItems = new HashMap<>();
+      for (Map.Entry<String, RelationshipItem> entry : relationshipItems.entrySet()) {
+        this.relationshipItems.put(entry.getKey(), RelationshipItem.copyRelationshipItem(entry.getValue()));
+      }
+		}
+
+		public HashMap<String, ClassItem> getClassItems() {
+			return classItemsMap;
+		}
+
+		public HashMap<String, RelationshipItem> getRelationshipItems() {
+			return relationshipItems;
+		}
+
+	}
+
+	/**
+	 * This method creates a new memento object.
+	 * It is used by the caretaker class to save the state of the Data object.
+	 * 
+	 * @return the memento object
+	 */
+	public Memento createMemento() {
+		return new Memento(classItems, relationshipItems);
+	}
+
+	/**
+	 * This method restores the state of the Data object from a memento object.
+	 * It is used by the caretaker class to restore the state of the Data object.
+	 * 
+	 * @param memento the memento object to restore the data from
+	 */
+
+	public void restoreFromMemento(Memento memento) {
+		this.setClassItems(memento.getClassItems());
+		this.setRelationshipItems(memento.getRelationshipItems());
+	}
+
+
 };
