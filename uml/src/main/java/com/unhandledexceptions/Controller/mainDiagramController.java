@@ -73,12 +73,7 @@ public class mainDiagramController
     {
         data.Clear();
 
-        ArrayList<Node> children = new ArrayList<>();
-        
-        for (Node child : anchorPane.getChildren())
-                children.add(child);
-        
-        anchorPane.getChildren().removeAll(children);
+        ClearAll();
     }
 
     public void openRecentMenuShowing()
@@ -127,6 +122,16 @@ public class mainDiagramController
         data.Load(anchorPane);
 
         Load();
+    }
+
+    private void ClearAll()
+    {
+        ArrayList<Node> children = new ArrayList<>();
+        
+        for (Node child : anchorPane.getChildren())
+                children.add(child);
+        
+        anchorPane.getChildren().removeAll(children);
     }
 
     private void Load()
