@@ -1,7 +1,6 @@
 package com.unhandledexceptions.Model;
 
 import java.util.HashMap;
-import java.util.Objects;
 import java.io.File;
 
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -34,12 +33,14 @@ public class Data
 		fileChooser.setInitialDirectory(new File(System.getProperty("user.dir")));
 	}
 
+	//clear method to reset this data object to a blank state
 	public void Clear()
 	{
 		classItems.clear();
 		relationshipItems.clear();
 	}
 
+	//basic getters and setters
 	public String getCurrentPath()
 	{
 		return this.currentPath;
@@ -70,24 +71,27 @@ public class Data
         this.relationshipItems = relationshipItems;
     }
 
+	//save called from GUI. Presents a file chooser dialog box if the current project
+	//hasn't been saved yet. otherwise just saves to the currently open project's file.
 	public String Save(AnchorPane anchorPane)
 	{
-		//gui save
 		if (currentPath.equals(""))
 			return SaveAs(anchorPane);
 		else
 			return Save(currentPath);
 	}
 
+
+	//saveAs called from GUI. Presents a file chooser dialog box to the user then saves.
 	public String SaveAs(AnchorPane anchorPane)
 	{
 		//get stage for filechooser dialog
 		Stage stage = (Stage) anchorPane.getScene().getWindow();
 
-		//gui save as
+		//display filechooser and get back filepath
 		File selectedFile = fileChooser.showSaveDialog(stage);
 
-		//check it
+		//check that a filepath was chosen, if so, save to it
 		if (selectedFile != null)
 		{
 			currentPath = selectedFile.getAbsolutePath();
@@ -102,10 +106,10 @@ public class Data
 		//get stage for filechooser dialog
 		Stage stage = (Stage) anchorPane.getScene().getWindow();
 
-		//gui load
+		//display filechooser and get back filepath
 		File selectedFile = fileChooser.showOpenDialog(stage);
 
-		//check it
+		//check that a filepath was chosen, if so, load from it
 		if (selectedFile != null)
 		{
 			currentPath = selectedFile.getAbsolutePath();
@@ -128,7 +132,7 @@ public class Data
 		items.put("relationshipItems", relationshipItems);
 
 		try
-		{
+		{//try to write the combined hashmap to the file
 			ObjectMapper objectMapper = new ObjectMapper();
 			objectMapper.writeValue(new File(filepath), items);
 		} catch (JsonProcessingException e) {
@@ -154,7 +158,7 @@ public class Data
 		HashMap<String, Object> items =  new HashMap<>();
 
 		try
-		{
+		{//try to read the combined hashmap from the file
 			ObjectMapper objectMapper = new ObjectMapper();
 			items = objectMapper.readValue(new File(filepath),
 			 new TypeReference<HashMap<String, Object>>() {});
@@ -180,14 +184,17 @@ public class Data
 		return "successfully loaded " + filepath;
 	}
 
+	//equals override to assist in comparing objects for unit testing
 	@Override
 	public boolean equals(Object o) 
 	{
+		//make sure the incoming object is valid
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
 
 		Data data = (Data) o;
 
+		//convert this object's equals method to return it's important field's toString methods.
 		return this.classItems.toString().equals(data.classItems.toString()) &&
 			this.relationshipItems.toString().equals(data.relationshipItems.toString());
 	}
