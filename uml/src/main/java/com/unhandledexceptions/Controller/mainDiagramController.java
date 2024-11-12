@@ -79,6 +79,11 @@ public class mainDiagramController
     {
         data.Clear();
 
+        clearAll();
+    }
+
+    // Clear all classes and relationships
+    @FXML public void clearAll() {
         ArrayList<Node> children = new ArrayList<>();
         
         for (Node child : anchorPane.getChildren())
@@ -127,6 +132,11 @@ public class mainDiagramController
             data.Load(result.get());
         }
 
+        load();
+
+    }
+
+    public void load() {
         //load classes
         HashMap<String, ClassItem> classItems = data.getClassItems();
         for (Map.Entry<String, ClassItem> entry : classItems.entrySet()) 
@@ -402,6 +412,20 @@ public class mainDiagramController
         {
             ClassBox.showError(result);
         }
+    }
+
+    // when the undo button is clicked
+    public void onUndoClicked() {
+        baseController.undoListener();
+        clearAll();
+        load();
+    }
+
+    // when the redo button is clicked
+    public void onRedoClicked() {
+        baseController.redoListener();
+        clearAll();
+        load();
     }
 
 }
