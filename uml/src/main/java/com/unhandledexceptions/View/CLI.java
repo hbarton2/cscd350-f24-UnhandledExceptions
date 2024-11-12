@@ -273,6 +273,8 @@ public final class CLI
 				break;
 			case "undo":
 				return controller.undoListener();
+			case "redo":
+				return controller.redoListener();
 
 			default:
 				return "unknown command";

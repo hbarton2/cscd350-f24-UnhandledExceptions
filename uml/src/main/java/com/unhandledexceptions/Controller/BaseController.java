@@ -165,6 +165,11 @@ public class BaseController
 
     public String undoListener() {
         this.careTaker.undo();
-        return "Change undone.";
+        return "Change Undone.";
+    }
+
+    public String redoListener() {
+        this.careTaker.redo();
+        return "Change Redone.";
     }
 }
