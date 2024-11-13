@@ -252,6 +252,11 @@ public class UI
 				System.out.println("Add method: [methodName] [returnType] to add a method, or `exit` to exit");
 				String result = reader.readLine().trim();
 				String[] split = result.split(" ");
+				// check input
+				if (split.length != 2) {
+					System.out.println("Invalid input. Please try again.");
+					continue;
+				}
 				// Exiting this loop exits creating a class
 				if (result.toLowerCase().length() == 0) {
 					return;

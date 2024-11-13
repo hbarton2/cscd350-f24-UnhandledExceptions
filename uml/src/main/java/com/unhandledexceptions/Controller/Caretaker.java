@@ -29,7 +29,6 @@ public class Caretaker {
     public void saveState() {
         if (lock) return;
         testMomentoCount += 1;
-        System.out.println("Momentos created: " + testMomentoCount);
         undoStack.push(this.data.createMemento());
         redoStack.clear(); // Clear redo stack whenever a new state is saved
     }
