@@ -1,9 +1,10 @@
 package com.unhandledexceptions.Controller;
 
+import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 import com.unhandledexceptions.Model.ClassItem;
 import com.unhandledexceptions.Model.Data;
@@ -16,20 +17,20 @@ import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Menu;
+import javafx.scene.control.MenuItem;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.Node;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.transform.Scale;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.control.TextInputDialog;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 
 public class mainDiagramController
 {
-    private mainDiagramController controller;
+    //private mainDiagramController controller;
     
     private Data data;
     private BaseController baseController;
@@ -40,7 +41,7 @@ public class mainDiagramController
     private double offsetY;
 
     public mainDiagramController() {
-        controller = this;
+        //controller = this;
         data = new Data();
         baseController = new BaseController(data);
     }
@@ -49,6 +50,7 @@ public class mainDiagramController
     @FXML private AnchorPane anchorPane;
     @FXML private ScrollPane scrollPane;
     @FXML private Menu addClassMenu;
+    @FXML private Menu openRecentMenu;
 
     // Zoom in/out variables
     @FXML private final Scale scaleTransform = new Scale(1.0, 1.0);
@@ -58,32 +60,72 @@ public class mainDiagramController
 
     @FXML private void initialize()
     {
-        controller = this;
+        //controller = this;
         data = new Data();
         baseController = new BaseController(data);
-
-        addClassMenu.setOnShowing(event -> {
-            onAddClassClicked(); 
-            });
-
         anchorPane.getTransforms().add(scaleTransform);
-
         scrollPane.addEventFilter(ScrollEvent.SCROLL, this::handleZoom);
-
         anchorPane.setOnMouseMoved(event -> mouseMove(event));
-
         anchorPane.setOnMouseClicked(event -> mouseClick(event));
     }
 
-    @FXML public void newMenuClick()
+    public void newMenuClick()
     {
         data.Clear();
 
-        clearAll();
+        ClearAll();
     }
 
-    // Clear all classes and relationships
-    @FXML public void clearAll() {
+    public void openRecentMenuShowing()
+    {
+        //clear items
+        openRecentMenu.getItems().clear();
+
+        // Get the current working directory
+        File dir = new File(System.getProperty("user.dir"));
+
+        // Filter for .json files
+        File[] jsonFiles = dir.listFiles((directory, name) -> name.endsWith(".json"));
+        if (jsonFiles != null) {
+            Arrays.stream(jsonFiles).forEach(file -> {
+                // Create a menu item for each .json file
+                MenuItem fileItem = new MenuItem(file.getName());
+                
+                // Set an action for each menu item (e.g., to open the file)
+                fileItem.setOnAction(event -> {
+                    newMenuClick();
+                    data.Load(file.getAbsolutePath());
+                    Load();
+                });
+                
+                // Add the menu item to the "Open Recent" submenu
+                openRecentMenu.getItems().add(fileItem);
+            });
+        }
+    }
+
+    public void saveMenuClick()
+    {
+        data.Save(anchorPane);
+    }
+
+    public void saveAsMenuClick()
+    {
+        data.SaveAs(anchorPane);
+    }
+
+    public void openMenuClick()
+    {
+        //clear all
+        newMenuClick();
+
+        data.Load(anchorPane);
+
+        Load();
+    }
+
+    private void ClearAll()
+    {
         ArrayList<Node> children = new ArrayList<>();
         
         for (Node child : anchorPane.getChildren())
@@ -92,51 +134,8 @@ public class mainDiagramController
         anchorPane.getChildren().removeAll(children);
     }
 
-    @FXML public void openRecentMenuClick()
+    private void Load()
     {
-        //open recent
-    }
-
-    @FXML public void saveMenuClick()
-    {
-        //save without asking for file name
-    }
-
-    @FXML public void saveAsMenuClick()
-    {
-        TextInputDialog input = new TextInputDialog();
-        input.setTitle("Save Project");
-        input.setHeaderText("Enter the file name");
-        input.setContentText("File name: ");
-
-        Optional<String> result = input.showAndWait();
-
-        if (result.isPresent()) {
-            data.Save(result.get());
-        }
-    }
-
-    @FXML public void openMenuClick()
-    {
-        TextInputDialog input = new TextInputDialog();
-        input.setTitle("Open Project");
-        input.setHeaderText("Enter the file name");
-        input.setContentText("File name: ");
-
-        Optional<String> result = input.showAndWait();
-
-        //clear all
-        newMenuClick();
-
-        if (result.isPresent()) {
-            data.Load(result.get());
-        }
-
-        load();
-
-    }
-
-    public void load() {
         //load classes
         HashMap<String, ClassItem> classItems = data.getClassItems();
         for (Map.Entry<String, ClassItem> entry : classItems.entrySet()) 
@@ -173,7 +172,7 @@ public class mainDiagramController
         }
     }
 
-    @FXML public ClassBox addClass(String className)
+    public ClassBox addClass(String className)
     {
         //creates a classBoxBuilder calls adds the panes we need, then builds it.
         ClassBoxBasicBuilder classBoxBuilder = new ClassBoxBasicBuilder(anchorPane, baseController, className, boxWidth, boxHeight, data.getClassItems().get(className));
@@ -250,7 +249,18 @@ public class mainDiagramController
     private void mouseMove(MouseEvent event)
     {
         if (placingRelation != null)
+        {
             placingRelation.Update(scaleTransform, event);
+        }
+        else
+        {
+            for (Node node : anchorPane.getChildren()) {
+                if (node instanceof RelationLine) {
+                    RelationLine line = (RelationLine) node;
+                    line.mouseMoved(event);
+                }
+            }
+        }
     }
 
     // mouse click on background event
@@ -260,7 +270,10 @@ public class mainDiagramController
         {
             //user is dragging around a relation line and has clicked the background
             //add a new class to hook the relation line to.
+            baseController.getCareTaker().saveState();
+            baseController.getCareTaker().Lock();
             ClassBox classBox = onAddClassClicked();
+            baseController.getCareTaker().Unlock();
             if (classBox == null) return;
 
             new Thread(() -> {
@@ -276,7 +289,9 @@ public class mainDiagramController
 
                 placingRelation.setEnd(classBox, i);
                 placingRelation.Update(scaleTransform);
-                placingRelation.Save(baseController); //update model
+                baseController.getCareTaker().Lock();
+                placingRelation.Save(); //update model
+                baseController.getCareTaker().Unlock();
                 placingRelation = null;
             }).start();
         }
@@ -316,7 +331,7 @@ public class mainDiagramController
         {
             placingRelation.setEnd(classBox, index);
             placingRelation.Update(scaleTransform);
-            placingRelation.Save(baseController); //update model
+            placingRelation.Save(); //update model
             placingRelation = null;
         }
     }
@@ -417,16 +432,22 @@ public class mainDiagramController
 
     // when the undo button is clicked
     public void onUndoClicked() {
-        baseController.undoListener();
-        clearAll();
-        load();
+        String result = baseController.undoListener();
+        if (result.equals("good"))
+        {
+            ClearAll();
+            Load();
+        }
     }
 
     // when the redo button is clicked
     public void onRedoClicked() {
-        baseController.redoListener();
-        clearAll();
-        load();
+        String result = baseController.redoListener();
+        if (result.equals("good"))
+        {
+            ClearAll();
+            Load();
+        }
     }
 
 }

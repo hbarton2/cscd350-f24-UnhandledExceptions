@@ -61,6 +61,7 @@ public class ClassItem implements PropertyChangeListener{
         String name = classItemName.toLowerCase().trim();// forces all classes to be in lower case and trims all leading
                                                          // and trailing "space" (refernce .trim() Java API for space
                                                          // definition).
+        
         /*
          * if the classItemList does not already have a class named classItemName, we
          * create a new ClassItem and add it to the HashMap
@@ -74,6 +75,29 @@ public class ClassItem implements PropertyChangeListener{
         } else {
             // if classItemName is already in use in the classItemList that's passed in.
             return "Class name must be unique.";
+        }
+    }
+    //randomized locations for the class items will only work up to 23-24 classes in GUI
+    public static void initialPosition(HashMap<String, ClassItem> classItems, ClassItem classItem) {
+        // take in and loop each class item in the map until it's finished
+        boolean finished = false;//not finished going though the list of classes
+        while(!finished){
+            finished = true;//ready to end the loop unless a box is too close to this one
+            double x1 = Math.random() * 900;//boundaries of the GUI box creation
+            double y1 = Math.random() * 565;
+            if(classItems.size() < 18){//hard cap on how many classes can be displayed. can be reoved once scrolling thorugh is working
+                for (HashMap.Entry<String, ClassItem> entry : classItems.entrySet()) {//for loop iterates through list of classes to check distance
+                    double x2 = entry.getValue().getX();
+                    double y2 = entry.getValue().getY();
+                    double distance = Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
+                    if(distance < 150){//if the distance is less than 150 pixels, the loop will start over and try again
+                        finished = false;
+                        break;
+                    }
+                }
+            }
+            classItem.setX(x1);//got throught the loop and found not too close to other classes, set the x and y values
+            classItem.setY(y1);
         }
     }
 

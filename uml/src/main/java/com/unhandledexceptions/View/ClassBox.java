@@ -39,7 +39,6 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Rectangle;
 import javafx.util.Pair;
-import javafx.scene.paint.Color;
 import javafx.scene.control.ButtonBar;
 
 /*
@@ -114,6 +113,9 @@ public class ClassBox extends StackPane implements PropertyChangeListener
             updateFields();
             //update methods
             updateMethods();
+
+            setLayoutX(classItem.getX());
+            setLayoutY(classItem.getY());
         }
 
     }
@@ -235,6 +237,7 @@ public class ClassBox extends StackPane implements PropertyChangeListener
         return hbox;
     }
 
+    /* Still needed?
     private void FieldClicked(String oldName, Label className){
         TextInputDialog input = new TextInputDialog();
         input.setTitle("Rename Field");
@@ -263,7 +266,8 @@ public class ClassBox extends StackPane implements PropertyChangeListener
             }
         }
     }
-    
+     */
+
     public String getClassName()
     {
         return this.className;
@@ -387,6 +391,7 @@ public class ClassBox extends StackPane implements PropertyChangeListener
 
     public void clearMethods()
     {
+        @SuppressWarnings("unchecked")
         ListView<TitledPane> methodsList = (ListView<TitledPane>) methodsPane.getContent();
         methodsList.getItems().clear();
     }
@@ -394,8 +399,10 @@ public class ClassBox extends StackPane implements PropertyChangeListener
     public void addMethod(String methodName, String methodType, ObservableList<String> params)
     {
         TitledPane newMethodPane = createNewMethod(methodName, methodType);  //create new box with list for params
+        @SuppressWarnings("unchecked")
         ListView<TitledPane> methodsList = (ListView<TitledPane>) methodsPane.getContent(); //extract the list the new box goes on
         methodsList.getItems().add(newMethodPane); //add box to extracted list
+        @SuppressWarnings("unchecked")
         ListView<String> methodParamList = (ListView<String>) newMethodPane.getContent();//extract paramlistview from newMethodPane
         methodParamList.setItems(params);
     }
@@ -499,7 +506,7 @@ public class ClassBox extends StackPane implements PropertyChangeListener
                     // Split the selected item to get old name and type
                     String[] parts = selectedItem.split(" "); // Assuming the format is "name - type"
                     if (parts.length == 2) {
-                        String oldParamType = parts[0].trim();
+                        //String oldParamType = parts[0].trim();
                         String oldParamName = parts[1].trim();
 
                         // Create input dialog to get new name and type
@@ -572,12 +579,14 @@ public class ClassBox extends StackPane implements PropertyChangeListener
    
     private void clearFields()
     {
+        @SuppressWarnings("unchecked")
         ListView<String> fieldsList = (ListView<String>) fieldsPane.getContent();
         fieldsList.getItems().clear();
     }
 
     private void addFields(ObservableList<String> fields)
     {
+        @SuppressWarnings("unchecked")
         ListView<String> fieldsList = (ListView<String>) fieldsPane.getContent();
         fieldsList.setItems(fields);
     }
