@@ -56,7 +56,10 @@
             <MenuItem fx:id="newMenu" mnemonicParsing="false" onAction="#newMenuClick" text="New" />
                   <SeparatorMenuItem mnemonicParsing="false" />
             <MenuItem fx:id="openMenu" mnemonicParsing="false" onAction="#openMenuClick" text="Open…" />
-            <Menu fx:id="openRecentMenu" mnemonicParsing="false" onAction="#openRecentMenuClick" text="Open Recent" />
+            <Menu fx:id="openRecentMenu" mnemonicParsing="false" onShowing="#openRecentMenuShowing" text="Open Recent">
+                     <items>
+                        <CustomMenuItem mnemonicParsing="false" text="Unspecified Action" />
+                     </items></Menu>
             <SeparatorMenuItem mnemonicParsing="false" />
             <MenuItem fx:id="saveMenu" mnemonicParsing="false" onAction="#saveMenuClick" text="Save" />
             <MenuItem fx:id="saveAsMenu" mnemonicParsing="false" onAction="#saveAsMenuClick" text="Save As…" />

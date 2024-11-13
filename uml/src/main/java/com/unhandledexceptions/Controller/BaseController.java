@@ -22,8 +22,12 @@ public class BaseController
     {
         return this.data;
     }
-   
 
+    public Caretaker getCareTaker()
+    {
+        return this.careTaker;
+    }
+   
     /*
      * Our controller is responsible for handling the commands passed in from the CLI and grabbing data from the model to manipulate.
      * The controller is also responsible for returning the results of the commands to the CLI to be displayed to the user.
@@ -83,14 +87,22 @@ public class BaseController
         
     }
 
+    public String ChangeRelationshipTypeListener(String source, String destination, String type)
+    {
+        // Need to ensure that the type is only one of four allowed types.
+        if (!(type.toLowerCase().trim().equals("aggregation") || type.toLowerCase().trim().equals("composition") || type.toLowerCase().trim().equals("generalization") || type.toLowerCase().trim().equals("realization")))
+        {
+            // If it's not one of the four types, we return a message to the user.
+            return "Invalid relationship type. Valid types: aggregation, composition, generalization, realization";
+        }
+
+        return withMemento(() -> RelationshipItem.changeRelationType(data.getRelationshipItems(), source, destination, type));
+        
+    }
+
     public String RemoveRelationshipListener(String source, String destination)
     {
         return withMemento(() -> RelationshipItem.removeRelationship(data.getRelationshipItems(), source, destination));
-    }
-
-    public String PlaceRelationshipListener(String source, String dest, int sourceInt, int destInt)
-    {
-        return withMemento(() -> RelationshipItem.placeRelation(data.getRelationshipItems(), source, dest, sourceInt, destInt));
     }
 
     public String AddFieldListener(String className, String type, String name)
@@ -164,12 +176,10 @@ public class BaseController
     }
 
     public String undoListener() {
-        this.careTaker.undo();
-        return "Change Undone.";
+        return this.careTaker.undo();
     }
 
     public String redoListener() {
-        this.careTaker.redo();
-        return "Change Redone.";
+        return this.careTaker.redo();
     }
 }

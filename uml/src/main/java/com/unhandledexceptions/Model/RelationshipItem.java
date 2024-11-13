@@ -85,6 +85,8 @@ public class RelationshipItem
 
         return "good";
     }
+
+
     /*
      * removeRelationship takes a Map of relationships we currently have created from the main.java, a String source and a String destination for the class names.
      * It removes a relationship from the passed in relationship map if it exists based on the key. \
@@ -105,16 +107,15 @@ public class RelationshipItem
         }
     }
 
-    public static String placeRelation(
-        HashMap<String, RelationshipItem> relationshipMap, 
-        String source, String dest, int sourceInt, int destInt)
+    public static String changeRelationType(
+        HashMap<String, RelationshipItem> relationshipMap,
+        String source, String dest, String type)
     {
         // key is sourceclass_destinationclass
         String key = source + "_" + dest;
         // if the key is in the relationship map, we remove it along with the value which is a relationship object
         if(relationshipMap.containsKey(key)){
-            relationshipMap.get(key).setSourceLoc(sourceInt);
-            relationshipMap.get(key).setDestLoc(destInt);
+            relationshipMap.get(key).setType(type);
             return "good";
         }
         else{

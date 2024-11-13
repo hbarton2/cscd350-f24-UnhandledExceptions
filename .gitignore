@@ -10,3 +10,4 @@
 *.log
 *.class
 /uml/target
+uml/target/classes/com/unhandledexceptions/Controller/BaseController.class

@@ -272,9 +272,17 @@ public final class CLI
 				println(UI.ListClass(data.getClassItems().get(input[1]), data.getRelationshipItems()));
 				break;
 			case "undo":
-				return controller.undoListener();
+				result = controller.undoListener();
+				if (result.equals("good"))
+					return "Change Undone.";
+				else
+					return "Nothing to Undo.";
 			case "redo":
-				return controller.redoListener();
+				result = controller.redoListener();
+				if (result.equals("good"))
+					return "Change Redone.";
+				else
+					return "Nothing to Redo.";
 
 			default:
 				return "unknown command";
