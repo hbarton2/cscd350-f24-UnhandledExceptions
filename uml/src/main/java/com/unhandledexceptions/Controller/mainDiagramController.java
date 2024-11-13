@@ -259,7 +259,10 @@ public class mainDiagramController
         {
             //user is dragging around a relation line and has clicked the background
             //add a new class to hook the relation line to.
+            baseController.getCareTaker().saveState();
+            baseController.getCareTaker().Lock();
             ClassBox classBox = onAddClassClicked();
+            baseController.getCareTaker().Unlock();
             if (classBox == null) return;
 
             new Thread(() -> {
@@ -275,7 +278,9 @@ public class mainDiagramController
 
                 placingRelation.setEnd(classBox, i);
                 placingRelation.Update(scaleTransform);
+                baseController.getCareTaker().Lock();
                 placingRelation.Save(baseController); //update model
+                baseController.getCareTaker().Unlock();
                 placingRelation = null;
             }).start();
         }
@@ -415,16 +420,22 @@ public class mainDiagramController
 
     // when the undo button is clicked
     public void onUndoClicked() {
-        baseController.undoListener();
-        clearAll();
-        load();
+        String result = baseController.undoListener();
+        if (result.equals("good"))
+        {
+            ClearAll();
+            Load();
+        }
     }
 
     // when the redo button is clicked
     public void onRedoClicked() {
-        baseController.redoListener();
-        clearAll();
-        load();
+        String result = baseController.redoListener();
+        if (result.equals("good"))
+        {
+            ClearAll();
+            Load();
+        }
     }
 
 }

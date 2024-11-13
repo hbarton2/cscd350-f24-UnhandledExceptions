@@ -15,6 +15,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Polyline;
 import javafx.scene.transform.Scale;
+import javafx.scene.transform.Transform;
 
 /*
  * This class is used to create a line between two classes in the GUI.
@@ -67,6 +68,16 @@ public class RelationLine extends Polyline
 
     private void mouseClicked(MouseEvent event)
     {
+        Scale scaleTransform = null;
+        for (Transform transform : anchorPane.getTransforms())
+        {
+            if (transform instanceof Scale)
+            {
+                scaleTransform = (Scale) transform;
+                break;
+            }
+        }
+
         String[] types = {"Aggregation", "Composition", "Generalization", "Realization"};
         JComboBox<String> comboBox = new JComboBox<>(types);
 
@@ -82,14 +93,17 @@ public class RelationLine extends Polyline
             type = selectedOption;
         } else {
             System.out.println("Dialog was canceled.");
-        }        
+        }
+
+        Update(scaleTransform);
     }
 
     // saves the relationships between classes into the model using the controller
     public void Save(BaseController controller)
     {
         controller.AddRelationshipListener(c1.getClassName(), c2.getClassName(), type);
-        controller.PlaceRelationshipListener(c1.getClassName(), c2.getClassName(), i1, i2);
+        baseController.getData().getRelationshipItems().get(c1.getClassName() + "_" + c2.getClassName()).setSourceLoc(i1);
+        baseController.getData().getRelationshipItems().get(c1.getClassName() + "_" + c2.getClassName()).setDestLoc(i2);
     }
 
     /*
@@ -102,15 +116,14 @@ public class RelationLine extends Polyline
      */
     public void Update(Scale scaleTransform)
     {
-        Bounds bounds = c1.getRanchor(i1).localToScene(c1.getRanchor(i1).getBoundsInLocal());
-        Bounds bounds2 = c2.getRanchor(i2).localToScene(c2.getRanchor(i2).getBoundsInLocal());
-        double startX = bounds.getCenterX() / scaleTransform.getX();
-        double startY = (bounds.getCenterY() - 25) / scaleTransform.getY();
-        double endX = bounds2.getCenterX() / scaleTransform.getX();
-        double endY = (bounds2.getCenterY() - 25) / scaleTransform.getY();
-
         Platform.runLater(new Runnable() {
             @Override public void run() {
+                Bounds bounds = c1.getRanchor(i1).localToScene(c1.getRanchor(i1).getBoundsInLocal());
+                Bounds bounds2 = c2.getRanchor(i2).localToScene(c2.getRanchor(i2).getBoundsInLocal());
+                double startX = bounds.getCenterX() / scaleTransform.getX();
+                double startY = (bounds.getCenterY() - 25) / scaleTransform.getY();
+                double endX = bounds2.getCenterX() / scaleTransform.getX();
+                double endY = (bounds2.getCenterY() - 25) / scaleTransform.getY();
                 update(startX, startY, endX, endY);
             }
         });
@@ -125,14 +138,13 @@ public class RelationLine extends Polyline
      */
     public void Update(Scale scaleTransform, MouseEvent event)
     {
-        Bounds bounds = c1.getRanchor(i1).localToScene(c1.getRanchor(i1).getBoundsInLocal());
-        double startX = bounds.getCenterX() / scaleTransform.getX();
-        double startY = (bounds.getCenterY() - 25) / scaleTransform.getY();
-        double endX = event.getSceneX() / scaleTransform.getX();
-        double endY = event.getSceneY() / scaleTransform.getY();
-
         Platform.runLater(new Runnable() {
             @Override public void run() {
+                Bounds bounds = c1.getRanchor(i1).localToScene(c1.getRanchor(i1).getBoundsInLocal());
+                double startX = bounds.getCenterX() / scaleTransform.getX();
+                double startY = (bounds.getCenterY() - 25) / scaleTransform.getY();
+                double endX = event.getSceneX() / scaleTransform.getX();
+                double endY = event.getSceneY() / scaleTransform.getY();
                 update(startX, startY, endX, endY);
             }
         });
