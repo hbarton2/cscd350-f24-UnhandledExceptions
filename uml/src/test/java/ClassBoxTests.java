@@ -1,13 +1,9 @@
 // Testing imports
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.testfx.framework.junit5.ApplicationExtension;
 import org.testfx.framework.junit5.Start;
 import org.testfx.api.FxToolkit;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-
-import javafx.scene.control.Label;
 
 //Project Imports
 import com.unhandledexceptions.Controller.BaseController;
@@ -16,9 +12,7 @@ import com.unhandledexceptions.View.ClassBox;
 import com.unhandledexceptions.View.ClassBoxBasicBuilder;
 
 import javafx.scene.Scene;
-import javafx.scene.control.TitledPane;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
