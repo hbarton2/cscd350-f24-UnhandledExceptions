@@ -77,6 +77,7 @@ public class ClassBox extends StackPane
 
     public void Update()
     {
+        double x,y;
         //rename class: NameClicked, renameClassLabel
         //delete class: createDeleteButton
 
@@ -109,7 +110,11 @@ public class ClassBox extends StackPane
 
         //name
         renameClassLabel(classItem.getName());
-        
+
+        //position
+        setLayoutX(classItem.getX());
+        setLayoutY(classItem.getY());
+
         //fields
         clearFields();
         HashMap<String, FieldItem> fieldItems = classItem.getFieldItems();

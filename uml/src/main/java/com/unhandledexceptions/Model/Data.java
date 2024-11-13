@@ -157,7 +157,6 @@ public class Data
 	public String Load(String filepath)
 	{
 		HashMap<String, Object> items =  new HashMap<>();
-
 		try
 		{//try to read the combined hashmap from the file
 			ObjectMapper objectMapper = new ObjectMapper();
