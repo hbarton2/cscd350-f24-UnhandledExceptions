@@ -94,3 +94,13 @@
 .transparent-button-delete:hover {
     -fx-effect: dropshadow(gaussian, red, 5, 0, 0, 0);
 }
+
+.transparent-button-toolbar {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-padding: 0;
+}
+
+.transparent-button-toolbar:hover {
+    -fx-effect: dropshadow(gaussian, rgb(158, 149, 149), 5, 0, 0, 0);
+}

@@ -41,6 +41,11 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.ToolBar?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.control.Separator?>
 
 <VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1280.0" stylesheets="@/css/classBoxStyle.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.unhandledexceptions.Controller.mainDiagramController">
   <children>
@@ -65,7 +70,7 @@
             <MenuItem mnemonicParsing="false" text="About" />
           </items>
         </Menu>
-            <Menu disable="true" mnemonicParsing="false" onAction="#onAddClassClicked" text="|" />
+            <!-- <Menu disable="true" mnemonicParsing="false" onAction="#onAddClassClicked" text="|" />
             <Menu fx:id="addClassMenu" mnemonicParsing="false" onAction="#onAddClassClicked" text="Add Class">
                <items>
                   <CustomMenuItem mnemonicParsing="false" text="Unspecified Action" />
@@ -79,9 +84,33 @@
                 <items>
                     <CustomMenuItem mnemonicParsing="false" text="Unspecified Action" />
                 </items>
-            </Menu>
+            </Menu> -->
       </menus>
     </MenuBar>
+    <ToolBar VBox.vgrow="NEVER">
+        <items>
+          <Button text="Add Class" onAction="#onAddClassClicked" styleClass="transparent-button-toolbar" />
+          <Separator />
+          <Button text="" onAction="#onUndoClicked" styleClass="transparent-button-toolbar">
+          <graphic>
+              <ImageView fitWidth="12" fitHeight="12">
+                <image>
+                  <Image url="@/images/undo-arrow.png" />
+                </image>
+              </ImageView>
+            </graphic>
+          </Button>
+          <Button text="" onAction="#onRedoClicked" styleClass="transparent-button-toolbar">
+            <graphic>
+              <ImageView fitWidth="12" fitHeight="12">
+                <image>
+                  <Image url="@/images/redo-arrow.png" />
+                </image>
+              </ImageView>
+            </graphic>
+          </Button>
+        </items>
+      </ToolBar>
       <StackPane fx:id="bgpane" prefHeight="150.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
          <children>
           <ScrollPane fx:id="scrollPane" fitToHeight="true" fitToWidth="true">
