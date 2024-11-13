@@ -75,6 +75,18 @@ public class ClassBox extends StackPane implements PropertyChangeListener
         // createClassBox(classNameIn, boxWidth, boxHeight);
     }
 
+    @SuppressWarnings("unchecked")
+    public ListView<String> getFieldsList()
+    {
+        return (ListView<String>) fieldsPane.getContent();
+    }   
+
+    @SuppressWarnings("unchecked")
+    public ListView<TitledPane> getMethodsList()
+    {
+        return (ListView<TitledPane>) methodsPane.getContent();
+    }
+
     public void Remove(AnchorPane anchorPane)
     {
         anchorPane.getChildren().remove(this);
@@ -108,7 +120,7 @@ public class ClassBox extends StackPane implements PropertyChangeListener
 
     public void updateFields(){
         // get class item object
-        ClassItem classItem = baseController.getData().getClassItems().get(className);
+        ClassItem classItem = baseController.getData().getClassItems().get(className.toLowerCase().trim());
         // get the field items
         HashMap<String, FieldItem> fieldItems = classItem.getFieldItems();
         // get the field pane
@@ -127,7 +139,7 @@ public class ClassBox extends StackPane implements PropertyChangeListener
 
     public void updateMethods(){
         // get class item object
-        ClassItem classItem = baseController.getData().getClassItems().get(className);
+        ClassItem classItem = baseController.getData().getClassItems().get(className.toLowerCase().trim());
         // clear existing methods
         clearMethods();
         // get the method items
@@ -202,9 +214,9 @@ public class ClassBox extends StackPane implements PropertyChangeListener
     public HBox nameAndDelete(String className){
         HBox hbox = new HBox();
         hbox.setAlignment(Pos.CENTER_LEFT);
-
         // Create and style the class name label
-        Label classNameLabel = new Label(className);
+        Label classNameLabel = new Label();
+        classNameLabel.setText(className);
         classNameLabel.setId("classNameLabel");
         classNameLabel.getStyleClass().add("class-name-label"); // Add CSS class for the class name label
         classNameLabel.setOnMouseClicked(event -> {  //"rename" event

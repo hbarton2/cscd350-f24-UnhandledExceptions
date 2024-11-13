@@ -1,12 +1,17 @@
 package com.unhandledexceptions.Model;
 
 import java.util.HashMap;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 
 public class ClassItem implements PropertyChangeListener{
     String name;
+
+    @JsonIgnore // ignore support for serialization, not a POJO
     private final PropertyChangeSupport support = new PropertyChangeSupport(this);
 
     // Names of FieldItem/MethodItem are keys to Map<k,v>
@@ -18,7 +23,7 @@ public class ClassItem implements PropertyChangeListener{
     } // blank constructor for IO serialization
 
     private ClassItem(final String classItemName) {
-        this.name = classItemName;
+        this.name = classItemName.trim();
         this.x = 0;
         this.y = 0;
 
@@ -62,7 +67,7 @@ public class ClassItem implements PropertyChangeListener{
          */
         if (!(classItems.containsKey(name))) {
             ClassItem createdClass = new ClassItem(classItemName.trim());
-            classItems.put(createdClass.getName(), createdClass);
+            classItems.put(name, createdClass);
             // fire support for added class item
             createdClass.support.firePropertyChange("classItem", null, createdClass);
             return "good";
@@ -134,15 +139,15 @@ public class ClassItem implements PropertyChangeListener{
 
         // checks that the old name to be changed exists, and that the name is not a
         // duplicate.
-        if (classItemList.containsKey(oldClassItemName)) {
+        if (classItemList.containsKey(oldClassItemName.toLowerCase().trim())) {
 
             if (!classItemList.containsKey(newClassItemName.toLowerCase().trim())) {
                 // sets the classItem Object that is stored in the value associated with the Map
                 // for the key oldClassItemName to be newClassItemName
                 // sets the new class name without updating the key in the map
-                ((ClassItem) classItemList.get(oldClassItemName)).setName(newClassItemName);
+                ((ClassItem) classItemList.get(oldClassItemName.toLowerCase().trim())).setName(newClassItemName.trim());
                 // ClassItem temp = new ClassItem(newClassItemName);
-                classItemList.put(newClassItemName.toLowerCase().trim(), classItemList.remove(oldClassItemName));
+                classItemList.put(newClassItemName.toLowerCase().trim(), classItemList.remove(oldClassItemName.toLowerCase().trim()));
 
                 // need to update relationships to reflect the new class name in the keys
                 // go through all relationships and update the keys that contain the old class
@@ -176,7 +181,7 @@ public class ClassItem implements PropertyChangeListener{
                 }
 
                 // fire support for renamed class item
-                classItemList.get(newClassItemName).support.firePropertyChange("name", oldClassItemName, newClassItemName);
+                classItemList.get(newClassItemName.toLowerCase().trim()).support.firePropertyChange("name", oldClassItemName, newClassItemName);
                 return "good";
             } else {
                 // displayed if newClassItemName is already a key in the HashMap
@@ -205,22 +210,24 @@ public class ClassItem implements PropertyChangeListener{
             throw new IllegalArgumentException("classItemName cannot be blank");
         }
 
+        String key = classItemName.toLowerCase().trim();
+
         // if the classItemName to delete is a key inside of the map given, we remove
         // the mapping for the key from the map.
         // .remove returns the previous value associated with the key, or null if it did
         // not exist.
-        if (classItems.containsKey(classItemName)) {
+        if (classItems.containsKey(key)) {
             //retrive the classItem object to be removed
-            ClassItem classItem = classItems.get(classItemName);
+            ClassItem classItem = classItems.get(key);
             //remove the item from the list
-            classItems.remove(classItemName);
+            classItems.remove(key);
             // fire support for deleted class item
             classItem.support.firePropertyChange("removeBox", classItemName, null);
             //classItems.remove(classItemName) != null
             // need to delete relationships corresponding to ClassItem that got removed
             // this goes through all entries and if the key contains the class name, which
             // it should, it gets removed.
-            relationships.entrySet().removeIf(entry -> entry.getKey().contains(classItemName));
+            relationships.entrySet().removeIf(entry -> entry.getKey().contains(key));
 
 
             return "good";
@@ -512,4 +519,7 @@ public class ClassItem implements PropertyChangeListener{
         support.firePropertyChange(evt.getPropertyName(), evt.getOldValue(), evt.getNewValue());
     }
 
+    public PropertyChangeSupport getSupport() {
+        return support;
+    }
 };
