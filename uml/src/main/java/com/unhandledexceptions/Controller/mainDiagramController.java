@@ -249,7 +249,18 @@ public class mainDiagramController
     private void mouseMove(MouseEvent event)
     {
         if (placingRelation != null)
+        {
             placingRelation.Update(scaleTransform, event);
+        }
+        else
+        {
+            for (Node node : anchorPane.getChildren()) {
+                if (node instanceof RelationLine) {
+                    RelationLine line = (RelationLine) node;
+                    line.mouseMoved(event);
+                }
+            }
+        }
     }
 
     // mouse click on background event
@@ -279,7 +290,7 @@ public class mainDiagramController
                 placingRelation.setEnd(classBox, i);
                 placingRelation.Update(scaleTransform);
                 baseController.getCareTaker().Lock();
-                placingRelation.Save(baseController); //update model
+                placingRelation.Save(); //update model
                 baseController.getCareTaker().Unlock();
                 placingRelation = null;
             }).start();
@@ -320,7 +331,7 @@ public class mainDiagramController
         {
             placingRelation.setEnd(classBox, index);
             placingRelation.Update(scaleTransform);
-            placingRelation.Save(baseController); //update model
+            placingRelation.Save(); //update model
             placingRelation = null;
         }
     }

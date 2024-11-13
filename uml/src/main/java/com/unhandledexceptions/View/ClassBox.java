@@ -94,7 +94,7 @@ public class ClassBox extends StackPane
             // remove the lines
             for (RelationLine line : nodesToRemove)
             {
-                line.Remove();
+                line.Remove(true);
             }
 
 
