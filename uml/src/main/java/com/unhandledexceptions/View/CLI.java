@@ -271,6 +271,10 @@ public final class CLI
 
 				println(UI.ListClass(data.getClassItems().get(input[1]), data.getRelationshipItems()));
 				break;
+			case "undo":
+				return controller.undoListener();
+			case "redo":
+				return controller.redoListener();
 
 			default:
 				return "unknown command";

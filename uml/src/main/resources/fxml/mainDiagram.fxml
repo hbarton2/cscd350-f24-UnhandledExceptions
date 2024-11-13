@@ -73,6 +73,16 @@
                <items>
                   <CustomMenuItem mnemonicParsing="false" text="Unspecified Action" />
                </items></Menu>
+            <Menu fx:id="undoMenu" mnemonicParsing="false" onShowing="#onUndoClicked" text="Undo">
+                <items>
+                    <CustomMenuItem mnemonicParsing="false" text="Unspecified Action" />
+                </items>
+            </Menu>
+            <Menu fx:id="redoMenu" mnemonicParsing="false" onShowing="#onRedoClicked" text="Redo">
+                <items>
+                    <CustomMenuItem mnemonicParsing="false" text="Unspecified Action" />
+                </items>
+            </Menu>
       </menus>
     </MenuBar>
       <StackPane fx:id="bgpane" prefHeight="150.0" prefWidth="200.0" VBox.vgrow="ALWAYS">

@@ -413,4 +413,18 @@ public class mainDiagramController
         }
     }
 
+    // when the undo button is clicked
+    public void onUndoClicked() {
+        baseController.undoListener();
+        clearAll();
+        load();
+    }
+
+    // when the redo button is clicked
+    public void onRedoClicked() {
+        baseController.redoListener();
+        clearAll();
+        load();
+    }
+
 }
