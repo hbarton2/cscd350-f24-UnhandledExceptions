@@ -84,7 +84,6 @@ public class Data
 	public String Load(String filepath)
 	{		
 		HashMap<String, Object> items =  new HashMap<>();
-
 		try
 		{
 			ObjectMapper objectMapper = new ObjectMapper();
