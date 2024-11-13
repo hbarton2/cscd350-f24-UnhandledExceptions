@@ -53,6 +53,8 @@ public class RelationLine extends Polyline
         anchorPane.getChildren().add(shape);
         shape.toBack();
 
+
+
         //type button
         typeButton = new Button();
         ImageView typeImage = new ImageView("/images/link-image.png");
@@ -92,7 +94,7 @@ public class RelationLine extends Polyline
         anchorPane.getChildren().remove(this);
     }
 
-    public void mouseMoved(MouseEvent event)
+    public void mouseMoved(MouseEvent event, Scale scaleTransform)
     {
         deleteButton.setVisible(false);
 
@@ -111,7 +113,7 @@ public class RelationLine extends Polyline
             y2 = getPoints().get(i+3);
 
             Point2D pointOnSegment = getClosestPointOnSegment(event.getSceneX(), event.getSceneY(), x1, y1, x2, y2);
-            distance = pointOnSegment.distance(event.getSceneX(), event.getSceneY());
+            distance = pointOnSegment.distance(event.getSceneX(), event.getSceneY()-50);
             
             if (distance < 100 && distance < minDistance)
             {
@@ -122,8 +124,8 @@ public class RelationLine extends Polyline
 
         if (nearestPoint != null)
         {
-            typeButton.setLayoutX(nearestPoint.getX());
-            typeButton.setLayoutY(nearestPoint.getY());
+            typeButton.setLayoutX(nearestPoint.getX() / scaleTransform.getX());
+            typeButton.setLayoutY(nearestPoint.getY() / scaleTransform.getY());
 
             typeButton.setVisible(true);
         }
@@ -140,7 +142,7 @@ public class RelationLine extends Polyline
         {
             // Vertical segment: x-coordinate is constant
             double clampedY = Math.max(Math.min(y1, y2), Math.min(mouseY, Math.max(y1, y2)));
-            return new Point2D(x1, clampedY - 35);
+            return new Point2D(x1, clampedY - 70);
         }
         else if (Math.abs(y1 - y2) < 1)
         {
@@ -210,9 +212,9 @@ public class RelationLine extends Polyline
                 Bounds bounds = c1.getRanchor(i1).localToScene(c1.getRanchor(i1).getBoundsInLocal());
                 Bounds bounds2 = c2.getRanchor(i2).localToScene(c2.getRanchor(i2).getBoundsInLocal());
                 double startX = bounds.getCenterX() / scaleTransform.getX();
-                double startY = (bounds.getCenterY() - 25) / scaleTransform.getY();
+                double startY = (bounds.getCenterY() - 50) / scaleTransform.getY();
                 double endX = bounds2.getCenterX() / scaleTransform.getX();
-                double endY = (bounds2.getCenterY() - 25) / scaleTransform.getY();
+                double endY = (bounds2.getCenterY() - 50) / scaleTransform.getY();
                 update(startX, startY, endX, endY);
             }
         });
@@ -231,7 +233,7 @@ public class RelationLine extends Polyline
             @Override public void run() {
                 Bounds bounds = c1.getRanchor(i1).localToScene(c1.getRanchor(i1).getBoundsInLocal());
                 double startX = bounds.getCenterX() / scaleTransform.getX();
-                double startY = (bounds.getCenterY() - 25) / scaleTransform.getY();
+                double startY = (bounds.getCenterY() - 50) / scaleTransform.getY();
                 double endX = event.getSceneX() / scaleTransform.getX();
                 double endY = event.getSceneY() / scaleTransform.getY();
                 update(startX, startY, endX, endY);

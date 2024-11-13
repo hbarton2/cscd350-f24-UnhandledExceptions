@@ -820,7 +820,7 @@ public class ClassBox extends StackPane
         // set the title and header as a warning
         alert.setTitle("Warning");
         alert.setHeaderText("Are you sure you want to delete this class?");
-        alert.setContentText("This action can not be undone");
+        //alert.setContentText("This action can not be undone");
 
         // return the alert to be instantiated by delete action
         return alert;
