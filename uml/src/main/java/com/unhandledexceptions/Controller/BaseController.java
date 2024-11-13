@@ -87,6 +87,19 @@ public class BaseController
         
     }
 
+    public String ChangeRelationshipTypeListener(String source, String destination, String type)
+    {
+        // Need to ensure that the type is only one of four allowed types.
+        if (!(type.toLowerCase().trim().equals("aggregation") || type.toLowerCase().trim().equals("composition") || type.toLowerCase().trim().equals("generalization") || type.toLowerCase().trim().equals("realization")))
+        {
+            // If it's not one of the four types, we return a message to the user.
+            return "Invalid relationship type. Valid types: aggregation, composition, generalization, realization";
+        }
+
+        return withMemento(() -> RelationshipItem.changeRelationType(data.getRelationshipItems(), source, destination, type));
+        
+    }
+
     public String RemoveRelationshipListener(String source, String destination)
     {
         return withMemento(() -> RelationshipItem.removeRelationship(data.getRelationshipItems(), source, destination));
