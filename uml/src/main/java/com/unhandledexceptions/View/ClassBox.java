@@ -173,7 +173,7 @@ public class ClassBox extends StackPane implements PropertyChangeListener
          // remove the lines
          for (RelationLine line : nodesToRemove)
          {
-             line.Remove();
+             line.Remove(true);
          }
 
          AnchorPane anchorPane = this.getAnchorPane();

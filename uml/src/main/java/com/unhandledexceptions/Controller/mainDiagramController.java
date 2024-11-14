@@ -143,7 +143,7 @@ public class mainDiagramController
             ClassBox classBox = addClass(entry.getKey());
             classBox.setLayoutX(entry.getValue().getX());
             classBox.setLayoutY(entry.getValue().getY());
-            //classBox.Update(classBox);
+            classBox.Update();
         }
 
         //load relationships

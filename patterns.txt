@@ -21,3 +21,13 @@ Pattern 5: Memento
   Justification: Our caretaker class handles storing memento objects and the undo and redo methods in the class.
     The originator is our Data.java because both CLI and GUI pull from the Data to display.
     The memento is a class nested in our originator since we are creating mementos from the states of data during runtime.
+
+Pattern 6: Observer (1st Instance)
+  ClassItem.java(15,73,208,249,320,345,380,406,439,461,495,520,532-548), ClassBox(73,867-896)
+  Justification: ClassItems notifying their observers(ClassBox) that their information has changed allows for the GUI to update only when the model updates.
+    This is more efficient than manually calling an update in the GUI to check if ClassItems have changed.
+
+Pattern 7: Observer (2nd Instance)
+  ClassItem.java(317) MethodItem.java(92,126,162,189,211,235-241)
+  Justification: Since ParameterItems are stored in MethodItems it was necessary to add a ClassItem as an observer of the MethodItem in order to update
+    the view when parameters were changed within a method. This also prevents manually calling update when a parameter is changed.
