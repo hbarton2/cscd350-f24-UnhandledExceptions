@@ -90,7 +90,7 @@ public final class CLI
 				if (input.length != 2) return "Syntax: " + UI.CommandSyntax(input[0]);
 
 				return (UI.ListClass(
-					data.getClassItems().get(input[1]), data.getRelationshipItems()));
+					data.getClassItems().get(input[1].toLowerCase().trim()), data.getRelationshipItems()));
 			case "h":
 			case "help":
 				UI.Help();

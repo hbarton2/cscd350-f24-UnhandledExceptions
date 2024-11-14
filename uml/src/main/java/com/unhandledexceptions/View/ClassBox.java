@@ -14,6 +14,8 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextInputDialog;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -48,7 +50,7 @@ import javafx.scene.control.ButtonBar;
  */
 
 
-public class ClassBox extends StackPane 
+public class ClassBox extends StackPane implements PropertyChangeListener
 {
     private String className;
     final double RANCHOR_VIEW_DISTANCE = 50; // Distance threshold for visibility
@@ -58,15 +60,30 @@ public class ClassBox extends StackPane
     AnchorPane anchorPane;
     TitledPane methodsPane;
     TitledPane fieldsPane;
+    private ClassItem classItem; // ClassItem object associated with the ClassBox to add listeners
 
     public ClassBox(AnchorPane anchorPane, BaseController baseController, String classNameIn, double boxWidth,
-     double boxHeight, Rectangle[] ranchors)
+     double boxHeight, Rectangle[] ranchors, ClassItem classItem)
     {
         this.anchorPane = anchorPane;
         this.baseController = baseController;
         this.className = classNameIn;
         this.ranchors = ranchors;
+        this.classItem = classItem;
+        classItem.addPropertyChangeListener(this);
         // createClassBox(classNameIn, boxWidth, boxHeight);
+    }
+
+    @SuppressWarnings("unchecked")
+    public ListView<String> getFieldsList()
+    {
+        return (ListView<String>) fieldsPane.getContent();
+    }   
+
+    @SuppressWarnings("unchecked")
+    public ListView<TitledPane> getMethodsList()
+    {
+        return (ListView<TitledPane>) methodsPane.getContent();
     }
 
     public void Remove(AnchorPane anchorPane)
@@ -74,68 +91,93 @@ public class ClassBox extends StackPane
         anchorPane.getChildren().remove(this);
     }
 
+    public AnchorPane getAnchorPane()
+    {
+        return this.anchorPane;
+    }
+
     public void Update()
     {
-        //get me
+        //rename class: NameClicked, renameClassLabel
+        //delete class: createDeleteButton
+
+        //get class item object
         ClassItem classItem = baseController.getData().getClassItems().get(className);
         if (classItem == null)
         {
-            //remove any relationlines
-            List<RelationLine> nodesToRemove = new ArrayList<>();
-            for (Node node : anchorPane.getChildren()) {
-                if(node instanceof RelationLine) {
-                    RelationLine line = (RelationLine) node;
-                    if (line.getC1().equals(this) || line.getC2().equals(this)) {
-                        nodesToRemove.add(line);
-                    }
-                }
-            }
+            removeRelationLines();
+        }else{
+            //rename class
+            renameClassLabel(classItem.getName());
+            //update fields
+            updateFields();
+            //update methods
+            updateMethods();
 
-            // remove the lines
-            for (RelationLine line : nodesToRemove)
-            {
-                line.Remove(true);
-            }
-
-
-            AnchorPane anchorPane = (AnchorPane) getParent();
-            anchorPane.getChildren().remove(this);
-            return;
+            setLayoutX(classItem.getX());
+            setLayoutY(classItem.getY());
         }
 
-        //name
-        renameClassLabel(classItem.getName());
+    }
 
-        //position
-        setLayoutX(classItem.getX());
-        setLayoutY(classItem.getY());
-
-        //fields
-        clearFields();
+    public void updateFields(){
+        // get class item object
+        ClassItem classItem = baseController.getData().getClassItems().get(className.toLowerCase().trim());
+        // get the field items
         HashMap<String, FieldItem> fieldItems = classItem.getFieldItems();
+        // get the field pane
+        ListView<String> fieldsList = (ListView<String>) fieldsPane.getContent();
+        // clear the fields list
+        clearFields();
+        // create a new observable list for the fields
         ObservableList<String> fields = FXCollections.observableArrayList();
-        
-        // Add each FieldItem's toString() result to the fields list
+        // add each field item to the fields list
         for (FieldItem fieldItem : fieldItems.values()) {
             fields.add(fieldItem.toString());
         }
+        // set the items in the fields list
+        fieldsList.setItems(fields);
+    }
 
-        addFields(fields);
-
-        //methods
+    public void updateMethods(){
+        // get class item object
+        ClassItem classItem = baseController.getData().getClassItems().get(className.toLowerCase().trim());
+        // clear existing methods
         clearMethods();
+        // get the method items
         HashMap<String, MethodItem> methodItems = classItem.getMethodItems();   //Hashmap <String, FieldItem>
         for (HashMap.Entry<String, MethodItem> methodItem : methodItems.entrySet()) 
-        //methodItem.getValue() -> MethodItem(String methodName, String type)
-        //
         {
+            // get the parameters for each method
             HashMap<String, ParameterItem> parameterItems = methodItem.getValue().getParameters();
             ObservableList<String> params = FXCollections.observableArrayList();
             for (ParameterItem parameterItem : parameterItems.values()) {
                 params.add(parameterItem.toString());
             }
+            // add the method to the methods pane
             addMethod(methodItem.getKey(), methodItem.getValue().getType() , params);
         }
+    }
+
+    public void removeRelationLines(){
+         //remove any relationlines
+         List<RelationLine> nodesToRemove = new ArrayList<>();
+         for (Node node : anchorPane.getChildren()) {
+             if(node instanceof RelationLine) {
+                 RelationLine line = (RelationLine) node;
+                 if (line.getC1().equals(this) || line.getC2().equals(this)) {
+                     nodesToRemove.add(line);
+                 }
+             }
+         }
+         // remove the lines
+         for (RelationLine line : nodesToRemove)
+         {
+             line.Remove(true);
+         }
+
+         AnchorPane anchorPane = this.getAnchorPane();
+         anchorPane.getChildren().remove(this);
     }
 
 
@@ -163,7 +205,6 @@ public class ClassBox extends StackPane
             if (modelUpdated == "good")
             {
                 this.className = newName;
-                Update();
             }
             else
             {
@@ -175,9 +216,9 @@ public class ClassBox extends StackPane
     public HBox nameAndDelete(String className){
         HBox hbox = new HBox();
         hbox.setAlignment(Pos.CENTER_LEFT);
-
         // Create and style the class name label
-        Label classNameLabel = new Label(className);
+        Label classNameLabel = new Label();
+        classNameLabel.setText(className);
         classNameLabel.setId("classNameLabel");
         classNameLabel.getStyleClass().add("class-name-label"); // Add CSS class for the class name label
         classNameLabel.setOnMouseClicked(event -> {  //"rename" event
@@ -219,11 +260,7 @@ public class ClassBox extends StackPane
     
             String modelUpdated = baseController.RenameFieldListener(className.getText(), oldName, newName);
             // parse result for either successful rename or failure
-            if (modelUpdated == "good")
-            {
-                Update();
-            }
-            else
+            if (!(modelUpdated == "good"))
             {
                 showError(modelUpdated);
             }
@@ -263,10 +300,10 @@ public class ClassBox extends StackPane
         return null;
     }
 
-    // ================================================================================================================================================================
-    // method to create a delete button, sets the action to call
-    // the controller to delete the class
-    // action will also call an alert box to warn user
+    /* method to create a delete button, sets the action to call
+     * the controller to delete the class
+     * action will also call an alert box to warn user
+     */
     public Button createDeleteButton() {
         // create a button with an image
         Button deleteButton = new Button();
@@ -294,11 +331,7 @@ public class ClassBox extends StackPane
                 // call controller delete passing this class box and the name
                 String modelUpdated = baseController.RemoveClassListener(className);
                 // parse result for either successful rename or failure
-                if (modelUpdated == "good")
-                {
-                    Update();
-                }
-                else
+                if (!(modelUpdated == "good"))
                 {
                     showError(modelUpdated);
                 }
@@ -312,7 +345,6 @@ public class ClassBox extends StackPane
         return deleteButton;
     }
 
-    // ================================================================================================================================================================
     // method to create a dialog box for user input of class name
     public static String classNameDialog() {
         // creates a dialog box for user input
@@ -344,16 +376,17 @@ public class ClassBox extends StackPane
         }
         return null;
     }
-
-    // ================================================================================================================================================================
+    
     // method to rename a class box label
     public void renameClassLabel(String newName) {
         // gets the label from the classBox object
         Label nameLabel = (Label) lookup("#classNameLabel");
 
         // if the label exists, rename
-        if (nameLabel != null)
+        if (nameLabel != null){
+            this.className = newName;
             nameLabel.setText(newName);
+        }
     }
 
     public void clearMethods()
@@ -397,12 +430,10 @@ public class ClassBox extends StackPane
                 String name = result.getValue().toLowerCase();
                 //String typeName = type + " " + name;    
                 String updateModel = baseController.AddMethodListener(className, name, type);   
-                if (updateModel == "good")
+                if (!(updateModel == "good"))
                 {
-                    Update();   //updates view if model is successfully updated.
-                } else {
                     showError(updateModel);
-                }
+                } 
             }
         });
         
@@ -457,12 +488,9 @@ public class ClassBox extends StackPane
                 String name = userInput.getValue().toLowerCase();
                 //String typeName = type + " " + name;    
                 String result = baseController.AddParameterListener(className, methodName, type, name);   
-                if (result == "good")
+                if (!(result == "good"))
                 {
-
-                    Update();   //updates view if model is successfully updated.
-                } else {
-                    ClassBox.showError(result);
+                    showError(result);
                 }
             } else {    //prints to terminal that user canceled dialog box for adding field
                 System.out.println("Dialog was canceled");
@@ -541,7 +569,7 @@ public class ClassBox extends StackPane
     
         // Check the results for both operations
         if ("good".equals(resultName) && "good".equals(resultType)) {
-            Update(); // Update the UI if both updates succeeded
+            //Update(); // Update the UI if both updates succeeded
         } else {
             // Show the appropriate error message based on which operation failed
             String errorMessage = !resultName.equals("good") ? resultName : resultType;
@@ -588,7 +616,6 @@ public class ClassBox extends StackPane
                 if (!type.isBlank() && !name.isBlank()) {
                     // Update your model with the new field
                     baseController.AddFieldListener(className, type, name);
-                    Update();
                 }
             } else {
                 System.out.println("Dialog was canceled");
@@ -649,12 +676,9 @@ public class ClassBox extends StackPane
         String resultType = baseController.RetypeFieldListener(className, newFieldName, newFieldType);
     
         // Check the results for both operations
-        if ("good".equals(resultName) && "good".equals(resultType)) {
-            Update(); // Update the UI if both updates succeeded
-        } else {
-            // Show the appropriate error message based on which operation failed
+        if (!("good".equals(resultName)) || !("good".equals(resultType))) {
             String errorMessage = !resultName.equals("good") ? resultName : resultType;
-            ClassBox.showError(errorMessage);
+            showError(errorMessage);
         }
     }
     
@@ -682,14 +706,11 @@ public class ClassBox extends StackPane
     
             String modelUpdated = baseController.RenameMethodListener(className, oldName, newName);
             // parse result for either successful rename or failure
-            if (modelUpdated == "good")
-            {
-                Update();
-            }
-            else
+            if (!(modelUpdated == "good"))
             {
                 showError(modelUpdated);
             }
+            
         }
     }
 
@@ -716,12 +737,9 @@ public class ClassBox extends StackPane
             // parse result for either successful rename or failure
             if (modelUpdated == "good")
             {
-                Update();
-            }
-            else
-            {
                 showError(modelUpdated);
             }
+            
         }
     }
 
@@ -794,7 +812,6 @@ public class ClassBox extends StackPane
     //     typeComboBox.setPromptText("Select Type");
     // }
 
-    // ================================================================================================================================================================
     // method to display an error message
     public static void showError(String errorMessage) {
         // create an alert box
@@ -841,6 +858,43 @@ public class ClassBox extends StackPane
             // return null if the label does not exist
             return null;
         }
+    }
+
+    /*
+     * PropertyChangeListener method to listen for changes in the model and update
+     * Source is the classItem related to the classBox object
+     */
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        switch(evt.getPropertyName()) {
+            case "classItem":
+                //redraws the classbox
+                Update();
+                break;
+            case "name":
+                //renames the label of the classbox
+                renameClassLabel((String) evt.getNewValue());
+                break;
+            case "field":
+                //updates the titlepane for fields
+                updateFields();
+                break;
+            case "method":
+                //updates the titlepane for methods
+                updateMethods();
+                break;
+            case "removeBox":
+                //removes the classbox
+                Update();
+                break;
+            case "parameterChange":
+                //updates the titlepane for methods which contains parameters
+                updateMethods();
+                break;
+            default:
+                break;
+        }
+        
     }
 
 }
