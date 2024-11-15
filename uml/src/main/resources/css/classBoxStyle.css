@@ -17,6 +17,7 @@
     -fx-spacing: 1;
     -fx-border-radius: 5;
     -fx-background-radius: 5;
+    -fx-effect: dropshadow(gaussian, lightgray, 10, 0, 5, 5); /* Add drop shadow */
 }
 
 /* TitledPane Styles */

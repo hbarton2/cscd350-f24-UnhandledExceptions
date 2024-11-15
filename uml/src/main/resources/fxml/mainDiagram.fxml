@@ -51,9 +51,9 @@
 
 <VBox fx:id="rootVBox" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1280.0" stylesheets="@/css/classBoxStyle.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.unhandledexceptions.Controller.mainDiagramController">
   <children>
-    <MenuBar VBox.vgrow="NEVER">
+    <MenuBar fx:id="menuBar" VBox.vgrow="NEVER">
       <menus>
-        <Menu mnemonicParsing="false" text="File">
+        <Menu fx:id="fileMenu" mnemonicParsing="false" text="File">
           <items>
             <MenuItem fx:id="newMenu" mnemonicParsing="false" onAction="#newMenuClick" text="New" />
                   <SeparatorMenuItem mnemonicParsing="false" />
@@ -69,7 +69,7 @@
             <MenuItem fx:id="quitMenu" mnemonicParsing="false" onAction="#quitMenuClick" text="Quit" />
           </items>
         </Menu>
-        <Menu mnemonicParsing="false" text="Help">
+        <Menu fx:id="helpMenu" mnemonicParsing="false" text="Help">
           <items>
             <MenuItem mnemonicParsing="false" onAction="#resetZoom" text="Reset Zoom" />
             <MenuItem mnemonicParsing="false" text="About" />
@@ -77,13 +77,13 @@
         </Menu>
       </menus>
     </MenuBar>
-    <ToolBar VBox.vgrow="NEVER">
+    <ToolBar fx:id="toolBar" VBox.vgrow="NEVER">
         <items>
-          <Button text="Add Class" onAction="#onAddClassClicked" styleClass="transparent-button-toolbar" />
+          <Button fx:id="addClassButton" text="Add Class" onAction="#onAddClassClicked" styleClass="transparent-button-toolbar" />
           <Separator />
           <Button text="" onAction="#onUndoClicked" styleClass="transparent-button-toolbar">
           <graphic>
-              <ImageView fitWidth="12" fitHeight="12">
+              <ImageView fx:id="undoImageView" fitWidth="12" fitHeight="12">
                 <image>
                   <Image url="@/images/undo-arrow.png" />
                 </image>
@@ -95,7 +95,7 @@
           </Button>
           <Button text="" onAction="#onRedoClicked" styleClass="transparent-button-toolbar">
             <graphic>
-              <ImageView fitWidth="12" fitHeight="12">
+              <ImageView fx:id="redoImageView" fitWidth="12" fitHeight="12">
                 <image>
                   <Image url="@/images/redo-arrow.png" />
                 </image>
@@ -106,7 +106,24 @@
             </tooltip>
           </Button>
           <Separator />
-          <Button text="Dark Mode" onAction="#onDarkModeClicked" styleClass="transparent-button-toolbar" />
+          <Button text="" onAction="#onDarkModeClicked" styleClass="transparent-button-toolbar" >
+            <graphic>
+              <ImageView fx:id="darkModeImageView" fitWidth="12" fitHeight="12">
+                <image>
+                  <Image url="@/images/dark-mode-toggle.png" />
+                </image>
+              </ImageView>
+            </graphic>
+          </Button>
+          <Button text="" onAction="#onLightModeClicked" styleClass="transparent-button-toolbar" >
+            <graphic>
+              <ImageView fx:id="lightModeImageView" fitWidth="12" fitHeight="12">
+                <image>
+                  <Image url="@/images/light-mode-toggle.png" />
+                </image>
+              </ImageView>
+            </graphic>
+          </Button>
         </items>
       </ToolBar>
       <StackPane fx:id="bgpane" prefHeight="150.0" prefWidth="200.0" VBox.vgrow="ALWAYS">

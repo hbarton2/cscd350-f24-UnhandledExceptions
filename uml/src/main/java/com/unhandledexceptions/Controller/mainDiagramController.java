@@ -16,7 +16,9 @@ import com.unhandledexceptions.View.RelationLine;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.control.Button;
 import javafx.scene.control.Menu;
+import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.StackPane;
@@ -25,6 +27,9 @@ import javafx.scene.Node;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.transform.Scale;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.ToolBar;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
@@ -41,8 +46,20 @@ public class mainDiagramController
     private double offsetX; // Used for dragging Class boxes
     private double offsetY;
     private boolean darkMode = false;
+
+    //styling declarations (needed to toggle between style sheets for fxml objects)
     @FXML
     private VBox rootVBox;
+    @FXML 
+    private ToolBar toolBar;
+    @FXML
+    private MenuBar menuBar;
+    @FXML
+    private ImageView undoImageView, redoImageView, darkModeImageView, lightModeImageView;
+    @FXML
+    private Button addClassButton;
+    @FXML
+    private Menu fileMenu, helpMenu;
 
     public mainDiagramController() {
         //controller = this;
@@ -443,19 +460,43 @@ public class mainDiagramController
     }
 
     // dark mode button
+    @FXML
     public void onDarkModeClicked() {
         // toggle dark mode
         if(!darkMode){
+            rootVBox.getStylesheets().remove(getClass().getResource("/css/classBoxStyle.css").toExternalForm());
             rootVBox.getStylesheets().add(getClass().getResource("/css/darktheme.css").toExternalForm());
+            menuBar.getStyleClass().add("menubar-dark");
+            fileMenu.getStyleClass().add("menu-dark");
+            helpMenu.getStyleClass().add("menu-dark");
+            toolBar.getStyleClass().add("toolbar-dark");
+            addClassButton.getStyleClass().add("dark-theme-button");
+            undoImageView.setImage(new Image(getClass().getResourceAsStream("/images/undo-arrow-dark.png")));
+            redoImageView.setImage(new Image(getClass().getResourceAsStream("/images/redo-arrow-dark.png")));
+            darkModeImageView.setImage(new Image(getClass().getResourceAsStream("/images/dark-mode-toggle-dark.png")));
+            lightModeImageView.setImage(new Image(getClass().getResourceAsStream("/images/light-mode-toggle-dark.png")));
 
             darkMode = true;
         }
     }
 
     // light mode button
+    @FXML
     public void onLightModeClicked() {
         if(darkMode){
-            rootVBox.getStylesheets().remove(getClass().getResource("/css/classBoxStyle.css").toExternalForm());
+            rootVBox.getStylesheets().remove(getClass().getResource("/css/darktheme.css").toExternalForm());
+            rootVBox.getStylesheets().add(getClass().getResource("/css/classBoxStyle.css").toExternalForm());
+            menuBar.getStyleClass().remove("menubar-dark");
+            fileMenu.getStyleClass().remove("menu-dark");
+            helpMenu.getStyleClass().remove("menu-dark");
+            toolBar.getStyleClass().remove("toolbar-dark");
+            addClassButton.getStyleClass().remove("dark-theme-button");
+            undoImageView.setImage(new Image(getClass().getResourceAsStream("/images/undo-arrow.png")));
+            redoImageView.setImage(new Image(getClass().getResourceAsStream("/images/redo-arrow.png")));
+            darkModeImageView.setImage(new Image(getClass().getResourceAsStream("/images/dark-mode-toggle.png")));
+            lightModeImageView.setImage(new Image(getClass().getResourceAsStream("/images/light-mode-toggle.png")));
+
+            darkMode = false;
         }
     }
 

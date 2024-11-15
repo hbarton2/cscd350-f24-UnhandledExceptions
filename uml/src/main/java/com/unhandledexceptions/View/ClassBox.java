@@ -413,6 +413,7 @@ public class ClassBox extends StackPane
 
         // Create a label for "Methods:"
         Label methodsLabel = new Label("Methods:");
+        methodsLabel.getStyleClass().add("fields-label");
 
         // Adds label and button to HBox, sets to methodsPane graphic.
         methodsTitleBox.getChildren().addAll(methodsLabel, addMethodsButton);
@@ -626,6 +627,7 @@ public class ClassBox extends StackPane
         HBox fieldsTitleBox = new HBox(160); // Add spacing between label and button
         Label fieldsLabel = new Label("Fields");
         fieldsLabel.setId("fieldTitleBoxLabel");
+        fieldsLabel.getStyleClass().add("fields-label");
         fieldsTitleBox.setAlignment(Pos.CENTER_LEFT); // Align items to the left
         fieldsTitleBox.getStyleClass().add("fields-title-box");
         fieldsTitleBox.getChildren().addAll(fieldsLabel, addFieldButton);

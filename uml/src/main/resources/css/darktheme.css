@@ -8,7 +8,9 @@
 
 .scroll-pane {
     -fx-background-color: #181818;
-    -fx-border-color: #181818
+    -fx-border-color: #181818;
+    -fx-text-fill: white;
+    -fx-text-base-color: white;
 }
 
 .class-box {
@@ -29,8 +31,6 @@
     -fx-border-color: transparent;
     -fx-border-width: 1;
     -fx-background-radius: 4;
-    -fx-text-fill: white;
-    -fx-text-base-color: white;
 }
 
 .titled-pane > .title {
@@ -117,4 +117,26 @@
 
 .transparent-button-toolbar:hover {
     -fx-effect: dropshadow(gaussian, rgb(158, 149, 149), 5, 0, 0, 0);
+}
+
+.fields-label {
+    -fx-text-fill:white;
+}
+
+.toolbar-dark {
+    -fx-background-color: #2b2b2b;
+    -fx-text-fill: white;
+}
+
+.dark-theme-button {
+    -fx-text-fill: white;
+}
+
+.menubar-dark {
+    -fx-background-color: #2b2b2b;
+}
+
+.menu-dark {
+    -fx-background-color: #2b2b2b;
+    -fx-text-fill: white;
 }
