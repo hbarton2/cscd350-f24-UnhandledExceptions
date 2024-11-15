@@ -381,7 +381,6 @@ public class ClassBox extends StackPane
         // when pressed, open dialog for user input
         addMethodsButton.setOnAction(e -> {
             Pair<String, String> result = createInputDialogs("Method");
-            //TODO: functionalty to update model
             if(result != null){
                 String type = result.getKey().toLowerCase();
                 String name = result.getValue().toLowerCase();
@@ -443,8 +442,8 @@ public class ClassBox extends StackPane
             Pair<String, String> userInput = createInputDialogs("Parameters");
 
             if(userInput != null){
-                String type = userInput.getKey().toLowerCase();
-                String name = userInput.getValue().toLowerCase();
+                String type = (userInput.getKey() != null) ? null : userInput.getKey().toLowerCase();
+                String name = (userInput.getValue() != null) ? null : userInput.getValue().toLowerCase();
                 //String typeName = type + " " + name;    
                 String result = baseController.AddParameterListener(className, methodName, type, name);   
                 if (result == "good")
@@ -468,20 +467,14 @@ public class ClassBox extends StackPane
                     // Split the selected item to get old name and type
                     String[] parts = selectedItem.split(" "); // Assuming the format is "name - type"
                     if (parts.length == 2) {
-                        String oldParamType = parts[0].trim();
-                        String newParamType = oldParamType;
                         String oldParamName = parts[1].trim();
-                        String newParamName = oldParamName;
+                        String oldParamType = parts[0].trim();
                         // Create input dialog to get new name and type
                         Pair<String, String> userInput = createInputDialogs("Field");
 
                         if (userInput != null) {    //user inputs some data
-                            if(userInput.getValue() != null){   //changing param name
-                                newParamName = userInput.getValue().toLowerCase();
-                            }
-                            if(userInput.getKey() != null){     //changing param type             
-                                newParamType = userInput.getKey().toLowerCase();
-                            }
+                            String newParamName = (userInput.getValue() == null) ? oldParamName : userInput.getValue();
+                            String newParamType = (userInput.getKey() == null) ? oldParamType : userInput.getKey();
 
                             // Call UpdateField to update the model
                             UpdateParam(methodName, newParamName, oldParamName, newParamType);
@@ -514,7 +507,7 @@ public class ClassBox extends StackPane
 
         titleBox.setAlignment(Pos.CENTER_LEFT);
         titleBox.getStyleClass().add("fields-title-box");
-        titleBox.getChildren().addAll(singleMethodName, singleMethodType, addParamsButton);
+        titleBox.getChildren().addAll(singleMethodType, singleMethodName, addParamsButton);
         singleMethodPane.setGraphic(titleBox);
         ;
 
@@ -528,14 +521,17 @@ public class ClassBox extends StackPane
             return;
         }
     
+        String resultName = null;
+         // Attempt to change the field type
+        if(!oldParamName.equals(newParamName)){
+            resultName = baseController.RenameParameterListener(className, methodName,newParamName, oldParamName);
+        }
         // Attempt to rename the field
         String resultType = baseController.RetypeParameterListener(className, methodName, oldParamName, newParamType);
-        // Attempt to change the field type
-        String resultName = baseController.RenameParameterListener(className, methodName,newParamName, oldParamName);
         //String resultType = baseController.RetypeFieldListener(className, newParamName, newParamType);
     
         // Check the results for both operations
-        if ("good".equals(resultName) && "good".equals(resultType)) {
+        if (("good".equals(resultName) || resultName == null ) && "good".equals(resultType)) {
             Update(); // Update the UI if both updates succeeded
         } else {
             // Show the appropriate error message based on which operation failed
@@ -574,16 +570,22 @@ public class ClassBox extends StackPane
         addFieldButton.getStyleClass().add("transparent-button");
         addFieldButton.setOnAction(e -> {
             Pair<String, String> userInput = createInputDialogs("Field");
-    
+            
             if (userInput != null) {
-                String type = userInput.getKey().toLowerCase();
-                String name = userInput.getValue().toLowerCase();
-                if (!type.isBlank() && !name.isBlank()) {
+                String type = (userInput.getKey() == null) ? null : userInput.getKey().toLowerCase();
+                String name = (userInput.getValue() == null) ? null : userInput.getValue().toLowerCase();
+                if (type != null && name != null) {
                     // Update your model with the new field
-                    baseController.AddFieldListener(className, type, name);
-                    Update();
-                }
-            } else {
+                    String result = baseController.AddFieldListener(className, type, name);
+                    if(result.equals("good")){
+                        Update();
+                    } else {
+                        showError(result);
+                    }
+                } else {
+                    showError("Fields must have both Type and Name");
+                }                
+            } else {  
                 System.out.println("Dialog was canceled");
             }
         });
@@ -596,16 +598,15 @@ public class ClassBox extends StackPane
                     // Split the selected item to get old name and type
                     String[] parts = selectedItem.split(" "); // Assuming the format is "name - type"
                     if (parts.length == 2) {
-                        String oldTypeName = parts[0].trim();
+                        String oldFieldType = parts[0].trim();
                         String oldFieldName = parts[1].trim();
 
                         // Create input dialog to get new name and type
                         Pair<String, String> userInput = createInputDialogs("Field");
 
                         if (userInput != null) {
-                            // String type = firstInputField.getText().isEmpty() ? null : firstInputField.getText();
                             String newFieldName = (userInput.getValue() == null) ? oldFieldName : userInput.getValue();
-                            String newFieldType = (userInput.getKey() == null) ? oldTypeName : userInput.getKey();
+                            String newFieldType = (userInput.getKey() == null) ? oldFieldType : userInput.getKey();
 
                             // Call UpdateField to update the model
                             UpdateField(oldFieldName, newFieldName, newFieldType);
@@ -723,7 +724,19 @@ public class ClassBox extends StackPane
     }
 
     
-    /**/
+    /**
+     * Displays dialog box prompting the user to enter type and name.
+     * 
+     * <p>This method creates a dialog box with two text input fields for user to input values for type and name.
+     * The dialog box has an "Add" button that is enabled when at least one of the input fields has text.
+     * If either field is left empty when "Add" it pressed, it returns {@code null} for that field in the resulting
+     * {@link Pair}.
+     * 
+     * @param promptName the name of the prompt to display in the dialog title and header.
+     * 
+     * @return a {@link Pair} containing the type and name entered by the user, or {@code null} for any field left
+     * empty. 
+     */
     public Pair<String, String> createInputDialogs(String promptName) {
         Dialog<Pair<String, String>> dialog = new Dialog<>();
         dialog.setTitle("Add: " + promptName);
@@ -783,16 +796,7 @@ public class ClassBox extends StackPane
         return result.orElse(null);  // Returns the result if present, otherwise null
     }
 
-    // public void setupComboBox(ComboBox<String> typeComboBox) {
-    //      // Convert enum values to a List of Strings
-    //     List<String> typeList = Arrays.stream(DataType.values())
-    //         .map(Enum::name) // Convert enum to its string name
-    //         .collect(Collectors.toList());
-
-    //     typeComboBox.getItems().addAll(typeList); // Set the list of DataTypes in the ComboBox
-    //     typeComboBox.setPromptText("Select Type");
-    // }
-
+    
     // ================================================================================================================================================================
     // method to display an error message
     public static void showError(String errorMessage) {
