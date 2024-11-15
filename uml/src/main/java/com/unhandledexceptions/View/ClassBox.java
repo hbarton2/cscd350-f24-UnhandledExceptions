@@ -67,7 +67,6 @@ public class ClassBox extends StackPane
         this.baseController = baseController;
         this.className = classNameIn;
         this.ranchors = ranchors;
-        // createClassBox(classNameIn, boxWidth, boxHeight);
     }
 
     public void Remove(AnchorPane anchorPane)
@@ -77,10 +76,6 @@ public class ClassBox extends StackPane
 
     public void Update()
     {
-        //rename class: NameClicked, renameClassLabel
-        //delete class: createDeleteButton
-
-        //get me
         ClassItem classItem = baseController.getData().getClassItems().get(className);
         if (classItem == null)
         {
@@ -601,14 +596,16 @@ public class ClassBox extends StackPane
                     // Split the selected item to get old name and type
                     String[] parts = selectedItem.split(" "); // Assuming the format is "name - type"
                     if (parts.length == 2) {
+                        String oldTypeName = parts[0].trim();
                         String oldFieldName = parts[1].trim();
 
                         // Create input dialog to get new name and type
                         Pair<String, String> userInput = createInputDialogs("Field");
 
                         if (userInput != null) {
-                            String newFieldName = userInput.getValue().toLowerCase();
-                            String newFieldType = userInput.getKey().toLowerCase();
+                            // String type = firstInputField.getText().isEmpty() ? null : firstInputField.getText();
+                            String newFieldName = (userInput.getValue() == null) ? oldFieldName : userInput.getValue();
+                            String newFieldType = (userInput.getKey() == null) ? oldTypeName : userInput.getKey();
 
                             // Call UpdateField to update the model
                             UpdateField(oldFieldName, newFieldName, newFieldType);
@@ -640,14 +637,16 @@ public class ClassBox extends StackPane
             ClassBox.showError("Field name and type cannot be empty.");
             return;
         }
-    
+        String resultName = null;
         // Attempt to rename the field
-        String resultName = baseController.RenameFieldListener(className, oldFieldName, newFieldName);
+        if(!oldFieldName.equals(newFieldName)){
+            resultName = baseController.RenameFieldListener(className, oldFieldName, newFieldName);
+        }
         // Attempt to change the field type
         String resultType = baseController.RetypeFieldListener(className, newFieldName, newFieldType);
     
         // Check the results for both operations
-        if ("good".equals(resultName) && "good".equals(resultType)) {
+        if (("good".equals(resultName) || resultName == null ) && "good".equals(resultType)) {
             Update(); // Update the UI if both updates succeeded
         } else {
             // Show the appropriate error message based on which operation failed
@@ -724,10 +723,10 @@ public class ClassBox extends StackPane
     }
 
     
-
+    /**/
     public Pair<String, String> createInputDialogs(String promptName) {
         Dialog<Pair<String, String>> dialog = new Dialog<>();
-        dialog.setTitle("Add promptName");
+        dialog.setTitle("Add: " + promptName);
         dialog.setHeaderText("Enter the " + promptName.toLowerCase() + " and name.");
 
         // Set the button types
@@ -764,16 +763,18 @@ public class ClassBox extends StackPane
 
         // Add listeners to fields to enable Add button when both fields have text
         firstInputField.textProperty().addListener((observable, oldValue, newValue) -> {
-            addButton.setDisable(firstInputField.getText().isEmpty()|| secondInputField.getText().isEmpty());
+            addButton.setDisable(firstInputField.getText().isEmpty()&& secondInputField.getText().isEmpty());
         });
-        // secondInputField.textProperty().addListener((observable, oldValue, newValue) -> {
-        //     addButton.setDisable(firstInputField.getText().isEmpty()|| secondInputField.getText().isEmpty());
-        // });
+        secondInputField.textProperty().addListener((observable, oldValue, newValue) -> {
+            addButton.setDisable(firstInputField.getText().isEmpty()&& secondInputField.getText().isEmpty());
+        });
 
         // Convert the result to a pair of strings when the Add button is clicked
         dialog.setResultConverter(dialogButton -> {
             if (dialogButton == addButtonType) {
-                return new Pair<>(firstInputField.getText(), secondInputField.getText());
+                String type = firstInputField.getText().isEmpty() ? null : firstInputField.getText();
+                String name = secondInputField.getText().isEmpty() ? null : secondInputField.getText();
+                return new Pair<>(type, name);
             }
             return null;
         });
