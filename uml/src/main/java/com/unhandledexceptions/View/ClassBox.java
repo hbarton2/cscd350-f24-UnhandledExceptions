@@ -474,14 +474,19 @@ public class ClassBox extends StackPane
                     String[] parts = selectedItem.split(" "); // Assuming the format is "name - type"
                     if (parts.length == 2) {
                         String oldParamType = parts[0].trim();
+                        String newParamType = oldParamType;
                         String oldParamName = parts[1].trim();
-
+                        String newParamName = oldParamName;
                         // Create input dialog to get new name and type
                         Pair<String, String> userInput = createInputDialogs("Field");
 
-                        if (userInput != null) {
-                            String newParamName = userInput.getValue().toLowerCase();
-                            String newParamType = userInput.getKey().toLowerCase();
+                        if (userInput != null) {    //user inputs some data
+                            if(userInput.getValue() != null){   //changing param name
+                                newParamName = userInput.getValue().toLowerCase();
+                            }
+                            if(userInput.getKey() != null){     //changing param type             
+                                newParamType = userInput.getKey().toLowerCase();
+                            }
 
                             // Call UpdateField to update the model
                             UpdateParam(methodName, newParamName, oldParamName, newParamType);
@@ -761,9 +766,9 @@ public class ClassBox extends StackPane
         firstInputField.textProperty().addListener((observable, oldValue, newValue) -> {
             addButton.setDisable(firstInputField.getText().isEmpty()|| secondInputField.getText().isEmpty());
         });
-        secondInputField.textProperty().addListener((observable, oldValue, newValue) -> {
-            addButton.setDisable(firstInputField.getText().isEmpty()|| secondInputField.getText().isEmpty());
-        });
+        // secondInputField.textProperty().addListener((observable, oldValue, newValue) -> {
+        //     addButton.setDisable(firstInputField.getText().isEmpty()|| secondInputField.getText().isEmpty());
+        // });
 
         // Convert the result to a pair of strings when the Add button is clicked
         dialog.setResultConverter(dialogButton -> {
