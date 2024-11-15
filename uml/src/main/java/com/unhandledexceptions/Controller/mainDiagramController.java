@@ -20,6 +20,7 @@ import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.Node;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.transform.Scale;
@@ -39,6 +40,9 @@ public class mainDiagramController
     private RelationLine placingRelation;
     private double offsetX; // Used for dragging Class boxes
     private double offsetY;
+    private boolean darkMode = false;
+    @FXML
+    private VBox rootVBox;
 
     public mainDiagramController() {
         //controller = this;
@@ -68,6 +72,10 @@ public class mainDiagramController
         scrollPane.addEventFilter(ScrollEvent.SCROLL, this::handleZoom);
         anchorPane.setOnMouseMoved(event -> mouseMove(event));
         anchorPane.setOnMouseClicked(event -> mouseClick(event));
+        scrollPane.getStyleClass().add("scroll-pane");
+        anchorPane.getStyleClass().add("anchor-pane");
+
+        rootVBox.getStyleClass().add("vbox");
     }
 
     public void newMenuClick()
@@ -431,6 +439,23 @@ public class mainDiagramController
         {
             ClearAll();
             Load();
+        }
+    }
+
+    // dark mode button
+    public void onDarkModeClicked() {
+        // toggle dark mode
+        if(!darkMode){
+            rootVBox.getStylesheets().add(getClass().getResource("/css/darktheme.css").toExternalForm());
+
+            darkMode = true;
+        }
+    }
+
+    // light mode button
+    public void onLightModeClicked() {
+        if(darkMode){
+            rootVBox.getStylesheets().remove(getClass().getResource("/css/classBoxStyle.css").toExternalForm());
         }
     }
 

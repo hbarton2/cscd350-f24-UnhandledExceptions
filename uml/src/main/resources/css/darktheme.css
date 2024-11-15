@@ -1,33 +1,36 @@
 .vbox {
-    -fx-background-color: transparent;
+    -fx-background-color: #181818;
 }
 
 .anchor-pane {
-    -fx-background-color: transparent;
+    -fx-background-color: #181818;
 }
 
 .scroll-pane {
-    -fx-background-color: transparent;
+    -fx-background-color: #181818;
+    -fx-border-color: #181818
 }
 
 .class-box {
     -fx-border-width: 1px;
-    -fx-background-color: white;
+    -fx-background-color: #2B2B2B;
     -fx-padding: 10;
     -fx-spacing: 1;
     -fx-border-radius: 5;
     -fx-background-radius: 5;
+    -fx-border-color: linear-gradient(to bottom right, #2B2B2B, #3d4ddd); 
+    -fx-text-fill: white;
 }
 
 /* TitledPane Styles */
 .titled-pane {
     -fx-font-family: "Arial";
     -fx-font-size: 14px;
-    -fx-text-fill: #333;
     -fx-border-color: transparent;
     -fx-border-width: 1;
     -fx-background-radius: 4;
     -fx-text-fill: white;
+    -fx-text-base-color: white;
 }
 
 .titled-pane > .title {
@@ -36,17 +39,21 @@
     -fx-font-weight: bold;
     -fx-padding: 5 10 5 10;
     -fx-background-radius: 4 4 0 0;
+    -fx-text-fill: white;
+    -fx-text-base-color: white;
 }
 
 .titled-pane > .content {
     -fx-padding: 10;
-    -fx-background-color: #ffffff;
+    -fx-background-color: #2B2B2B;
+    -fx-text-fill: white;
 }
 
 /* ListView styles for fields and methods */
 .list-view {
-    -fx-background-color: #fafafa;
+    -fx-background-color: #2B2B2B;
     -fx-border-color: #ddd;
+    -fx-text-fill: white;
 }
 
 .list-view .list-cell {
@@ -54,18 +61,14 @@
     -fx-background-color: transparent;
     -fx-font-family: "Arial";
     -fx-font-size: 13px;
-    -fx-border-color: #eee;
-}
-
-.list-view .list-cell:hover {
-    -fx-background-color: #e6f3ff; /* Light blue on hover */
-}
-
-/* ScrollPane Styles */
-.scroll-pane {
-    -fx-background-color: transparent;
     -fx-border-color: transparent;
+    -fx-text-fill: white;
 }
+
+/* .list-view .list-cell:hover {
+    -fx-background-color: #e6f3ff;
+} */
+
 
 /* Label style for class name */
 .class-name-label {
@@ -74,7 +77,7 @@
     -fx-padding: 10px; /* Add padding for spacing */
     -fx-text-align: center; /* Center text */
     -fx-alignment: center; /* label centered in its parent */
-    -fx-fill: #333; /* change text color */
+    -fx-text-fill: white; /* change text color */
 }
 
 .fields-title-box {
@@ -82,12 +85,14 @@
     -fx-padding: 0;
     -fx-border-color: transparent;
     -fx-border-width: 0 0 1 0;
+    -fx-text-fill: white;
 }
 
 .transparent-button {
     -fx-background-color: transparent; 
     -fx-border-color: transparent; 
     -fx-padding: 0;
+    -fx-text-fill: white;
 }
 
 .transparent-button:hover {
