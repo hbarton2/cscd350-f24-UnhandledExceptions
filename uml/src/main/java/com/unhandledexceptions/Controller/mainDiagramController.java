@@ -16,6 +16,7 @@ import com.unhandledexceptions.View.RelationLine;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.geometry.Point2D;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.layout.AnchorPane;
@@ -154,9 +155,9 @@ public class mainDiagramController
         for (Map.Entry<String, RelationshipItem> entry : relationItems.entrySet()) 
         {
             ClassBox source = getClassBoxByName(entry.getValue().getSource().getName());
-            int sourceLoc = entry.getValue().getSourceLoc();
+            Point2D sourceLoc = entry.getValue().getSourceLoc();
             ClassBox dest = getClassBoxByName(entry.getValue().getDestination().getName());
-            int destLoc = entry.getValue().getDestLoc();
+            Point2D destLoc = entry.getValue().getDestLoc();
 
             if (source != null && dest != null)
             {
@@ -208,16 +209,6 @@ public class mainDiagramController
                 adjustAnchorPaneSize(newX, newY, classBox);
                 updateRelationLines();
             });
-
-        //setup ranchor events
-        for (int i = 0; i < 4; i++)
-        {
-            int index = i;
-            classBox.getRanchor(i).setOnMouseClicked(event -> {
-                ranchorClick(event, classBox, index);
-                event.consume();
-            });
-        }
 
         return classBox;
     }
@@ -284,9 +275,8 @@ public class mainDiagramController
                 } catch (InterruptedException e) { e.printStackTrace(); }
 
                 int i = (placingRelation.getI1() + 2) % 4;
-                Rectangle r = classBox.getRanchor(i);
-                double newX = event.getSceneX() - r.getBoundsInParent().getMinX();
-                double newY = event.getSceneY() - r.getBoundsInParent().getMinY() - 35;
+                double newX = event.getSceneX();
+                double newY = event.getSceneY() - 35;
                 classBox.setLayoutX(newX / scaleTransform.getX());
                 classBox.setLayoutY(newY / scaleTransform.getY());
 

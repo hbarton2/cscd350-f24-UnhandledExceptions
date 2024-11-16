@@ -1,7 +1,7 @@
 package com.unhandledexceptions.Model;
 
 import java.util.HashMap;
-//import java.util.Scanner;
+import javafx.geometry.Point2D;
 
 public class RelationshipItem
 {
@@ -9,14 +9,14 @@ public class RelationshipItem
     private ClassItem source;
     private ClassItem destination;
     private String type;
-    private int sourceLoc, destLoc;
+    private Point2D sourceLoc, destLoc;
     
     public RelationshipItem() {} //blank constructor for IO serialization
 
     public RelationshipItem(final ClassItem source, final ClassItem destination, final String type)
     {
-        sourceLoc = 0;
-        destLoc = 0;
+        sourceLoc = Point2D.ZERO;
+        destLoc = Point2D.ZERO;
         // checking for null values and throwing an exception if the source or destination are null
         // we can't have a relationship with only a source or only a destination
         if(source == null || destination == null){
@@ -150,22 +150,22 @@ public class RelationshipItem
         this.destination = destination;
     }
 
-    public int getSourceLoc()
+    public Point2D getSourceLoc()
     {
         return this.sourceLoc;
     }
 
-    public void setSourceLoc(int sourceLoc)
+    public void setSourceLoc(Point2D sourceLoc)
     {
         this.sourceLoc = sourceLoc;
     }
 
-    public int getDestLoc()
+    public Point2D getDestLoc()
     {
         return this.destLoc;
     }
 
-    public void setDestLoc(int destLoc)
+    public void setDestLoc(Point2D destLoc)
     {
         this.destLoc = destLoc;
     }

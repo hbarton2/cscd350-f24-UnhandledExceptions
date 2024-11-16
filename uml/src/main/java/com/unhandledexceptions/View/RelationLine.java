@@ -8,7 +8,6 @@ import javax.swing.JPanel;
 import com.unhandledexceptions.Controller.BaseController;
 
 import javafx.application.Platform;
-import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
 import javafx.scene.control.Button;
 import javafx.scene.image.ImageView;
@@ -28,10 +27,9 @@ import javafx.scene.transform.Transform;
 
 public class RelationLine extends Polyline
 {
-    // indexes of the classboxes' relationship anchors either 0, 1, 2, or 3
-    private int i1, i2;
+    private Point2D sourceLoc, destLoc;
     // classboxes that the relation line connects
-    private ClassBox c1, c2;
+    private ClassBox source, dest;
     // type of relationship (Aggregation, Composition, Generalization, Realization)
     private String type;
 
@@ -69,7 +67,6 @@ public class RelationLine extends Polyline
             deleteButton.setLayoutY(typeButton.getLayoutY());
         });
         anchorPane.getChildren().add(typeButton);
-
         //delete button
         deleteButton = new Button();
         ImageView deleteImage = new ImageView("/images/trash-can-icon.png");
@@ -85,7 +82,7 @@ public class RelationLine extends Polyline
 
     public void Remove(boolean justView)
     {
-        if (!justView) baseController.RemoveRelationshipListener(c1.getClassName(), c2.getClassName());
+        if (!justView) baseController.RemoveRelationshipListener(source.getClassName(), dest.getClassName());
         anchorPane.getChildren().remove(shape);
         anchorPane.getChildren().remove(typeButton);
         anchorPane.getChildren().remove(deleteButton);
@@ -96,7 +93,7 @@ public class RelationLine extends Polyline
     {
         deleteButton.setVisible(false);
 
-        if (c1 == c2) return;
+        if (source == dest) return;
 
         Point2D nearestPoint = null;
         double minDistance = Double.MAX_VALUE;
@@ -154,7 +151,7 @@ public class RelationLine extends Polyline
 
     private void typeDialog()
     {
-        if (c1 == c2) return;
+        if (source == dest) return;
 
         Scale scaleTransform = null;
         for (Transform transform : anchorPane.getTransforms())
@@ -179,7 +176,7 @@ public class RelationLine extends Polyline
         if (result == JOptionPane.OK_OPTION) {
             String selectedOption = (String) comboBox.getSelectedItem();
             type = selectedOption;
-            baseController.ChangeRelationshipTypeListener(c1.getClassName(), c2.getClassName(), selectedOption);
+            baseController.ChangeRelationshipTypeListener(source.getClassName(), dest.getClassName(), selectedOption);
         } else {
             System.out.println("Dialog was canceled.");
         }
@@ -190,12 +187,12 @@ public class RelationLine extends Polyline
     // saves the relationships between classes into the model using the controller
     public void Save()
     {
-        String c1Name = c1.getClassName().toLowerCase().trim();
-        String c2Name = c2.getClassName().toLowerCase().trim();
+        String c1Name = source.getClassName().toLowerCase().trim();
+        String c2Name = dest.getClassName().toLowerCase().trim();
 
         baseController.AddRelationshipListener(c1Name, c2Name, type);
-        baseController.getData().getRelationshipItems().get(c1Name + "_" + c2Name).setSourceLoc(i1);
-        baseController.getData().getRelationshipItems().get(c1Name + "_" + c2Name).setDestLoc(i2);
+        baseController.getData().getRelationshipItems().get(c1Name + "_" + c2Name).setSourceLoc(sourceLoc);
+        baseController.getData().getRelationshipItems().get(c1Name + "_" + c2Name).setDestLoc(destLoc);
     }
 
     /*
@@ -210,12 +207,10 @@ public class RelationLine extends Polyline
     {
         Platform.runLater(new Runnable() {
             @Override public void run() {
-                Bounds bounds = c1.getRanchor(i1).localToScene(c1.getRanchor(i1).getBoundsInLocal());
-                Bounds bounds2 = c2.getRanchor(i2).localToScene(c2.getRanchor(i2).getBoundsInLocal());
-                double startX = bounds.getCenterX() / scaleTransform.getX();
-                double startY = (bounds.getCenterY() - 25) / scaleTransform.getY();
-                double endX = bounds2.getCenterX() / scaleTransform.getX();
-                double endY = (bounds2.getCenterY() - 25) / scaleTransform.getY();
+                double startX = sourceLoc.getX() / scaleTransform.getX();
+                double startY = (sourceLoc.getY() - 25) / scaleTransform.getY();
+                double endX = destLoc.getX() / scaleTransform.getX();
+                double endY = (destLoc.getY() - 25) / scaleTransform.getY();
                 update(startX, startY, endX, endY);
             }
         });
@@ -232,9 +227,8 @@ public class RelationLine extends Polyline
     {
         Platform.runLater(new Runnable() {
             @Override public void run() {
-                Bounds bounds = c1.getRanchor(i1).localToScene(c1.getRanchor(i1).getBoundsInLocal());
-                double startX = bounds.getCenterX() / scaleTransform.getX();
-                double startY = (bounds.getCenterY() - 25) / scaleTransform.getY();
+                double startX = sourceLoc.getX() / scaleTransform.getX();
+                double startY = (destLoc.getY() - 25) / scaleTransform.getY();
                 double endX = event.getSceneX() / scaleTransform.getX();
                 double endY = event.getSceneY() / scaleTransform.getY();
                 update(startX, startY, endX, endY);
@@ -260,9 +254,7 @@ public class RelationLine extends Polyline
         //start
         if (type.equals("Aggregation") || type.equals("Composition"))
         {
-            double aimX = c1.getLayoutX() + c1.getWidth() / 2;
-            double aimY = c1.getLayoutY() + c1.getHeight() / 2;
-            double angle = Math.atan2(aimY - startY, aimX - startX);
+            double angle = Math.atan2(startY, startX);
 
             //type shape
             int offset = 20;
@@ -287,77 +279,30 @@ public class RelationLine extends Polyline
         getPoints().add(startY);
 
         //middle for top anchor
-        if (i1 == 0)
-        {
-            if (endY > startY)
-            {
-                double shift = c1.getWidth() / 2;
-                if (endX < startX)
-                    shift = shift * -1;
-                getPoints().add(startX + shift);
-                getPoints().add(startY);
-            }
-            getPoints().add(getPoints().get(getPoints().size() - 2));
-            getPoints().add(endY);
-        }
 
-        //middle for bottom anchor
-        if (i1 == 2)
+        if (endY > startY)
         {
-            if (endY < startY)
-            {
-                double shift = c1.getWidth() / 2;
-                if (endX < startX)
-                    shift = shift * -1;
-                getPoints().add(startX + shift);
-                getPoints().add(startY);
-            }
-            getPoints().add(getPoints().get(getPoints().size() - 2));
-            getPoints().add(endY);
-        }
-
-        //middle for left anchor
-        if (i1 == 3)
-        {
-            if (endX > startX)
-            {
-                double shift = c1.getHeight() / 2;
-                if (endY < startY)
-                    shift = shift * -1;
-                getPoints().add(startX);
-                getPoints().add(startY + shift);
-            }
-            getPoints().add(endX);
-            getPoints().add(getPoints().get(getPoints().size() - 2));
-        }
-
-        //middle for right anchor
-        if (i1 == 1)
-        {
+            double shift = source.getWidth() / 2;
             if (endX < startX)
-            {
-                double shift = c1.getHeight() / 2;
-                if (endY < startY)
-                    shift = shift * -1;
-                getPoints().add(startX);
-                getPoints().add(startY + shift);
-            }
-            getPoints().add(endX);
-            getPoints().add(getPoints().get(getPoints().size() - 2));
+                shift = shift * -1;
+            getPoints().add(startX + shift);
+            getPoints().add(startY);
         }
+        getPoints().add(getPoints().get(getPoints().size() - 2));
+        getPoints().add(endY);
 
         //end
         getPoints().add(endX);
         getPoints().add(endY);
 
-        if (c1 != c2)
+        if (source != dest)
         {
             if (type.equals("Generalization") || type.equals("Realization"))
             {
                 int offset = 10;
 
-                double aimX = c2.getLayoutX() + c2.getWidth() / 2;
-                double aimY = c2.getLayoutY() + c2.getHeight() / 2;
+                double aimX = dest.getLayoutX() + dest.getWidth() / 2;
+                double aimY = dest.getLayoutY() + dest.getHeight() / 2;
                 double angle = Math.atan2(aimY - endY, aimX - endX);
 
                 endX = (endX + 5 * Math.cos(angle));
@@ -380,8 +325,8 @@ public class RelationLine extends Polyline
             }
             else
             {
-                getPoints().add(c2.getLayoutX() + c2.getWidth() / 2);
-                getPoints().add(c2.getLayoutY() + c2.getHeight() / 2);
+                getPoints().add(dest.getLayoutX() + dest.getWidth() / 2);
+                getPoints().add(dest.getLayoutY() + dest.getHeight() / 2);
             }
         }
 
@@ -409,24 +354,14 @@ public class RelationLine extends Polyline
         this.type = type;
     }
 
-    public int getI1()
+    public ClassBox getSource()
     {
-        return this.i1;
+        return this.source;
     }
 
-    public int getI2()
+    public ClassBox getDest()
     {
-        return this.i2;
-    }
-
-    public ClassBox getC1()
-    {
-        return this.c1;
-    }
-
-    public ClassBox getC2()
-    {
-        return this.c2;
+        return this.dest;
     }
 
     /*
@@ -435,12 +370,12 @@ public class RelationLine extends Polyline
      * @param classBox the classbox that the relationship line starts from
      * @param index the index of the relationship anchor that the relationship line starts from
      */
-    public void setStart(ClassBox classBox, int index)
+    public void setStart(ClassBox classBox, Point2D loc)
     {
-        this.c1 = classBox;
-        this.i1 = index;
-        this.c2 = c1;
-        this.i2 = i1;
+        this.source = classBox;
+        this.sourceLoc = loc;
+        this.dest = source;
+        this.destLoc = new Point2D(classBox.getLayoutX(), classBox.getLayoutY());
     }
 
     /*
@@ -449,9 +384,9 @@ public class RelationLine extends Polyline
      * @param classBox the classbox that the relationship line ends at
      * @param index the index of the relationship anchor that the relationship line ends at
      */
-    public void setEnd(ClassBox classBox, int index)
+    public void setEnd(ClassBox classBox, Point2D loc)
     {
-        this.c2 = classBox;
-        this.i2 = index;
+        this.dest = classBox;
+        this.destLoc = loc;
     }
 }

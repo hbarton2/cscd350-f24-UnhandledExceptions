@@ -29,7 +29,6 @@ import com.unhandledexceptions.Model.ParameterItem;
 import javafx.scene.control.TitledPane;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -37,7 +36,6 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.shape.Rectangle;
 import javafx.util.Pair;
 import javafx.scene.control.ButtonBar;
 
@@ -53,22 +51,19 @@ import javafx.scene.control.ButtonBar;
 public class ClassBox extends StackPane implements PropertyChangeListener
 {
     private String className;
-    final double RANCHOR_VIEW_DISTANCE = 50; // Distance threshold for visibility
     private VBox dragBox;
     BaseController baseController;
-    private Rectangle[] ranchors = new Rectangle[4]; // Relationship anchors
     AnchorPane anchorPane;
     TitledPane methodsPane;
     TitledPane fieldsPane;
     private ClassItem classItem; // ClassItem object associated with the ClassBox to add listeners
 
     public ClassBox(AnchorPane anchorPane, BaseController baseController, String classNameIn, double boxWidth,
-     double boxHeight, Rectangle[] ranchors, ClassItem classItem)
+     double boxHeight, ClassItem classItem)
     {
         this.anchorPane = anchorPane;
         this.baseController = baseController;
         this.className = classNameIn;
-        this.ranchors = ranchors;
         this.classItem = classItem;
         this.classItem.addPropertyChangeListener(this);
         // createClassBox(classNameIn, boxWidth, boxHeight);
@@ -166,7 +161,7 @@ public class ClassBox extends StackPane implements PropertyChangeListener
          for (Node node : anchorPane.getChildren()) {
              if(node instanceof RelationLine) {
                  RelationLine line = (RelationLine) node;
-                 if (line.getC1().equals(this) || line.getC2().equals(this)) {
+                 if (line.getSource().equals(this) || line.getDest().equals(this)) {
                      nodesToRemove.add(line);
                  }
              }
@@ -281,24 +276,6 @@ public class ClassBox extends StackPane implements PropertyChangeListener
 
     public VBox getDragBox() {
         return this.dragBox;
-    }
-
-    public Rectangle getRanchor(int i)
-    {
-        return this.ranchors[i];
-    }
-
-    public Rectangle[] getRanchors()
-    {
-        return this.ranchors;
-    }
-
-    public Rectangle getClickedRanchor(MouseEvent event)
-    {
-        for (Rectangle ranchor : ranchors)
-            if (ranchor.contains(event.getX(), event.getY()))
-                return ranchor;
-        return null;
     }
 
     /* method to create a delete button, sets the action to call
@@ -425,7 +402,6 @@ public class ClassBox extends StackPane implements PropertyChangeListener
         // when pressed, open dialog for user input
         addMethodsButton.setOnAction(e -> {
             Pair<String, String> result = createInputDialogs("Method");
-            //TODO: functionalty to update model
             if(result != null){
                 String type = result.getKey().toLowerCase();
                 String name = result.getValue().toLowerCase();
