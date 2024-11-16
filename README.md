@@ -3,6 +3,7 @@
 ### Prerequisites
 
 - Java 21+ [Installation](https://www.java.com/en/download/help/download_options.html)
+    * Note: to ensure you have Java installed, run `java --version`.
 
 ### Run the Program
 
