@@ -1,32 +1,33 @@
 .vbox {
-    -fx-background-color: #181818;
+    -fx-background-color: #2B2B2B;
 }
 
 .anchor-pane {
-    -fx-background-color: #181818;
+    -fx-background-color: #2B2B2B;
 }
 
 .scroll-pane {
-    -fx-background-color: #181818;
-    -fx-border-color: #181818;
+    -fx-background-color: #2B2B2B;
+    -fx-border-color: #2B2B2B;
     -fx-text-fill: white;
     -fx-text-base-color: white;
 }
 
 .scroll-pane .viewport {
-    -fx-background-color: #181818;
+    -fx-background-color: #2B2B2B;
 }
 
 .class-box {
     -fx-border-width: 1px;
-    -fx-background-color: #2B2B2B;
+    -fx-background-color: #252525;
     -fx-padding: 10;
     -fx-spacing: 1;
     -fx-border-radius: 5;
     -fx-background-radius: 5;
-    -fx-border-color: linear-gradient(to bottom right, #2B2B2B, #3d4ddd); 
+    /* -fx-border-color: linear-gradient(to bottom right, #252525, #3d4ddd);  */
     -fx-text-fill: white;
-}
+    /* -fx-effect: dropshadow(gaussian, darkblue, 10, 0, 5, 5); */
+} 
 
 /* TitledPane Styles */
 .titled-pane {
@@ -49,13 +50,13 @@
 
 .titled-pane > .content {
     -fx-padding: 10;
-    -fx-background-color: #2B2B2B;
+    -fx-background-color: #252525;
     -fx-text-fill: white;
 }
 
 /* ListView styles for fields and methods */
 .list-view {
-    -fx-background-color: #2B2B2B;
+    -fx-background-color: #252525;
     -fx-border-color: #ddd;
     -fx-text-fill: white;
 }
@@ -128,7 +129,7 @@
 }
 
 .toolbar-dark {
-    -fx-background-color: #2b2b2b;
+    -fx-background-color: #252525;
     -fx-text-fill: white;
 }
 
@@ -137,10 +138,21 @@
 }
 
 .menubar-dark {
-    -fx-background-color: #2b2b2b;
+    -fx-background-color: #252525;
 }
 
 .menu-dark {
-    -fx-background-color: #2b2b2b;
+    -fx-background-color: #252525;
     -fx-text-fill: white;
+    -fx-text-base-color: white;
 }
+
+.menu-dark .label{
+    -fx-text-fill: white;
+    -fx-background-color: transparent;
+}
+
+.menu-dark .context-menu{
+    -fx-background-color: #252525;
+}
+

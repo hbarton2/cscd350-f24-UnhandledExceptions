@@ -11,6 +11,7 @@ import javafx.application.Platform;
 import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
 import javafx.scene.control.Button;
+import javafx.scene.effect.DropShadow;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
@@ -186,7 +187,7 @@ public class RelationLine extends Polyline
             System.out.println("Dialog was canceled.");
         }
 
-        Update(scaleTransform);
+        Update(scaleTransform, false);
     }
 
     // saves the relationships between classes into the model using the controller
@@ -205,7 +206,7 @@ public class RelationLine extends Polyline
      *
      * @param scaleTransform the scale transformation to be applied to the coordinates
      */
-    public void Update(Scale scaleTransform)
+    public void Update(Scale scaleTransform, boolean partyMode)
     {
         Platform.runLater(new Runnable() {
             @Override public void run() {
@@ -215,7 +216,7 @@ public class RelationLine extends Polyline
                 double startY = (bounds.getCenterY() - 50) / scaleTransform.getY();
                 double endX = bounds2.getCenterX() / scaleTransform.getX();
                 double endY = (bounds2.getCenterY() - 50) / scaleTransform.getY();
-                update(startX, startY, endX, endY);
+                update(startX, startY, endX, endY, partyMode);
             }
         });
     }
@@ -227,7 +228,7 @@ public class RelationLine extends Polyline
      * @param scaleTransform the scale transformation to be applied to the coordinates
      * @param event the mouse event containing the new position
      */
-    public void Update(Scale scaleTransform, MouseEvent event)
+    public void Update(Scale scaleTransform, MouseEvent event, boolean partyMode)
     {
         Platform.runLater(new Runnable() {
             @Override public void run() {
@@ -236,7 +237,7 @@ public class RelationLine extends Polyline
                 double startY = (bounds.getCenterY() - 50) / scaleTransform.getY();
                 double endX = event.getSceneX() / scaleTransform.getX();
                 double endY = event.getSceneY() / scaleTransform.getY();
-                update(startX, startY, endX, endY);
+                update(startX, startY, endX, endY, partyMode);
             }
         });
     }
@@ -250,7 +251,7 @@ public class RelationLine extends Polyline
      * @param endX the ending X coordinate of the line
      * @param endY the ending Y coordinate of the line
      */
-    private void update(double startX, double startY, double endX, double endY)
+    private void update(double startX, double startY, double endX, double endY, boolean partyMode)
     {
         toBack();
         getPoints().clear();
@@ -384,11 +385,33 @@ public class RelationLine extends Polyline
             }
         }
 
+        int r = 24, g = 24, b = 24;
+        
+        DropShadow shadow = new DropShadow();
+
+        if(partyMode){
+            shadow.setOffsetX(5);
+            shadow.setOffsetY(5);
+            shadow.setRadius(5);
+            int max = 255;
+            int min = 0;
+
+            r = (int)(Math.random() * (max - min + 1)) + min;
+            g = (int)(Math.random() * (max - min + 1)) + min;
+            b = (int)(Math.random() * (max - min + 1)) + min;
+
+            shadow.setColor(Color.rgb(r, g, b));
+            setEffect(shadow);
+        }
+
         //misc
         setStrokeWidth(3);
+        setEffect(shadow);
+        setStroke(Color.rgb(r, g, b));
         shape.setStrokeWidth(3);
-        shape.setStroke(Color.BLACK);
-        shape.setFill(Color.BLACK);
+        shape.setStroke(Color.rgb(r, g, b));
+        shape.setFill(Color.rgb(r, g, b));
+        shape.setEffect(shadow);
         getStrokeDashArray().clear();
         if (!type.equals("Composition"))
             shape.setFill(Color.TRANSPARENT);

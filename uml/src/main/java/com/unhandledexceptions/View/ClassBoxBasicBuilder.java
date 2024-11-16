@@ -48,7 +48,7 @@ public class ClassBoxBasicBuilder implements ClassBoxBuilderInterface {
         // ranchors (relationship anchors)
         for (int i = 0; i < 4; i++) {
             ranchors[i] = new Rectangle(15, 15);
-            ranchors[i].setFill(Color.BLACK);
+            ranchors[i].setFill(Color.rgb(24, 24, 24));
         }
 
         //assumbling the classbox, creates a "+" shape with the middle being the classBox we see on screen.
