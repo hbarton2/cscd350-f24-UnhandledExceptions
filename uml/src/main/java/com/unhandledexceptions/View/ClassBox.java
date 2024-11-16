@@ -70,7 +70,7 @@ public class ClassBox extends StackPane implements PropertyChangeListener
         this.className = classNameIn;
         this.ranchors = ranchors;
         this.classItem = classItem;
-        classItem.addPropertyChangeListener(this);
+        this.classItem.addPropertyChangeListener(this);
         // createClassBox(classNameIn, boxWidth, boxHeight);
     }
 
@@ -126,6 +126,7 @@ public class ClassBox extends StackPane implements PropertyChangeListener
         // get the field items
         HashMap<String, FieldItem> fieldItems = classItem.getFieldItems();
         // get the field pane
+        @SuppressWarnings("unchecked")
         ListView<String> fieldsList = (ListView<String>) fieldsPane.getContent();
         // clear the fields list
         clearFields();
@@ -584,12 +585,15 @@ public class ClassBox extends StackPane implements PropertyChangeListener
         fieldsList.getItems().clear();
     }
 
+    /*
+    // currently unused.
     private void addFields(ObservableList<String> fields)
     {
         @SuppressWarnings("unchecked")
         ListView<String> fieldsList = (ListView<String>) fieldsPane.getContent();
         fieldsList.setItems(fields);
     }
+    */
 
     public TitledPane createFieldPane() {
         fieldsPane = new TitledPane();

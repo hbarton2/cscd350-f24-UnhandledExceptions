@@ -16,7 +16,7 @@ public class Caretaker {
     private Stack<Memento> undoStack;
     private Stack<Memento> redoStack;
     private boolean lock;
-    private int testMomentoCount = 0;
+    //private int testMomentoCount = 0;
 
     // Constructor
     public Caretaker(Data data) {
@@ -28,8 +28,8 @@ public class Caretaker {
     // Save the current state of the Data object
     public void saveState() {
         if (lock) return;
-        testMomentoCount += 1;
-        System.out.println("Momentos created: " + testMomentoCount);
+        //testMomentoCount += 1;
+        //System.out.println("Momentos created: " + testMomentoCount);
         undoStack.push(this.data.createMemento());
         redoStack.clear(); // Clear redo stack whenever a new state is saved
     }

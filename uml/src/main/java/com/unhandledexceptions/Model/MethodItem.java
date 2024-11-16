@@ -4,8 +4,6 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.HashMap;
 
-import javafx.beans.property.Property;
-
 public class MethodItem implements UMLObject {
 	private String methodName;
 	// return type for the method

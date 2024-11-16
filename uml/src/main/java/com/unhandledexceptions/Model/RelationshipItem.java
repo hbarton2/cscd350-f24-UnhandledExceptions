@@ -26,7 +26,7 @@ public class RelationshipItem
         // sets the source and destination ClassItem objects as well as the String type
         this.source = source;
         this.destination = destination;
-        this.type = type;
+        this.type = type.substring(0, 1).toUpperCase() + type.substring(1).toLowerCase();
     }
 
     /**
@@ -72,6 +72,9 @@ public class RelationshipItem
             return "One or both of the classes do not exist";
         }
 
+        //proper case for type
+        type = type.substring(0, 1).toUpperCase() + type.substring(1).toLowerCase();
+
         // if the relationship already exists, we return a message that the relationship already exists
         if(relationships.containsKey(key)){
             relationships.get(key).setType(type);
@@ -113,6 +116,10 @@ public class RelationshipItem
     {
         // key is sourceclass_destinationclass
         String key = source + "_" + dest;
+
+        //proper case for type
+        type = type.substring(0, 1).toUpperCase() + type.substring(1).toLowerCase();
+
         // if the key is in the relationship map, we remove it along with the value which is a relationship object
         if(relationshipMap.containsKey(key)){
             relationshipMap.get(key).setType(type);
@@ -168,6 +175,8 @@ public class RelationshipItem
     }
 
     public void setType(String type) {
+        //proper case for type
+        type = type.substring(0, 1).toUpperCase() + type.substring(1).toLowerCase();
         this.type = type;
     }
 

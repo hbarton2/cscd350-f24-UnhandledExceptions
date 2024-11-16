@@ -95,7 +95,7 @@ public class mainDiagramController
                 fileItem.setOnAction(event -> {
                     newMenuClick();
                     data.Load(file.getAbsolutePath());
-                    Load();
+                    LoadAll();
                 });
                 
                 // Add the menu item to the "Open Recent" submenu
@@ -116,12 +116,15 @@ public class mainDiagramController
 
     public void openMenuClick()
     {
-        //clear all
-        newMenuClick();
+        String result = data.Load(anchorPane);
 
-        data.Load(anchorPane);
+        if (result.equals("good"))
+        {
+            //clear all
+            newMenuClick();
 
-        Load();
+            LoadAll();   
+        }
     }
 
     private void ClearAll()
@@ -134,7 +137,7 @@ public class mainDiagramController
         anchorPane.getChildren().removeAll(children);
     }
 
-    private void Load()
+    private void LoadAll()
     {
         //load classes
         HashMap<String, ClassItem> classItems = data.getClassItems();
@@ -436,7 +439,7 @@ public class mainDiagramController
         if (result.equals("good"))
         {
             ClearAll();
-            Load();
+            LoadAll();
         }
     }
 
@@ -446,7 +449,7 @@ public class mainDiagramController
         if (result.equals("good"))
         {
             ClearAll();
-            Load();
+            LoadAll();
         }
     }
 
