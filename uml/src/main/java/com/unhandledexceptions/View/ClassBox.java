@@ -305,7 +305,6 @@ public class ClassBox extends StackPane
         return deleteButton;
     }
 
-    // ================================================================================================================================================================
     // method to create a dialog box for user input of class name
     public static String classNameDialog() {
         // creates a dialog box for user input
@@ -338,7 +337,6 @@ public class ClassBox extends StackPane
         return null;
     }
 
-    // ================================================================================================================================================================
     // method to rename a class box label
     public void renameClassLabel(String newName) {
         // gets the label from the classBox object
@@ -349,12 +347,14 @@ public class ClassBox extends StackPane
             nameLabel.setText(newName);
     }
 
+    //User for the Update() Method
     public void clearMethods()
     {
         ListView<TitledPane> methodsList = (ListView<TitledPane>) methodsPane.getContent();
         methodsList.getItems().clear();
     }
 
+    //Used for the Update() Method
     public void addMethod(String methodName, String methodType, ObservableList<String> params)
     {
         TitledPane newMethodPane = createNewMethod(methodName, methodType);  //create new box with list for params
@@ -364,6 +364,30 @@ public class ClassBox extends StackPane
         methodParamList.setItems(params);
     }
 
+    /**
+     * Creates and returns a {@link TitledPane} for managing methods. The pane includes
+     * a list of methods represented by individual {@code TitledPane} objects and a button
+     * for adding new methods.
+     *
+     * <p>The {@code TitledPane} contains:
+     * <ul>
+     *   <li>A title bar with a "Methods" label and an "Add Method" button.</li>
+     *   <li>A {@link ListView} to display individual method panes.</li>
+     * </ul>
+     * </p>
+     *
+     * <p>Key Features:
+     * <ul>
+     *   <li>Allows the addition of new methods via an input dialog. The user inputs the method's 
+     *       name and type, and the model is updated using {@code baseController.AddMethodListener()}.</li>
+     *   <li>Displays error messages if invalid input is provided or the addition fails.</li>
+     *   <li>Applies custom styling to the pane and its components using predefined CSS classes.</li>
+     *   <li>Sets up spacing and alignment for the title bar's label and button.</li>
+     * </ul>
+     * </p>
+     *
+     * @return the configured {@code TitledPane} for managing methods.
+     */
     public TitledPane createMethodPane() {
         // Create TitledPane for methods
         methodsPane = new TitledPane();
@@ -416,6 +440,35 @@ public class ClassBox extends StackPane
         return methodsPane;
     }
 
+    /**
+     * Creates a new {@link TitledPane} to represent a method with its type, name, 
+     * and a list of parameters. The pane provides functionality to add new parameters 
+     * and edit the method's name, type, or parameters via double-click actions.
+     *
+     * <p>The {@code TitledPane} includes:
+     * <ul>
+     *   <li>A title bar with the method type, name, and an "Add Parameter" button.</li>
+     *   <li>A {@link ListView} to display the method's parameters.</li>
+     *   <li>Double-click functionality for renaming the method's type, name, or parameters.</li>
+     * </ul>
+     * </p>
+     *
+     * <p>Key Features:
+     * <ul>
+     *   <li>Allows the addition of new parameters using an input dialog. Updates the model via 
+     *       {@code baseController.AddParameterListener()}.</li>
+     *   <li>Supports double-click actions to edit existing parameters by invoking the 
+     *       {@code UpdateParam()} method.</li>
+     *   <li>Allows editing of the method's name and type via double-click events, calling 
+     *       {@code MethodNameClicked()} and {@code MethodTypeClicked()}, respectively.</li>
+     *   <li>Validates all input and displays errors for invalid or failed updates.</li>
+     * </ul>
+     * </p>
+     *
+     * @param methodName the name of the method.
+     * @param methodType the return type of the method.
+     * @return the configured {@code TitledPane} for the method.
+     */
     private TitledPane createNewMethod(String methodName, String methodType) {
         TitledPane singleMethodPane = new TitledPane();
         singleMethodPane.setExpanded(true);
@@ -430,7 +483,6 @@ public class ClassBox extends StackPane
         ObservableList<String> params = FXCollections.observableArrayList();
         methodParamList.setItems(params);
 
-        // TODO: fix issue where setting content here causes the list to be able to be
         // expanded without items in it. set after an item is added?
         singleMethodPane.setContent(methodParamList);
 
@@ -514,6 +566,28 @@ public class ClassBox extends StackPane
         return singleMethodPane;
     }
 
+    /**
+     * Updates a parameter of a method in the model by renaming it and/or changing its type.
+     * Validates the input and updates the UI if the operation succeeds. Displays error
+     * messages if validation fails or an update operation is unsuccessful.
+     *
+     * <p>Key Features:
+     * <ul>
+     *   <li>Renames the parameter using {@code baseController.RenameParameterListener()} if 
+     *       the new parameter name is different from the old one.</li>
+     *   <li>Changes the parameter type using {@code baseController.RetypeParameterListener()}.</li>
+     *   <li>Updates the UI by calling {@code Update()} if both operations are successful.</li>
+     *   <li>Displays an appropriate error message if either operation fails.</li>
+     *   <li>Ensures that neither the new parameter name nor type is blank before attempting 
+     *       any updates.</li>
+     * </ul>
+     * </p>
+     *
+     * @param methodName   the name of the method to which the parameter belongs.
+     * @param newParamName the new name for the parameter.
+     * @param oldParamName the current name of the parameter.
+     * @param newParamType the new type for the parameter.
+     */
     private void UpdateParam(String methodName, String newParamName, String oldParamName, String newParamType) {
         // Validate input for new field name and type
         if (newParamName.isBlank() || newParamName.isBlank()) {
@@ -552,6 +626,27 @@ public class ClassBox extends StackPane
         fieldsList.setItems(fields);
     }
 
+    /**
+     * Creates and returns a {@link TitledPane} that contains a list of fields with functionality
+     * to add new fields and rename existing ones. The pane includes a label, an add button, and a 
+     * {@link ListView} to display field names. It supports double-clicking a field to rename it 
+     * and updating the model accordingly.
+     *
+     * <p>The {@code TitledPane} is initially collapsed, styled with custom CSS classes, and 
+     * restricted to a maximum height of 150 pixels. Fields can be added via an input dialog, and 
+     * each field is displayed as a combination of its type and name.</p>
+     *
+     * <p>Key Features:
+     * <ul>
+     *   <li>Add new fields using a "+" button. Prompts the user to input a type and name.</li>
+     *   <li>Double-click an existing field to rename it via an input dialog.</li>
+     *   <li>Updates the model using the {@code baseController.AddFieldListener()} method.</li>
+     *   <li>Displays errors if invalid input is provided or if the addition/update fails.</li>
+     * </ul>
+     * </p>
+     *
+     * @return the configured {@code TitledPane} for managing fields.
+     */
     public TitledPane createFieldPane() {
         fieldsPane = new TitledPane();
         fieldsPane.setExpanded(false);
@@ -632,6 +727,26 @@ public class ClassBox extends StackPane
         return fieldsPane;
     }
     
+    /**
+     * Updates a field in the model by renaming it and/or changing its type. 
+     * Validates input for the new field name and type, and performs updates 
+     * through the appropriate listener methods in the controller.
+     *
+     * <p>The method performs the following actions:
+     * <ul>
+     *   <li>Checks that the new field name and type are not blank.</li>
+     *   <li>Attempts to rename the field using {@code baseController.RenameFieldListener()} 
+     *       if the new name is different from the old name.</li>
+     *   <li>Attempts to change the field type using {@code baseController.RetypeFieldListener()}.</li>
+     *   <li>Displays error messages if either operation fails, using {@code ClassBox.showError()}.</li>
+     *   <li>Updates the UI by calling {@code Update()} if both operations succeed.</li>
+     * </ul>
+     * </p>
+     *
+     * @param oldFieldName the current name of the field to be updated.
+     * @param newFieldName the new name for the field. Must not be blank.
+     * @param newFieldType the new type for the field. Must not be blank.
+     */
     private void UpdateField(String oldFieldName, String newFieldName, String newFieldType) {
         // Validate input for new field name and type
         if (newFieldName.isBlank() || newFieldType.isBlank()) {
@@ -751,9 +866,6 @@ public class ClassBox extends StackPane
         grid.setHgap(10);
         grid.setVgap(10);
         grid.setPadding(new Insets(20, 150, 10, 10));
-
-        // ComboBox<String> typeComboBox = new ComboBox<>();
-        // setupComboBox(typeComboBox);
 
         //Text for type input
         TextField firstInputField = new TextField();
