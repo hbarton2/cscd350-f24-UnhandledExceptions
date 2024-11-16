@@ -458,7 +458,7 @@ public class mainDiagramController
             Load();
         }
     }
-
+    //TODO: change the color of 'file' and 'help' menus to white when dark mode is enabled
     // dark mode button
     @FXML
     public void onDarkModeClicked() {
