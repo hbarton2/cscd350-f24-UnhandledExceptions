@@ -13,6 +13,10 @@
     -fx-text-base-color: white;
 }
 
+.scroll-pane .viewport {
+    -fx-background-color: #181818;
+}
+
 .class-box {
     -fx-border-width: 1px;
     -fx-background-color: #2B2B2B;
