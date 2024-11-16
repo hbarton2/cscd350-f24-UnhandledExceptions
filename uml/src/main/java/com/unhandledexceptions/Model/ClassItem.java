@@ -71,6 +71,7 @@ public class ClassItem implements PropertyChangeListener{
             classItems.put(name, createdClass);
             // fire support for added class item
             createdClass.support.firePropertyChange("classItem", null, createdClass);
+            initialPosition(classItems, createdClass);
             return "good";
         } else {
             // if classItemName is already in use in the classItemList that's passed in.
