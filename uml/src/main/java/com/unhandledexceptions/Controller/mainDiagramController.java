@@ -175,7 +175,7 @@ public class mainDiagramController
     public ClassBox addClass(String className)
     {
         //creates a classBoxBuilder calls adds the panes we need, then builds it.
-        ClassBoxBasicBuilder classBoxBuilder = new ClassBoxBasicBuilder(anchorPane, baseController, className, boxWidth, boxHeight, data.getClassItems().get(className));
+        ClassBoxBasicBuilder classBoxBuilder = new ClassBoxBasicBuilder(anchorPane, baseController, className, boxWidth, boxHeight, data.getClassItems().get(className.toLowerCase().trim()));
         classBoxBuilder.withFieldPane();
         classBoxBuilder.withMethodPane();
         ClassBox classBox = classBoxBuilder.build();
@@ -199,8 +199,8 @@ public class mainDiagramController
             
                 classBox.setLayoutX(newX);
                 classBox.setLayoutY(newY);
-                data.getClassItems().get(classBox.getClassName()).setX(newX);
-                data.getClassItems().get(classBox.getClassName()).setY(newY);
+                data.getClassItems().get(classBox.getClassName().toLowerCase().trim()).setX(newX);
+                data.getClassItems().get(classBox.getClassName().toLowerCase().trim()).setY(newY);
 
                 adjustAnchorPaneSize(newX, newY, classBox);
                 updateRelationLines();

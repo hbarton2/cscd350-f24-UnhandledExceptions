@@ -102,7 +102,7 @@ public class ClassBox extends StackPane implements PropertyChangeListener
         //delete class: createDeleteButton
 
         //get class item object
-        ClassItem classItem = baseController.getData().getClassItems().get(className);
+        ClassItem classItem = baseController.getData().getClassItems().get(className.toLowerCase().trim());
         if (classItem == null)
         {
             removeRelationLines();
