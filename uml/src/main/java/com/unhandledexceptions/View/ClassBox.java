@@ -115,7 +115,7 @@ public class ClassBox extends StackPane implements PropertyChangeListener
             double closestX = Math.min(Math.max(event.getX(), classBoxBounds.getMinX()), classBoxBounds.getMaxX());
             double closestY = Math.min(Math.max(event.getY(), classBoxBounds.getMinY()), classBoxBounds.getMaxY());
     
-            double spacing = 10;
+            double spacing = 15;
             
             // Snap the ranchor to the nearest edge
             if (event.getX() < classBoxBounds.getMinX() + spacing) {

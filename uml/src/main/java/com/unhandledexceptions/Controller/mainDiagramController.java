@@ -67,6 +67,7 @@ public class mainDiagramController
         anchorPane.getTransforms().add(scaleTransform);
         scrollPane.addEventFilter(ScrollEvent.SCROLL, this::handleZoom);
         anchorPane.setOnMouseMoved(event -> mouseMove(event));
+        anchorPane.setOnScroll(event -> mouseScroll(event));
         anchorPane.setOnMouseClicked(event -> mouseClick(event));
     }
 
@@ -248,6 +249,48 @@ public class mainDiagramController
         }
     }
 
+    private void mouseScroll(ScrollEvent event)
+    {
+        if (placingRelation != null)
+        {
+            String[] types = { "Aggregation", "Composition", "Generalization", "Realization" };
+            String currentType = placingRelation.getType();
+            int currentIndex = java.util.Arrays.asList(types).indexOf(currentType);
+
+            if (event.getDeltaY() > 0) { // Scrolling up
+                currentIndex = (currentIndex + 1) % types.length;
+            } else if (event.getDeltaY() < 0) { // Scrolling down
+                currentIndex = (currentIndex - 1 + types.length) % types.length;
+            }
+
+            placingRelation.setType(types[currentIndex]);
+
+            // Create a minimal MouseEvent for just the required X and Y
+            MouseEvent fakeMouseEvent = new MouseEvent(
+                MouseEvent.MOUSE_MOVED,  // Event type
+                event.getX(),            // X coordinate
+                event.getY(),            // Y coordinate
+                0,                       // Screen X (unused, can be 0)
+                0,                       // Screen Y (unused, can be 0)
+                MouseButton.NONE,        // No button pressed
+                0,                       // Click count
+                false,                   // Shift down
+                false,                   // Control down
+                false,                   // Alt down
+                false,                   // Meta down
+                false,                   // Primary button down
+                false,                   // Middle button down
+                false,                   // Secondary button down
+                false,                   // Synthesized
+                false,                   // Popup trigger
+                false,                   // Still since press
+                null                     // Pick result
+            );
+
+            placingRelation.Update(scaleTransform, fakeMouseEvent);
+        }
+    }
+
     private void mouseMove(MouseEvent event)
     {
         if (placingRelation != null)
@@ -333,6 +376,7 @@ public class mainDiagramController
         double offsetX = classBox.getRanchor().getCenterX() - classBox.getLayoutX();
         double offsetY = classBox.getRanchor().getCenterY() - classBox.getLayoutY();
         Point2D offset = new Point2D(offsetX, offsetY);
+        //System.out.println(offset.toString());
 
         if (placingRelation == null)
         {

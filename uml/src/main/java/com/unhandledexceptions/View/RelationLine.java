@@ -10,11 +10,12 @@ import com.unhandledexceptions.Controller.BaseController;
 import javafx.application.Platform;
 import javafx.geometry.Point2D;
 import javafx.scene.control.Button;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Polygon;
+import javafx.scene.shape.Circle;
 import javafx.scene.shape.Polyline;
 import javafx.scene.transform.Scale;
 import javafx.scene.transform.Transform;
@@ -33,11 +34,12 @@ public class RelationLine extends Polyline
     // type of relationship (Aggregation, Composition, Generalization, Realization)
     private String type;
 
-    private Polygon shape;
     BaseController baseController;
     AnchorPane anchorPane;
     Button typeButton;
     Button deleteButton;
+    ImageView typeIcon;
+    Circle ranchor;
 
     // constructor for relationship line
     public RelationLine(BaseController baseController, AnchorPane anchorPane)
@@ -47,9 +49,16 @@ public class RelationLine extends Polyline
         this.anchorPane = anchorPane;
         this.baseController = baseController;
         type = "Composition";
-        shape = new Polygon();
-        anchorPane.getChildren().add(shape);
-        shape.toBack();
+        typeIcon = new ImageView(new Image("/images/Composition.png"));
+        typeIcon.setVisible(false);
+        anchorPane.getChildren().add(typeIcon);
+        typeIcon.toBack();
+
+        ranchor = new Circle(5);
+        ranchor.setFill(Color.BLACK);
+        ranchor.setVisible(false);
+        anchorPane.getChildren().add(this.ranchor);
+        ranchor.toBack();
 
         //type button
         typeButton = new Button();
@@ -83,7 +92,8 @@ public class RelationLine extends Polyline
     public void Remove(boolean justView)
     {
         if (!justView) baseController.RemoveRelationshipListener(source.getClassName(), dest.getClassName());
-        anchorPane.getChildren().remove(shape);
+        anchorPane.getChildren().remove(typeIcon);
+        anchorPane.getChildren().remove(ranchor);
         anchorPane.getChildren().remove(typeButton);
         anchorPane.getChildren().remove(deleteButton);
         anchorPane.getChildren().remove(this);
@@ -176,6 +186,7 @@ public class RelationLine extends Polyline
         if (result == JOptionPane.OK_OPTION) {
             String selectedOption = (String) comboBox.getSelectedItem();
             type = selectedOption;
+            typeIcon.setImage(new Image("/images/" + type + ".png"));
             baseController.ChangeRelationshipTypeListener(source.getClassName(), dest.getClassName(), selectedOption);
         } else {
             System.out.println("Dialog was canceled.");
@@ -249,12 +260,79 @@ public class RelationLine extends Polyline
     {
         toBack();
         getPoints().clear();
-        shape.getPoints().clear();
 
-        getPoints().add(startX);
-        getPoints().add(startY);
-        getPoints().add(endX);
-        getPoints().add(endY);
+        //get pre-start
+        double preX = startX, firstX = startX;
+        double preY = startY, firstY = startY;
+        if (sourceOffset.getX() < 0)
+        {
+            firstX = startX - 20;
+            preX = startX + 10;
+        }
+        else if (sourceOffset.getX() > source.getWidth())
+        {
+            firstX = startX + 20;
+            preX = startX - 10;
+        }
+        else if (sourceOffset.getY() < 0)
+        {
+            firstY = startY - 20;
+            preY = startY + 10;
+            typeIcon.setRotate(90);
+        }
+        else if (sourceOffset.getY() > source.getHeight())
+        {
+            firstY = startY + 20;
+            preY = startY - 10;
+            typeIcon.setRotate(-90);
+        }
+
+        getPoints().add(preX);
+        getPoints().add(preY);
+
+        getPoints().add(firstX);
+        getPoints().add(firstY);
+
+        //get post-end
+        double postX = endX, lastX = endX;
+        double postY = endY, lastY = endY;
+        if (destOffset.getX() < 0)
+        {
+            lastX = endX - 20;
+            postX = endX + 10;
+            typeIcon.setRotate(0);
+        }
+        else if (destOffset.getX() > dest.getWidth())
+        {
+            lastX = endX + 20;
+            postX = endX - 10;
+            typeIcon.setRotate(180);
+        }
+        else if (destOffset.getY() < 0)
+        {
+            lastY = endY - 20;
+            postY = endY + 10;
+            typeIcon.setRotate(90);
+        }
+        else if (destOffset.getY() > dest.getHeight())
+        {
+            lastY = endY + 20;
+            postY = endY - 10;
+            typeIcon.setRotate(-90);
+        }
+
+        if (source != dest)
+        {
+            getPoints().add(lastX);
+            getPoints().add(lastY);
+            getPoints().add(postX);
+            getPoints().add(postY);
+        }
+        else
+        {
+            getPoints().add(endX);
+            getPoints().add(endY);
+        }
 
         // //start
         // if (type.equals("Aggregation") || type.equals("Composition"))
@@ -335,14 +413,27 @@ public class RelationLine extends Polyline
         //     }
         // }
 
-        //misc
+        //extra parts
+        if (type.equals("Aggregation") || type.equals("Composition"))
+        {
+            typeIcon.setLayoutX(startX - typeIcon.getImage().getWidth() / 2);
+            typeIcon.setLayoutY(startY - typeIcon.getImage().getHeight() / 2);
+            ranchor.setCenterX(endX);
+            ranchor.setCenterY(endY);
+        }
+        else
+        {
+            typeIcon.setLayoutX(endX - typeIcon.getImage().getWidth() / 2);
+            typeIcon.setLayoutY(endY - typeIcon.getImage().getHeight() / 2);
+            ranchor.setCenterX(startX);
+            ranchor.setCenterY(startY);
+        }
+
+        //misc "Aggregation", "Composition", "Generalization", "Realization"
+        typeIcon.setVisible(true);
+        ranchor.setVisible(true);
         setStrokeWidth(3);
-        shape.setStrokeWidth(3);
-        shape.setStroke(Color.BLACK);
-        shape.setFill(Color.BLACK);
         getStrokeDashArray().clear();
-        if (!type.equals("Composition"))
-            shape.setFill(Color.TRANSPARENT);
         if (type.equals("Realization"))
             getStrokeDashArray().addAll(10.0, 10.0);
         
@@ -357,6 +448,7 @@ public class RelationLine extends Polyline
     public void setType(String type)
     {
         this.type = type;
+        typeIcon.setImage(new Image("/images/" + type + ".png"));
     }
 
     public ClassBox getSource()
