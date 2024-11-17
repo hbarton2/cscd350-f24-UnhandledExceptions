@@ -188,7 +188,7 @@ public class MethodItem implements UMLObject {
 			// return successfull rename message
 			return "good";
 		} else {
-			// methodItem does not contain a method with that name.
+			// methodItem does not contain a parameter with that name.
 			return "Parameter: " + oldParamName + " does not exist.";
 		}
 	}
