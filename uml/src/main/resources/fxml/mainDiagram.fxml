@@ -51,7 +51,10 @@
             <MenuItem fx:id="newMenu" mnemonicParsing="false" onAction="#newMenuClick" text="New" />
                   <SeparatorMenuItem mnemonicParsing="false" />
             <MenuItem fx:id="openMenu" mnemonicParsing="false" onAction="#openMenuClick" text="Open…" />
-            <Menu fx:id="openRecentMenu" mnemonicParsing="false" onAction="#openRecentMenuClick" text="Open Recent" />
+            <Menu fx:id="openRecentMenu" mnemonicParsing="false" onShowing="#openRecentMenuShowing" text="Open Recent">
+                     <items>
+                        <CustomMenuItem mnemonicParsing="false" text="Unspecified Action" />
+                     </items></Menu>
             <SeparatorMenuItem mnemonicParsing="false" />
             <MenuItem fx:id="saveMenu" mnemonicParsing="false" onAction="#saveMenuClick" text="Save" />
             <MenuItem fx:id="saveAsMenu" mnemonicParsing="false" onAction="#saveAsMenuClick" text="Save As…" />
@@ -66,10 +69,20 @@
           </items>
         </Menu>
             <Menu disable="true" mnemonicParsing="false" onAction="#onAddClassClicked" text="|" />
-            <Menu fx:id="addClassMenu" mnemonicParsing="false" onAction="#onAddClassClicked" text="Add Class">
+            <Menu fx:id="addClassMenu" mnemonicParsing="false" onShowing="#onAddClassClicked" text="Add Class">
                <items>
                   <CustomMenuItem mnemonicParsing="false" text="Unspecified Action" />
                </items></Menu>
+            <Menu fx:id="undoMenu" mnemonicParsing="false" onShowing="#onUndoClicked" text="Undo">
+                <items>
+                    <CustomMenuItem mnemonicParsing="false" text="Unspecified Action" />
+                </items>
+            </Menu>
+            <Menu fx:id="redoMenu" mnemonicParsing="false" onShowing="#onRedoClicked" text="Redo">
+                <items>
+                    <CustomMenuItem mnemonicParsing="false" text="Unspecified Action" />
+                </items>
+            </Menu>
       </menus>
     </MenuBar>
       <StackPane fx:id="bgpane" prefHeight="150.0" prefWidth="200.0" VBox.vgrow="ALWAYS">

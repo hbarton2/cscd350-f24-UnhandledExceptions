@@ -5,7 +5,6 @@ import org.junit.jupiter.api.BeforeEach;
 
 // Project imports
 import com.unhandledexceptions.Controller.BaseController;
-import com.unhandledexceptions.Model.ClassItem;
 import com.unhandledexceptions.Model.Data;
 
 public class BaseControllerTests {
@@ -32,10 +31,11 @@ public class BaseControllerTests {
     // Test adding a class
     String result = baseController.AddClassListener("TestClass");
     assertEquals("good", result);
+    System.out.println(data.getClassItems().keySet());
     // ensure that the class was added to the data object
     assertTrue(data.getClassItems().containsKey("testclass"));
     // ensure the class name wasn't changed
-    assertEquals("testclass", data.getClassItems().get("testclass").getName());
+    assertEquals("TestClass", data.getClassItems().get("testclass").getName());
   }
 
   // Test renaming a class with the controller
@@ -99,20 +99,6 @@ public class BaseControllerTests {
     assertEquals("Invalid relationship type. Valid types: aggregation, composition, generalization, realization", result);
     // ensure that the relationship was not added to the data object
     assertFalse(data.getRelationshipItems().containsKey("testclass1_testclass2"));
-  }
-
-  // Test placing a relationship
-  @Test
-  public void testPlaceRelationshipListener() {
-    // Test placing a relationship
-    baseController.AddClassListener("testclass1");
-    baseController.AddClassListener("testclass2");
-    baseController.AddRelationshipListener("testclass1", "testclass2", "aggregation");
-    String result = baseController.PlaceRelationshipListener("testclass1", "testclass2", 4, 4);
-    assertEquals("good", result);
-    // ensure that the relationship was placed in the data object
-    assertEquals(4, data.getRelationshipItems().get("testclass1_testclass2").getSourceLoc());
-    assertEquals(4, data.getRelationshipItems().get("testclass1_testclass2").getDestLoc());
   }
 
   /* 

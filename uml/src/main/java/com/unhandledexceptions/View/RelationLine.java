@@ -9,12 +9,16 @@ import com.unhandledexceptions.Controller.BaseController;
 
 import javafx.application.Platform;
 import javafx.geometry.Bounds;
+import javafx.geometry.Point2D;
+import javafx.scene.control.Button;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Polyline;
 import javafx.scene.transform.Scale;
+import javafx.scene.transform.Transform;
 
 /*
  * This class is used to create a line between two classes in the GUI.
@@ -34,7 +38,9 @@ public class RelationLine extends Polyline
     private Polygon shape;
     BaseController baseController;
     AnchorPane anchorPane;
-    
+    Button typeButton;
+    Button deleteButton;
+
     // constructor for relationship line
     public RelationLine(BaseController baseController, AnchorPane anchorPane)
     {
@@ -46,27 +52,120 @@ public class RelationLine extends Polyline
         shape = new Polygon();
         anchorPane.getChildren().add(shape);
         shape.toBack();
-        //setOnMouseClicked(event -> mouseClicked(event));
-        setOnMouseClicked(event -> {  //"rename" event
-            if (event.getClickCount() == 2) {
-                Remove();
-                event.consume();
-            }
-            else
-            {
-                mouseClicked(event);
-            }
+
+        //type button
+        typeButton = new Button();
+        ImageView typeImage = new ImageView("/images/link-image.png");
+        typeImage.setFitHeight(12);
+        typeImage.setFitWidth(18);
+        typeImage.setStyle("-fx-background-color: transparent;");
+        typeButton.setGraphic(typeImage);
+        typeButton.getStyleClass().add("transparent-button-delete");
+        typeButton.setVisible(false);
+        typeButton.setOnAction(event -> typeDialog());
+        typeButton.setOnMouseEntered(event -> {
+            deleteButton.setVisible(true);
+            deleteButton.setLayoutX(typeButton.getLayoutX()+typeButton.getWidth());
+            deleteButton.setLayoutY(typeButton.getLayoutY());
         });
+        anchorPane.getChildren().add(typeButton);
+
+        //delete button
+        deleteButton = new Button();
+        ImageView deleteImage = new ImageView("/images/trash-can-icon.png");
+        deleteImage.setFitHeight(12);
+        deleteImage.setFitWidth(18);
+        deleteImage.setStyle("-fx-background-color: transparent;");
+        deleteButton.setGraphic(deleteImage);
+        deleteButton.getStyleClass().add("transparent-button-delete");
+        deleteButton.setVisible(false);
+        deleteButton.setOnAction(event -> Remove(false));
+        anchorPane.getChildren().add(deleteButton);
     }
 
-    public void Remove()
+    public void Remove(boolean justView)
     {
+        if (!justView) baseController.RemoveRelationshipListener(c1.getClassName(), c2.getClassName());
         anchorPane.getChildren().remove(shape);
+        anchorPane.getChildren().remove(typeButton);
+        anchorPane.getChildren().remove(deleteButton);
         anchorPane.getChildren().remove(this);
     }
 
-    private void mouseClicked(MouseEvent event)
+    public void mouseMoved(MouseEvent event)
     {
+        deleteButton.setVisible(false);
+
+        if (c1 == c2) return;
+
+        Point2D nearestPoint = null;
+        double minDistance = Double.MAX_VALUE;
+        double distance = 0;
+
+        for (int i = 0; i < getPoints().size() - 2; i += 2)
+        {
+            double x1, y1, x2, y2;
+            x1 = getPoints().get(i);
+            y1 = getPoints().get(i+1);
+            x2 = getPoints().get(i+2);
+            y2 = getPoints().get(i+3);
+
+            Point2D pointOnSegment = getClosestPointOnSegment(event.getSceneX(), event.getSceneY(), x1, y1, x2, y2);
+            distance = pointOnSegment.distance(event.getSceneX(), event.getSceneY());
+            
+            if (distance < 100 && distance < minDistance)
+            {
+                minDistance = distance;
+                nearestPoint = pointOnSegment;
+            }
+        }
+
+        if (nearestPoint != null)
+        {
+            typeButton.setLayoutX(nearestPoint.getX());
+            typeButton.setLayoutY(nearestPoint.getY());
+
+            typeButton.setVisible(true);
+        }
+        else
+        {
+            typeButton.setVisible(false);
+        }
+
+    }
+
+    public Point2D getClosestPointOnSegment(double mouseX, double mouseY, double x1, double y1, double x2, double y2)
+    {
+        if (Math.abs(x1 - x2) < 1)
+        {
+            // Vertical segment: x-coordinate is constant
+            double clampedY = Math.max(Math.min(y1, y2), Math.min(mouseY, Math.max(y1, y2)));
+            return new Point2D(x1, clampedY - 35);
+        }
+        else if (Math.abs(y1 - y2) < 1)
+        {
+            // Horizontal segment: y-coordinate is constant
+            double clampedX = Math.max(Math.min(x1, x2), Math.min(mouseX, Math.max(x1, x2)));
+            return new Point2D(clampedX - 10, y1);
+        }
+
+        return new Point2D(0, 0);
+    }
+
+    private void typeDialog()
+    {
+        if (c1 == c2) return;
+
+        Scale scaleTransform = null;
+        for (Transform transform : anchorPane.getTransforms())
+        {
+            if (transform instanceof Scale)
+            {
+                scaleTransform = (Scale) transform;
+                break;
+            }
+        }
+
         String[] types = {"Aggregation", "Composition", "Generalization", "Realization"};
         JComboBox<String> comboBox = new JComboBox<>(types);
 
@@ -80,16 +179,23 @@ public class RelationLine extends Polyline
         if (result == JOptionPane.OK_OPTION) {
             String selectedOption = (String) comboBox.getSelectedItem();
             type = selectedOption;
+            baseController.ChangeRelationshipTypeListener(c1.getClassName(), c2.getClassName(), selectedOption);
         } else {
             System.out.println("Dialog was canceled.");
-        }        
+        }
+
+        Update(scaleTransform);
     }
 
     // saves the relationships between classes into the model using the controller
-    public void Save(BaseController controller)
+    public void Save()
     {
-        controller.AddRelationshipListener(c1.getClassName(), c2.getClassName(), type);
-        controller.PlaceRelationshipListener(c1.getClassName(), c2.getClassName(), i1, i2);
+        String c1Name = c1.getClassName().toLowerCase().trim();
+        String c2Name = c2.getClassName().toLowerCase().trim();
+
+        baseController.AddRelationshipListener(c1Name, c2Name, type);
+        baseController.getData().getRelationshipItems().get(c1Name + "_" + c2Name).setSourceLoc(i1);
+        baseController.getData().getRelationshipItems().get(c1Name + "_" + c2Name).setDestLoc(i2);
     }
 
     /*
@@ -102,15 +208,14 @@ public class RelationLine extends Polyline
      */
     public void Update(Scale scaleTransform)
     {
-        Bounds bounds = c1.getRanchor(i1).localToScene(c1.getRanchor(i1).getBoundsInLocal());
-        Bounds bounds2 = c2.getRanchor(i2).localToScene(c2.getRanchor(i2).getBoundsInLocal());
-        double startX = bounds.getCenterX() / scaleTransform.getX();
-        double startY = (bounds.getCenterY() - 25) / scaleTransform.getY();
-        double endX = bounds2.getCenterX() / scaleTransform.getX();
-        double endY = (bounds2.getCenterY() - 25) / scaleTransform.getY();
-
         Platform.runLater(new Runnable() {
             @Override public void run() {
+                Bounds bounds = c1.getRanchor(i1).localToScene(c1.getRanchor(i1).getBoundsInLocal());
+                Bounds bounds2 = c2.getRanchor(i2).localToScene(c2.getRanchor(i2).getBoundsInLocal());
+                double startX = bounds.getCenterX() / scaleTransform.getX();
+                double startY = (bounds.getCenterY() - 25) / scaleTransform.getY();
+                double endX = bounds2.getCenterX() / scaleTransform.getX();
+                double endY = (bounds2.getCenterY() - 25) / scaleTransform.getY();
                 update(startX, startY, endX, endY);
             }
         });
@@ -125,14 +230,13 @@ public class RelationLine extends Polyline
      */
     public void Update(Scale scaleTransform, MouseEvent event)
     {
-        Bounds bounds = c1.getRanchor(i1).localToScene(c1.getRanchor(i1).getBoundsInLocal());
-        double startX = bounds.getCenterX() / scaleTransform.getX();
-        double startY = (bounds.getCenterY() - 25) / scaleTransform.getY();
-        double endX = event.getSceneX() / scaleTransform.getX();
-        double endY = event.getSceneY() / scaleTransform.getY();
-
         Platform.runLater(new Runnable() {
             @Override public void run() {
+                Bounds bounds = c1.getRanchor(i1).localToScene(c1.getRanchor(i1).getBoundsInLocal());
+                double startX = bounds.getCenterX() / scaleTransform.getX();
+                double startY = (bounds.getCenterY() - 25) / scaleTransform.getY();
+                double endX = event.getSceneX() / scaleTransform.getX();
+                double endY = event.getSceneY() / scaleTransform.getY();
                 update(startX, startY, endX, endY);
             }
         });

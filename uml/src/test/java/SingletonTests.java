@@ -4,7 +4,6 @@ import org.junit.jupiter.api.Test;
 
 // modules being tested for singleton
 import com.unhandledexceptions.View.CLI;
-import com.unhandledexceptions.View.GUI;
 import com.unhandledexceptions.Model.Data;
 
 public class SingletonTests {

@@ -26,7 +26,32 @@ public class RelationshipItem
         // sets the source and destination ClassItem objects as well as the String type
         this.source = source;
         this.destination = destination;
-        this.type = type;
+        this.type = type.substring(0, 1).toUpperCase() + type.substring(1).toLowerCase();
+    }
+
+    /**
+     * The point of this constructor is to make a deep copy object of a RelationshipItem.
+     * 
+     * @param relationship the relationship object to make a copy of
+     */
+
+    private RelationshipItem(RelationshipItem relationship)
+    {
+        this.source = relationship.source;
+        this.destination = relationship.destination;
+        this.type = relationship.type;
+        this.sourceLoc = relationship.sourceLoc;
+        this.destLoc = relationship.destLoc;
+    }
+
+    /**
+     * The method used to copy a relationshipItem
+     * 
+     * @param other the relationship item to be copied
+     * @return a relationshipItem object that is a copy of the parameter object passed in 
+     */
+    public static RelationshipItem copyRelationshipItem(RelationshipItem other) {
+        return new RelationshipItem(other);
     }
 
     /* addRelationship takes a Map of relationships we currently have created from the main.java, String source and String destination.
@@ -47,6 +72,9 @@ public class RelationshipItem
             return "One or both of the classes do not exist";
         }
 
+        //proper case for type
+        type = type.substring(0, 1).toUpperCase() + type.substring(1).toLowerCase();
+
         // if the relationship already exists, we return a message that the relationship already exists
         if(relationships.containsKey(key)){
             relationships.get(key).setType(type);
@@ -60,6 +88,8 @@ public class RelationshipItem
 
         return "good";
     }
+
+
     /*
      * removeRelationship takes a Map of relationships we currently have created from the main.java, a String source and a String destination for the class names.
      * It removes a relationship from the passed in relationship map if it exists based on the key. \
@@ -80,16 +110,19 @@ public class RelationshipItem
         }
     }
 
-    public static String placeRelation(
-        HashMap<String, RelationshipItem> relationshipMap, 
-        String source, String dest, int sourceInt, int destInt)
+    public static String changeRelationType(
+        HashMap<String, RelationshipItem> relationshipMap,
+        String source, String dest, String type)
     {
         // key is sourceclass_destinationclass
         String key = source + "_" + dest;
+
+        //proper case for type
+        type = type.substring(0, 1).toUpperCase() + type.substring(1).toLowerCase();
+
         // if the key is in the relationship map, we remove it along with the value which is a relationship object
         if(relationshipMap.containsKey(key)){
-            relationshipMap.get(key).setSourceLoc(sourceInt);
-            relationshipMap.get(key).setDestLoc(destInt);
+            relationshipMap.get(key).setType(type);
             return "good";
         }
         else{
@@ -142,6 +175,8 @@ public class RelationshipItem
     }
 
     public void setType(String type) {
+        //proper case for type
+        type = type.substring(0, 1).toUpperCase() + type.substring(1).toLowerCase();
         this.type = type;
     }
 

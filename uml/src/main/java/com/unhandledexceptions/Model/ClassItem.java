@@ -2,8 +2,17 @@ package com.unhandledexceptions.Model;
 
 import java.util.HashMap;
 
-public class ClassItem {
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
+
+public class ClassItem implements PropertyChangeListener{
     String name;
+
+    @JsonIgnore // ignore support for serialization, not a POJO
+    private final PropertyChangeSupport support = new PropertyChangeSupport(this);
 
     // Names of FieldItem/MethodItem are keys to Map<k,v>
     private HashMap<String, FieldItem> fieldItems;
@@ -14,7 +23,7 @@ public class ClassItem {
     } // blank constructor for IO serialization
 
     private ClassItem(final String classItemName) {
-        this.name = classItemName;
+        this.name = classItemName.trim();
         this.x = 0;
         this.y = 0;
 
@@ -23,22 +32,73 @@ public class ClassItem {
         this.methodItems = new HashMap<String, MethodItem>();
     }
 
+    /**
+     * The point of this constructor is to make a deep copy of a classItem, that way
+     * when we create a copy it is a completely new object, not a memory address reference
+     * 
+     * @param other a ClassItem object that you wish to copy
+     */
+    private ClassItem(ClassItem other){
+        this.name = other.name;
+        this.fieldItems = new HashMap<String, FieldItem>(other.fieldItems);
+        this.methodItems = new HashMap<String, MethodItem>(other.methodItems);
+        this.x = other.x;
+        this.y = other.y;
+    }
+
+    /**
+     * The copy method to make a new object that is a copy of a classItem.
+     * 
+     * @param other the ClassItem to be copied
+     * @return the copy object of the parameter other
+     */
+    public static ClassItem copyClassItem(ClassItem other) {
+        return new ClassItem(other);
+    }
+
     // Used for tester methods and unit tests currently.
     public static String addClassItem(final HashMap<String, ClassItem> classItems, final String classItemName) {
         String name = classItemName.toLowerCase().trim();// forces all classes to be in lower case and trims all leading
                                                          // and trailing "space" (refernce .trim() Java API for space
                                                          // definition).
+        
         /*
          * if the classItemList does not already have a class named classItemName, we
          * create a new ClassItem and add it to the HashMap
          */
         if (!(classItems.containsKey(name))) {
-            ClassItem createdClass = new ClassItem(name);
-            classItems.put(createdClass.getName(), createdClass);
+            ClassItem createdClass = new ClassItem(classItemName.trim());
+            classItems.put(name, createdClass);
+            // fire support for added class item
+            createdClass.support.firePropertyChange("classItem", null, createdClass);
+            initialPosition(classItems, createdClass);
             return "good";
         } else {
             // if classItemName is already in use in the classItemList that's passed in.
             return "Class name must be unique.";
+        }
+    }
+    //randomized locations for the class items will only work up to 23-24 classes in GUI
+    public static void initialPosition(HashMap<String, ClassItem> classItems, ClassItem classItem) {
+        // take in and loop each class item in the map until it's finished
+        boolean finished = false;//not finished going though the list of classes
+        while(!finished){
+            finished = true;//ready to end the loop unless a box is too close to this one
+            double x1 = Math.random() * 900;//boundaries of the GUI box creation
+            double y1 = Math.random() * 565;
+            if(classItems.size() < 18){//hard cap on how many classes can be displayed. can be reoved once scrolling thorugh is working
+                for (HashMap.Entry<String, ClassItem> entry : classItems.entrySet()) {//for loop iterates through list of classes to check distance
+                    double x2 = entry.getValue().getX();
+                    double y2 = entry.getValue().getY();
+                    double distance = Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
+                    if(distance < 150){//if the distance is less than 150 pixels, the loop will start over and try again
+                        finished = false;
+                        break;
+                    }
+                }
+            }
+            classItem.setX(x1);//got throught the loop and found not too close to other classes, set the x and y values
+            classItem.setY(y1);
         }
     }
 
@@ -104,15 +164,15 @@ public class ClassItem {
 
         // checks that the old name to be changed exists, and that the name is not a
         // duplicate.
-        if (classItemList.containsKey(oldClassItemName)) {
+        if (classItemList.containsKey(oldClassItemName.toLowerCase().trim())) {
 
             if (!classItemList.containsKey(newClassItemName.toLowerCase().trim())) {
                 // sets the classItem Object that is stored in the value associated with the Map
                 // for the key oldClassItemName to be newClassItemName
                 // sets the new class name without updating the key in the map
-                ((ClassItem) classItemList.get(oldClassItemName)).setName(newClassItemName);
+                ((ClassItem) classItemList.get(oldClassItemName.toLowerCase().trim())).setName(newClassItemName.trim());
                 // ClassItem temp = new ClassItem(newClassItemName);
-                classItemList.put(newClassItemName.toLowerCase().trim(), classItemList.remove(oldClassItemName));
+                classItemList.put(newClassItemName.toLowerCase().trim(), classItemList.remove(oldClassItemName.toLowerCase().trim()));
 
                 // need to update relationships to reflect the new class name in the keys
                 // go through all relationships and update the keys that contain the old class
@@ -145,6 +205,8 @@ public class ClassItem {
                     }
                 }
 
+                // fire support for renamed class item
+                classItemList.get(newClassItemName.toLowerCase().trim()).support.firePropertyChange("name", oldClassItemName, newClassItemName);
                 return "good";
             } else {
                 // displayed if newClassItemName is already a key in the HashMap
@@ -173,15 +235,25 @@ public class ClassItem {
             throw new IllegalArgumentException("classItemName cannot be blank");
         }
 
+        String key = classItemName.toLowerCase().trim();
+
         // if the classItemName to delete is a key inside of the map given, we remove
         // the mapping for the key from the map.
         // .remove returns the previous value associated with the key, or null if it did
         // not exist.
-        if (classItems.remove(classItemName) != null) {
+        if (classItems.containsKey(key)) {
+            //retrive the classItem object to be removed
+            ClassItem classItem = classItems.get(key);
+            //remove the item from the list
+            classItems.remove(key);
+            // fire support for deleted class item
+            classItem.support.firePropertyChange("removeBox", classItemName, null);
+            //classItems.remove(classItemName) != null
             // need to delete relationships corresponding to ClassItem that got removed
             // this goes through all entries and if the key contains the class name, which
             // it should, it gets removed.
-            relationships.entrySet().removeIf(entry -> entry.getKey().contains(classItemName));
+            relationships.entrySet().removeIf(entry -> entry.getKey().contains(key));
+
 
             return "good";
         } else {
@@ -242,6 +314,13 @@ public class ClassItem {
         // insert new method item into map
         classItem.getMethodItems().put(methodName, newMethod);
 
+        // add classItem as a listener to the new method for parameter changes
+        newMethod.addPropertyChangeListener(classItem);
+
+        // fire support for added method item
+        classItem.support.firePropertyChange("method", returnType, newMethod);
+
+
         // return successful add of method
         return "good";
     }
@@ -264,6 +343,7 @@ public class ClassItem {
 
         // remove method item from hash map
         classItem.getMethodItems().remove(methodName);
+        classItem.support.firePropertyChange("method", classItem, methodName);
 
         // return successful removal of method
         return "good";
@@ -297,6 +377,8 @@ public class ClassItem {
 
             // add new method item to class
             classItem.getMethodItems().put(newName, newMethod);
+            // fire support for renamed method item
+            classItem.support.firePropertyChange("method", oldName, newName);
 
             // return success
             return "good";
@@ -321,6 +403,8 @@ public class ClassItem {
 
             // changes the type of the method
             newMethod.setType(newType);
+            // fire support for retype method
+            classItem.support.firePropertyChange("method", newType, newMethod); // fire property change
 
             // return success
             return "good";
@@ -352,6 +436,8 @@ public class ClassItem {
 
         // add new field item to map
         classItem.getFieldItems().put(fieldName, newField);
+        // fire support for added field item
+        classItem.support.firePropertyChange("field", type, newField);
 
         return "good";
     }
@@ -372,6 +458,8 @@ public class ClassItem {
 
         // remove field from map
         classItem.getFieldItems().remove(fieldName);
+        // fire support for removed field item
+        classItem.support.firePropertyChange("field", classItem, fieldName);
 
         return "Field name: " + fieldName + " successfully removed.";
     }
@@ -404,6 +492,8 @@ public class ClassItem {
 
             // add new field item into map
             classItem.getFieldItems().put(newName, newField);
+            // fire support for renamed field item
+            classItem.support.firePropertyChange("field", newName, newField);
 
             return "good";
         } else {
@@ -427,6 +517,8 @@ public class ClassItem {
 
             // set field objects type to new type
             Field.setType(newType);
+            // fire support for retype field item
+            classItem.support.firePropertyChange("field", newType, Field);
 
             return "good";
         } else {
@@ -436,5 +528,23 @@ public class ClassItem {
 
     public String toString() {
         return this.name;
+    }
+
+    // Property Change Listener methods
+    public void addPropertyChangeListener(PropertyChangeListener listener) {
+        support.addPropertyChangeListener(listener);
+    }
+
+    public void removePropertyChangeListener(PropertyChangeListener listener) {
+        support.removePropertyChangeListener(listener);
+    }
+
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        support.firePropertyChange(evt.getPropertyName(), evt.getOldValue(), evt.getNewValue());
+    }
+
+    public PropertyChangeSupport getSupport() {
+        return support;
     }
 };
