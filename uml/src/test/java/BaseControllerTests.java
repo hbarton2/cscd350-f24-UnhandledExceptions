@@ -73,7 +73,7 @@ public class BaseControllerTests {
     // ensure that the relationship was added to the data object
     assertTrue(data.getRelationshipItems().containsKey("testclass1_testclass2"));
     // ensure the relationship type is correct
-    assertEquals("aggregation", data.getRelationshipItems().get("testclass1_testclass2").getType());
+    assertEquals("Aggregation", data.getRelationshipItems().get("testclass1_testclass2").getType());
   }
 
   // Test removing a relationship

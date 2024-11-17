@@ -390,6 +390,7 @@ public class ClassBox extends StackPane implements PropertyChangeListener
         }
     }
 
+    //User for the Update() Method
     public void clearMethods()
     {
         @SuppressWarnings("unchecked")
@@ -397,6 +398,7 @@ public class ClassBox extends StackPane implements PropertyChangeListener
         methodsList.getItems().clear();
     }
 
+    //Used for the Update() Method
     public void addMethod(String methodName, String methodType, ObservableList<String> params)
     {
         TitledPane newMethodPane = createNewMethod(methodName, methodType);  //create new box with list for params
@@ -408,6 +410,30 @@ public class ClassBox extends StackPane implements PropertyChangeListener
         methodParamList.setItems(params);
     }
 
+    /**
+     * Creates and returns a {@link TitledPane} for managing methods. The pane includes
+     * a list of methods represented by individual {@code TitledPane} objects and a button
+     * for adding new methods.
+     *
+     * <p>The {@code TitledPane} contains:
+     * <ul>
+     *   <li>A title bar with a "Methods" label and an "Add Method" button.</li>
+     *   <li>A {@link ListView} to display individual method panes.</li>
+     * </ul>
+     * </p>
+     *
+     * <p>Key Features:
+     * <ul>
+     *   <li>Allows the addition of new methods via an input dialog. The user inputs the method's 
+     *       name and type, and the model is updated using {@code baseController.AddMethodListener()}.</li>
+     *   <li>Displays error messages if invalid input is provided or the addition fails.</li>
+     *   <li>Applies custom styling to the pane and its components using predefined CSS classes.</li>
+     *   <li>Sets up spacing and alignment for the title bar's label and button.</li>
+     * </ul>
+     * </p>
+     *
+     * @return the configured {@code TitledPane} for managing methods.
+     */
     public TitledPane createMethodPane() {
         // Create TitledPane for methods
         methodsPane = new TitledPane();
@@ -425,7 +451,6 @@ public class ClassBox extends StackPane implements PropertyChangeListener
         // when pressed, open dialog for user input
         addMethodsButton.setOnAction(e -> {
             Pair<String, String> result = createInputDialogs("Method");
-            //TODO: functionalty to update model
             if(result != null){
                 String type = result.getKey().toLowerCase();
                 String name = result.getValue().toLowerCase();
@@ -459,6 +484,35 @@ public class ClassBox extends StackPane implements PropertyChangeListener
         return methodsPane;
     }
 
+    /**
+     * Creates a new {@link TitledPane} to represent a method with its type, name, 
+     * and a list of parameters. The pane provides functionality to add new parameters 
+     * and edit the method's name, type, or parameters via double-click actions.
+     *
+     * <p>The {@code TitledPane} includes:
+     * <ul>
+     *   <li>A title bar with the method type, name, and an "Add Parameter" button.</li>
+     *   <li>A {@link ListView} to display the method's parameters.</li>
+     *   <li>Double-click functionality for renaming the method's type, name, or parameters.</li>
+     * </ul>
+     * </p>
+     *
+     * <p>Key Features:
+     * <ul>
+     *   <li>Allows the addition of new parameters using an input dialog. Updates the model via 
+     *       {@code baseController.AddParameterListener()}.</li>
+     *   <li>Supports double-click actions to edit existing parameters by invoking the 
+     *       {@code UpdateParam()} method.</li>
+     *   <li>Allows editing of the method's name and type via double-click events, calling 
+     *       {@code MethodNameClicked()} and {@code MethodTypeClicked()}, respectively.</li>
+     *   <li>Validates all input and displays errors for invalid or failed updates.</li>
+     * </ul>
+     * </p>
+     *
+     * @param methodName the name of the method.
+     * @param methodType the return type of the method.
+     * @return the configured {@code TitledPane} for the method.
+     */
     private TitledPane createNewMethod(String methodName, String methodType) {
         TitledPane singleMethodPane = new TitledPane();
         singleMethodPane.setExpanded(true);
@@ -473,7 +527,6 @@ public class ClassBox extends StackPane implements PropertyChangeListener
         ObservableList<String> params = FXCollections.observableArrayList();
         methodParamList.setItems(params);
 
-        // TODO: fix issue where setting content here causes the list to be able to be
         // expanded without items in it. set after an item is added?
         singleMethodPane.setContent(methodParamList);
 
@@ -485,8 +538,8 @@ public class ClassBox extends StackPane implements PropertyChangeListener
             Pair<String, String> userInput = createInputDialogs("Parameters");
 
             if(userInput != null){
-                String type = userInput.getKey().toLowerCase();
-                String name = userInput.getValue().toLowerCase();
+                String type = (userInput.getKey() == null) ? null : userInput.getKey().toLowerCase();
+                String name = (userInput.getValue() == null) ? null : userInput.getValue().toLowerCase();
                 //String typeName = type + " " + name;    
                 String result = baseController.AddParameterListener(className, methodName, type, name);   
                 if (!(result == "good"))
@@ -507,15 +560,14 @@ public class ClassBox extends StackPane implements PropertyChangeListener
                     // Split the selected item to get old name and type
                     String[] parts = selectedItem.split(" "); // Assuming the format is "name - type"
                     if (parts.length == 2) {
-                        //String oldParamType = parts[0].trim();
                         String oldParamName = parts[1].trim();
-
+                        String oldParamType = parts[0].trim();
                         // Create input dialog to get new name and type
                         Pair<String, String> userInput = createInputDialogs("Field");
 
-                        if (userInput != null) {
-                            String newParamName = userInput.getValue().toLowerCase();
-                            String newParamType = userInput.getKey().toLowerCase();
+                        if (userInput != null) {    //user inputs some data
+                            String newParamName = (userInput.getValue() == null) ? oldParamName : userInput.getValue();
+                            String newParamType = (userInput.getKey() == null) ? oldParamType : userInput.getKey();
 
                             // Call UpdateField to update the model
                             UpdateParam(methodName, newParamName, oldParamName, newParamType);
@@ -548,28 +600,55 @@ public class ClassBox extends StackPane implements PropertyChangeListener
 
         titleBox.setAlignment(Pos.CENTER_LEFT);
         titleBox.getStyleClass().add("fields-title-box");
-        titleBox.getChildren().addAll(singleMethodName, singleMethodType, addParamsButton);
+        titleBox.getChildren().addAll(singleMethodType, singleMethodName, addParamsButton);
         singleMethodPane.setGraphic(titleBox);
         ;
 
         return singleMethodPane;
     }
 
+    /**
+     * Updates a parameter of a method in the model by renaming it and/or changing its type.
+     * Validates the input and updates the UI if the operation succeeds. Displays error
+     * messages if validation fails or an update operation is unsuccessful.
+     *
+     * <p>Key Features:
+     * <ul>
+     *   <li>Renames the parameter using {@code baseController.RenameParameterListener()} if 
+     *       the new parameter name is different from the old one.</li>
+     *   <li>Changes the parameter type using {@code baseController.RetypeParameterListener()}.</li>
+     *   <li>Updates the UI by calling {@code Update()} if both operations are successful.</li>
+     *   <li>Displays an appropriate error message if either operation fails.</li>
+     *   <li>Ensures that neither the new parameter name nor type is blank before attempting 
+     *       any updates.</li>
+     * </ul>
+     * </p>
+     *
+     * @param methodName   the name of the method to which the parameter belongs.
+     * @param newParamName the new name for the parameter.
+     * @param oldParamName the current name of the parameter.
+     * @param newParamType the new type for the parameter.
+     */
     private void UpdateParam(String methodName, String newParamName, String oldParamName, String newParamType) {
         // Validate input for new field name and type
         if (newParamName.isBlank() || newParamName.isBlank()) {
-            ClassBox.showError("Field name and type cannot be empty.");
+            ClassBox.showError("Parameter name and type cannot be empty.");
             return;
         }
     
-        // Attempt to rename the field
-        String resultType = baseController.RetypeParameterListener(className, methodName, oldParamName, newParamType);
-        // Attempt to change the field type
-        String resultName = baseController.RenameParameterListener(className, methodName,newParamName, oldParamName);
-        //String resultType = baseController.RetypeFieldListener(className, newParamName, newParamType);
+        String resultName = null;
+
+        // Attempt to retype the param
+         String resultType = baseController.RetypeParameterListener(className, methodName, oldParamName, newParamType);
+
+        //Attempt to rename the param
+        if(!oldParamName.equals(newParamName)){
+            resultName = baseController.RenameParameterListener(className, methodName,newParamName, oldParamName);
+        }
+    
     
         // Check the results for both operations
-        if ("good".equals(resultName) && "good".equals(resultType)) {
+        if (("good".equals(resultName) || resultName == null ) && "good".equals(resultType)) {
             //Update(); // Update the UI if both updates succeeded
         } else {
             // Show the appropriate error message based on which operation failed
@@ -595,6 +674,27 @@ public class ClassBox extends StackPane implements PropertyChangeListener
     }
     */
 
+    /**
+     * Creates and returns a {@link TitledPane} that contains a list of fields with functionality
+     * to add new fields and rename existing ones. The pane includes a label, an add button, and a 
+     * {@link ListView} to display field names. It supports double-clicking a field to rename it 
+     * and updating the model accordingly.
+     *
+     * <p>The {@code TitledPane} is initially collapsed, styled with custom CSS classes, and 
+     * restricted to a maximum height of 150 pixels. Fields can be added via an input dialog, and 
+     * each field is displayed as a combination of its type and name.</p>
+     *
+     * <p>Key Features:
+     * <ul>
+     *   <li>Add new fields using a "+" button. Prompts the user to input a type and name.</li>
+     *   <li>Double-click an existing field to rename it via an input dialog.</li>
+     *   <li>Updates the model using the {@code baseController.AddFieldListener()} method.</li>
+     *   <li>Displays errors if invalid input is provided or if the addition/update fails.</li>
+     * </ul>
+     * </p>
+     *
+     * @return the configured {@code TitledPane} for managing fields.
+     */
     public TitledPane createFieldPane() {
         fieldsPane = new TitledPane();
         fieldsPane.setExpanded(false);
@@ -613,15 +713,22 @@ public class ClassBox extends StackPane implements PropertyChangeListener
         addFieldButton.getStyleClass().add("transparent-button");
         addFieldButton.setOnAction(e -> {
             Pair<String, String> userInput = createInputDialogs("Field");
-    
+            
             if (userInput != null) {
-                String type = userInput.getKey().toLowerCase();
-                String name = userInput.getValue().toLowerCase();
-                if (!type.isBlank() && !name.isBlank()) {
-                    // Update your model with the new field
-                    baseController.AddFieldListener(className, type, name);
-                }
-            } else {
+                String type = (userInput.getKey() == null) ? null : userInput.getKey().toLowerCase();
+                String name = (userInput.getValue() == null) ? null : userInput.getValue().toLowerCase();
+                if (type != null && name != null) {
+                    // Update your model with the new field                    
+                    String result = baseController.AddFieldListener(className, type, name);
+                    if(result.equals("good")){
+                        // Print success message to terminal?
+                    } else {
+                        showError(result);
+                    }
+                } else {
+                    showError("Fields must have both Type and Name");
+                }                
+            } else {  
                 System.out.println("Dialog was canceled");
             }
         });
@@ -634,14 +741,15 @@ public class ClassBox extends StackPane implements PropertyChangeListener
                     // Split the selected item to get old name and type
                     String[] parts = selectedItem.split(" "); // Assuming the format is "name - type"
                     if (parts.length == 2) {
+                        String oldFieldType = parts[0].trim();
                         String oldFieldName = parts[1].trim();
 
                         // Create input dialog to get new name and type
                         Pair<String, String> userInput = createInputDialogs("Field");
 
                         if (userInput != null) {
-                            String newFieldName = userInput.getValue().toLowerCase();
-                            String newFieldType = userInput.getKey().toLowerCase();
+                            String newFieldName = (userInput.getValue() == null) ? oldFieldName : userInput.getValue();
+                            String newFieldType = (userInput.getKey() == null) ? oldFieldType : userInput.getKey();
 
                             // Call UpdateField to update the model
                             UpdateField(oldFieldName, newFieldName, newFieldType);
@@ -667,20 +775,45 @@ public class ClassBox extends StackPane implements PropertyChangeListener
         return fieldsPane;
     }
     
+    /**
+     * Updates a field in the model by renaming it and/or changing its type. 
+     * Validates input for the new field name and type, and performs updates 
+     * through the appropriate listener methods in the controller.
+     *
+     * <p>The method performs the following actions:
+     * <ul>
+     *   <li>Checks that the new field name and type are not blank.</li>
+     *   <li>Attempts to rename the field using {@code baseController.RenameFieldListener()} 
+     *       if the new name is different from the old name.</li>
+     *   <li>Attempts to change the field type using {@code baseController.RetypeFieldListener()}.</li>
+     *   <li>Displays error messages if either operation fails, using {@code ClassBox.showError()}.</li>
+     *   <li>Updates the UI by calling {@code Update()} if both operations succeed.</li>
+     * </ul>
+     * </p>
+     *
+     * @param oldFieldName the current name of the field to be updated.
+     * @param newFieldName the new name for the field. Must not be blank.
+     * @param newFieldType the new type for the field. Must not be blank.
+     */
     private void UpdateField(String oldFieldName, String newFieldName, String newFieldType) {
         // Validate input for new field name and type
         if (newFieldName.isBlank() || newFieldType.isBlank()) {
             ClassBox.showError("Field name and type cannot be empty.");
             return;
         }
-    
+        String resultName = null;
         // Attempt to rename the field
-        String resultName = baseController.RenameFieldListener(className, oldFieldName, newFieldName);
+        if(!oldFieldName.equals(newFieldName)){
+            resultName = baseController.RenameFieldListener(className, oldFieldName, newFieldName);
+        }
         // Attempt to change the field type
         String resultType = baseController.RetypeFieldListener(className, newFieldName, newFieldType);
     
         // Check the results for both operations
-        if (!("good".equals(resultName)) || !("good".equals(resultType))) {
+        if (("good".equals(resultName) || resultName == null ) && "good".equals(resultType)) {
+            Update(); // Update the UI if both updates succeeded
+        } else {
+            // Show the appropriate error message based on which operation failed
             String errorMessage = !resultName.equals("good") ? resultName : resultType;
             showError(errorMessage);
         }
@@ -748,10 +881,22 @@ public class ClassBox extends StackPane implements PropertyChangeListener
     }
 
     
-
+    /**
+     * Displays dialog box prompting the user to enter type and name.
+     * 
+     * <p>This method creates a dialog box with two text input fields for user to input values for type and name.
+     * The dialog box has an "Add" button that is enabled when at least one of the input fields has text.
+     * If either field is left empty when "Add" it pressed, it returns {@code null} for that field in the resulting
+     * {@link Pair}.
+     * 
+     * @param promptName the name of the prompt to display in the dialog title and header.
+     * 
+     * @return a {@link Pair} containing the type and name entered by the user, or {@code null} for any field left
+     * empty. 
+     */
     public Pair<String, String> createInputDialogs(String promptName) {
         Dialog<Pair<String, String>> dialog = new Dialog<>();
-        dialog.setTitle("Add promptName");
+        dialog.setTitle("Add: " + promptName);
         dialog.setHeaderText("Enter the " + promptName.toLowerCase() + " and name.");
 
         // Set the button types
@@ -763,9 +908,6 @@ public class ClassBox extends StackPane implements PropertyChangeListener
         grid.setHgap(10);
         grid.setVgap(10);
         grid.setPadding(new Insets(20, 150, 10, 10));
-
-        // ComboBox<String> typeComboBox = new ComboBox<>();
-        // setupComboBox(typeComboBox);
 
         //Text for type input
         TextField firstInputField = new TextField();
@@ -788,16 +930,18 @@ public class ClassBox extends StackPane implements PropertyChangeListener
 
         // Add listeners to fields to enable Add button when both fields have text
         firstInputField.textProperty().addListener((observable, oldValue, newValue) -> {
-            addButton.setDisable(firstInputField.getText().isEmpty()|| secondInputField.getText().isEmpty());
+            addButton.setDisable(firstInputField.getText().isEmpty()&& secondInputField.getText().isEmpty());
         });
         secondInputField.textProperty().addListener((observable, oldValue, newValue) -> {
-            addButton.setDisable(firstInputField.getText().isEmpty()|| secondInputField.getText().isEmpty());
+            addButton.setDisable(firstInputField.getText().isEmpty()&& secondInputField.getText().isEmpty());
         });
 
         // Convert the result to a pair of strings when the Add button is clicked
         dialog.setResultConverter(dialogButton -> {
             if (dialogButton == addButtonType) {
-                return new Pair<>(firstInputField.getText(), secondInputField.getText());
+                String type = firstInputField.getText().isEmpty() ? null : firstInputField.getText();
+                String name = secondInputField.getText().isEmpty() ? null : secondInputField.getText();
+                return new Pair<>(type, name);
             }
             return null;
         });
@@ -806,16 +950,8 @@ public class ClassBox extends StackPane implements PropertyChangeListener
         return result.orElse(null);  // Returns the result if present, otherwise null
     }
 
-    // public void setupComboBox(ComboBox<String> typeComboBox) {
-    //      // Convert enum values to a List of Strings
-    //     List<String> typeList = Arrays.stream(DataType.values())
-    //         .map(Enum::name) // Convert enum to its string name
-    //         .collect(Collectors.toList());
-
-    //     typeComboBox.getItems().addAll(typeList); // Set the list of DataTypes in the ComboBox
-    //     typeComboBox.setPromptText("Select Type");
-    // }
-
+    
+    // ================================================================================================================================================================
     // method to display an error message
     public static void showError(String errorMessage) {
         // create an alert box
