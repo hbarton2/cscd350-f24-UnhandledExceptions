@@ -538,8 +538,8 @@ public class ClassBox extends StackPane implements PropertyChangeListener
             Pair<String, String> userInput = createInputDialogs("Parameters");
 
             if(userInput != null){
-                String type = (userInput.getKey() != null) ? null : userInput.getKey().toLowerCase();
-                String name = (userInput.getValue() != null) ? null : userInput.getValue().toLowerCase();
+                String type = (userInput.getKey() == null) ? null : userInput.getKey().toLowerCase();
+                String name = (userInput.getValue() == null) ? null : userInput.getValue().toLowerCase();
                 //String typeName = type + " " + name;    
                 String result = baseController.AddParameterListener(className, methodName, type, name);   
                 if (!(result == "good"))
@@ -632,18 +632,20 @@ public class ClassBox extends StackPane implements PropertyChangeListener
     private void UpdateParam(String methodName, String newParamName, String oldParamName, String newParamType) {
         // Validate input for new field name and type
         if (newParamName.isBlank() || newParamName.isBlank()) {
-            ClassBox.showError("Field name and type cannot be empty.");
+            ClassBox.showError("Parameter name and type cannot be empty.");
             return;
         }
     
         String resultName = null;
-         // Attempt to change the field type
+
+        // Attempt to retype the param
+         String resultType = baseController.RetypeParameterListener(className, methodName, oldParamName, newParamType);
+
+        //Attempt to rename the param
         if(!oldParamName.equals(newParamName)){
             resultName = baseController.RenameParameterListener(className, methodName,newParamName, oldParamName);
         }
-        // Attempt to rename the field
-        String resultType = baseController.RetypeParameterListener(className, methodName, oldParamName, newParamType);
-        //String resultType = baseController.RetypeFieldListener(className, newParamName, newParamType);
+    
     
         // Check the results for both operations
         if (("good".equals(resultName) || resultName == null ) && "good".equals(resultType)) {
