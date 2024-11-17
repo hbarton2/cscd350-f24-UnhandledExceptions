@@ -8,6 +8,7 @@ import javax.swing.JPanel;
 import com.unhandledexceptions.Controller.BaseController;
 
 import javafx.application.Platform;
+import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
@@ -261,68 +262,123 @@ public class RelationLine extends Polyline
         toBack();
         getPoints().clear();
 
-        //get pre-start
         double preX = startX, firstX = startX;
         double preY = startY, firstY = startY;
+        double postX = endX, lastX = endX;
+        double postY = endY, lastY = endY;
+        Bounds sourceBounds = source.getBoundsInParent();
+        Bounds destBounds = dest.getBoundsInParent();
+        enum side {N,E,S,W};
+        side sourceSide = side.N, destSide = side.N;
+
+        //get pre-start
         if (sourceOffset.getX() < 0)
         {
             firstX = startX - 20;
             preX = startX + 10;
+            sourceSide = side.W;
+            typeIcon.setRotate(0);
         }
         else if (sourceOffset.getX() > source.getWidth())
         {
             firstX = startX + 20;
             preX = startX - 10;
+            sourceSide = side.E;
+            typeIcon.setRotate(180);
         }
         else if (sourceOffset.getY() < 0)
         {
             firstY = startY - 20;
             preY = startY + 10;
             typeIcon.setRotate(90);
+            sourceSide = side.N;
         }
         else if (sourceOffset.getY() > source.getHeight())
         {
             firstY = startY + 20;
             preY = startY - 10;
             typeIcon.setRotate(-90);
+            sourceSide = side.S;
         }
 
+        //get post-end
+        if (source != dest)
+        {
+            if (destOffset.getX() < 0)
+            {
+                lastX = endX - 20;
+                postX = endX + 10;
+                if (type.equals("Generalization") || type.equals("Realization")) typeIcon.setRotate(0);
+                destSide = side.W;
+            }
+            else if (destOffset.getX() > dest.getWidth())
+            {
+                lastX = endX + 20;
+                postX = endX - 10;
+                if (type.equals("Generalization") || type.equals("Realization"))typeIcon.setRotate(180);
+                destSide = side.E;
+            }
+            else if (destOffset.getY() < 0)
+            {
+                lastY = endY - 20;
+                postY = endY + 10;
+                if (type.equals("Generalization") || type.equals("Realization"))typeIcon.setRotate(90);
+                destSide = side.N;
+            }
+            else if (destOffset.getY() > dest.getHeight())
+            {
+                lastY = endY + 20;
+                postY = endY - 10;
+                if (type.equals("Generalization") || type.equals("Realization"))typeIcon.setRotate(-90);
+                destSide = side.S;
+            }
+        }
+
+        //set pre-start point
         getPoints().add(preX);
         getPoints().add(preY);
 
+        //set first real point
         getPoints().add(firstX);
         getPoints().add(firstY);
 
-        //get post-end
-        double postX = endX, lastX = endX;
-        double postY = endY, lastY = endY;
-        if (destOffset.getX() < 0)
+        //middle for source top
+        if (sourceSide == side.N)
         {
-            lastX = endX - 20;
-            postX = endX + 10;
-            typeIcon.setRotate(0);
+            if (lastY > firstY)
+            {
+                if (lastX < firstX)
+                    getPoints().add(sourceBounds.getMinX() - 20);
+                else
+                    getPoints().add(sourceBounds.getMaxX() + 20);
+
+                getPoints().add(firstY);
+
+                //getPoints().add(sourceBounds.getMaxX() + 20);
+                //getPoints().add(lastY);
+            }
+            getPoints().add(getPoints().get(getPoints().size() - 2));
+            getPoints().add(lastY);
         }
-        else if (destOffset.getX() > dest.getWidth())
+        else if (sourceSide == side.E)
         {
-            lastX = endX + 20;
-            postX = endX - 10;
-            typeIcon.setRotate(180);
+
         }
-        else if (destOffset.getY() < 0)
+        else if (sourceSide == side.S)
         {
-            lastY = endY - 20;
-            postY = endY + 10;
-            typeIcon.setRotate(90);
+            getPoints().add(firstX);
+            getPoints().add(lastY);
         }
-        else if (destOffset.getY() > dest.getHeight())
+        else if (sourceSide == side.W)
         {
-            lastY = endY + 20;
-            postY = endY - 10;
-            typeIcon.setRotate(-90);
+
         }
 
+
+        //get post-end
         if (source != dest)
         {
+            //set final 2 points (dragging a classbox)
             getPoints().add(lastX);
             getPoints().add(lastY);
             getPoints().add(postX);
@@ -330,88 +386,10 @@ public class RelationLine extends Polyline
         }
         else
         {
-            getPoints().add(endX);
-            getPoints().add(endY);
+            //set final point (placing the line with the mouse)
+            getPoints().add(lastX);
+            getPoints().add(lastY);
         }
-
-        // //start
-        // if (type.equals("Aggregation") || type.equals("Composition"))
-        // {
-        //     double angle = Math.atan2(startY, startX);
-
-        //     //type shape
-        //     int offset = 20;
-        //     shape.getPoints().clear();
-
-        //     shape.getPoints().add(startX - (offset) * Math.cos(angle));
-        //     shape.getPoints().add(startY - (offset) * Math.sin(angle));
-
-        //     shape.getPoints().add(startX + (offset/2) * Math.cos(angle + Math.PI / 2));
-        //     shape.getPoints().add(startY + (offset/2) * Math.sin(angle + Math.PI / 2));
-
-        //     shape.getPoints().add(startX + (offset) * Math.cos(angle));
-        //     shape.getPoints().add(startY + (offset) * Math.sin(angle));
-
-        //     shape.getPoints().add(startX + (offset/2) * Math.cos(angle - Math.PI / 2));
-        //     shape.getPoints().add(startY + (offset/2) * Math.sin(angle - Math.PI / 2));
-
-        //     startX = startX - (offset) * Math.cos(angle);
-        //     startY = startY - (offset) * Math.sin(angle);
-        // }
-        // getPoints().add(startX);
-        // getPoints().add(startY);
-
-        // //middle for top anchor
-
-        // if (endY > startY)
-        // {
-        //     double shift = source.getWidth() / 2;
-        //     if (endX < startX)
-        //         shift = shift * -1;
-        //     getPoints().add(startX + shift);
-        //     getPoints().add(startY);
-        // }
-        // getPoints().add(getPoints().get(getPoints().size() - 2));
-        // getPoints().add(endY);
-
-        // //end
-        // getPoints().add(endX);
-        // getPoints().add(endY);
-
-        // if (source != dest)
-        // {
-        //     if (type.equals("Generalization") || type.equals("Realization"))
-        //     {
-        //         int offset = 10;
-
-        //         double aimX = dest.getLayoutX() + dest.getWidth() / 2;
-        //         double aimY = dest.getLayoutY() + dest.getHeight() / 2;
-        //         double angle = Math.atan2(aimY - endY, aimX - endX);
-
-        //         endX = (endX + 5 * Math.cos(angle));
-        //         endY = (endY + 5 * Math.sin(angle));
-
-        //         getPoints().add(endX);
-        //         getPoints().add(endY);
-
-        //         //type shape
-        //         shape.getPoints().clear();
-
-        //         shape.getPoints().add(endX + (offset) * Math.cos(angle + Math.PI / 2));
-        //         shape.getPoints().add(endY + (offset) * Math.sin(angle + Math.PI / 2));
-
-        //         shape.getPoints().add(endX + (offset) * Math.cos(angle));
-        //         shape.getPoints().add(endY + (offset) * Math.sin(angle));
-
-        //         shape.getPoints().add(endX + (offset) * Math.cos(angle - Math.PI / 2));
-        //         shape.getPoints().add(endY + (offset) * Math.sin(angle - Math.PI / 2));
-        //     }
-        //     else
-        //     {
-        //         getPoints().add(dest.getLayoutX() + dest.getWidth() / 2);
-        //         getPoints().add(dest.getLayoutY() + dest.getHeight() / 2);
-        //     }
-        // }
 
         //extra parts
         if (type.equals("Aggregation") || type.equals("Composition"))
@@ -428,7 +406,7 @@ public class RelationLine extends Polyline
             ranchor.setCenterX(startX);
             ranchor.setCenterY(startY);
         }
-
+        
         //misc "Aggregation", "Composition", "Generalization", "Realization"
         typeIcon.setVisible(true);
         ranchor.setVisible(true);

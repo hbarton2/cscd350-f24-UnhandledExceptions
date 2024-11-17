@@ -300,7 +300,7 @@ public class mainDiagramController
         for (Node node : anchorPane.getChildren()) {
             if (node instanceof RelationLine) {
                 RelationLine line = (RelationLine) node;
-                line.mouseMoved(event);
+                //line.mouseMoved(event);
             }
             if (node instanceof ClassBox) {
                 ClassBox classBox = (ClassBox) node;
