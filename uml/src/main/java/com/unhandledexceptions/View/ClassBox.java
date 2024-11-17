@@ -59,14 +59,18 @@ public class ClassBox extends StackPane
     AnchorPane anchorPane;
     TitledPane methodsPane;
     TitledPane fieldsPane;
+    private ClassItem classItem; // ClassItem object associated with the ClassBox to add listeners
 
     public ClassBox(AnchorPane anchorPane, BaseController baseController, String classNameIn, double boxWidth,
-     double boxHeight, Rectangle[] ranchors)
+     double boxHeight, Rectangle[] ranchors, ClassItem classItem)
     {
         this.anchorPane = anchorPane;
         this.baseController = baseController;
         this.className = classNameIn;
         this.ranchors = ranchors;
+        this.classItem = classItem;
+        this.classItem.addPropertyChangeListener(this);
+        // createClassBox(classNameIn, boxWidth, boxHeight);
     }
 
     public void Remove(AnchorPane anchorPane)
@@ -76,7 +80,7 @@ public class ClassBox extends StackPane
 
     public void Update()
     {
-        ClassItem classItem = baseController.getData().getClassItems().get(className);
+        ClassItem classItem = baseController.getData().getClassItems().get(className.toLowerCase().trim());
         if (classItem == null)
         {
             //remove any relationlines
