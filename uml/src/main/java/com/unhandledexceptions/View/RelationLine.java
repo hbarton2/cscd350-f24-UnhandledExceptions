@@ -27,7 +27,7 @@ import javafx.scene.transform.Transform;
 
 public class RelationLine extends Polyline
 {
-    private Point2D sourceLoc, destLoc;
+    private Point2D sourceOffset, destOffset;
     // classboxes that the relation line connects
     private ClassBox source, dest;
     // type of relationship (Aggregation, Composition, Generalization, Realization)
@@ -191,8 +191,8 @@ public class RelationLine extends Polyline
         String c2Name = dest.getClassName().toLowerCase().trim();
 
         baseController.AddRelationshipListener(c1Name, c2Name, type);
-        baseController.getData().getRelationshipItems().get(c1Name + "_" + c2Name).setSourceLoc(sourceLoc);
-        baseController.getData().getRelationshipItems().get(c1Name + "_" + c2Name).setDestLoc(destLoc);
+        baseController.getData().getRelationshipItems().get(c1Name + "_" + c2Name).setSourceLoc(sourceOffset);
+        baseController.getData().getRelationshipItems().get(c1Name + "_" + c2Name).setDestLoc(destOffset);
     }
 
     /*
@@ -207,10 +207,10 @@ public class RelationLine extends Polyline
     {
         Platform.runLater(new Runnable() {
             @Override public void run() {
-                double startX = sourceLoc.getX() / scaleTransform.getX();
-                double startY = (sourceLoc.getY() - 25) / scaleTransform.getY();
-                double endX = destLoc.getX() / scaleTransform.getX();
-                double endY = (destLoc.getY() - 25) / scaleTransform.getY();
+                double startX = (source.getLayoutX() + sourceOffset.getX()) / scaleTransform.getX();
+                double startY = ((source.getLayoutY() + sourceOffset.getY())) / scaleTransform.getY();
+                double endX = (dest.getLayoutX() + destOffset.getX()) / scaleTransform.getX();
+                double endY = ((dest.getLayoutY() + destOffset.getY())) / scaleTransform.getY();
                 update(startX, startY, endX, endY);
             }
         });
@@ -227,10 +227,10 @@ public class RelationLine extends Polyline
     {
         Platform.runLater(new Runnable() {
             @Override public void run() {
-                double startX = sourceLoc.getX() / scaleTransform.getX();
-                double startY = (destLoc.getY() - 25) / scaleTransform.getY();
-                double endX = event.getSceneX() / scaleTransform.getX();
-                double endY = event.getSceneY() / scaleTransform.getY();
+                double startX = (source.getLayoutX() + sourceOffset.getX()) / scaleTransform.getX();
+                double startY = ((source.getLayoutY() + sourceOffset.getY())) / scaleTransform.getY();
+                double endX = event.getX() / scaleTransform.getX();
+                double endY = event.getY() / scaleTransform.getY();
                 update(startX, startY, endX, endY);
             }
         });
@@ -251,84 +251,89 @@ public class RelationLine extends Polyline
         getPoints().clear();
         shape.getPoints().clear();
 
-        //start
-        if (type.equals("Aggregation") || type.equals("Composition"))
-        {
-            double angle = Math.atan2(startY, startX);
-
-            //type shape
-            int offset = 20;
-            shape.getPoints().clear();
-
-            shape.getPoints().add(startX - (offset) * Math.cos(angle));
-            shape.getPoints().add(startY - (offset) * Math.sin(angle));
-
-            shape.getPoints().add(startX + (offset/2) * Math.cos(angle + Math.PI / 2));
-            shape.getPoints().add(startY + (offset/2) * Math.sin(angle + Math.PI / 2));
-
-            shape.getPoints().add(startX + (offset) * Math.cos(angle));
-            shape.getPoints().add(startY + (offset) * Math.sin(angle));
-
-            shape.getPoints().add(startX + (offset/2) * Math.cos(angle - Math.PI / 2));
-            shape.getPoints().add(startY + (offset/2) * Math.sin(angle - Math.PI / 2));
-
-            startX = startX - (offset) * Math.cos(angle);
-            startY = startY - (offset) * Math.sin(angle);
-        }
         getPoints().add(startX);
         getPoints().add(startY);
-
-        //middle for top anchor
-
-        if (endY > startY)
-        {
-            double shift = source.getWidth() / 2;
-            if (endX < startX)
-                shift = shift * -1;
-            getPoints().add(startX + shift);
-            getPoints().add(startY);
-        }
-        getPoints().add(getPoints().get(getPoints().size() - 2));
-        getPoints().add(endY);
-
-        //end
         getPoints().add(endX);
         getPoints().add(endY);
 
-        if (source != dest)
-        {
-            if (type.equals("Generalization") || type.equals("Realization"))
-            {
-                int offset = 10;
+        // //start
+        // if (type.equals("Aggregation") || type.equals("Composition"))
+        // {
+        //     double angle = Math.atan2(startY, startX);
 
-                double aimX = dest.getLayoutX() + dest.getWidth() / 2;
-                double aimY = dest.getLayoutY() + dest.getHeight() / 2;
-                double angle = Math.atan2(aimY - endY, aimX - endX);
+        //     //type shape
+        //     int offset = 20;
+        //     shape.getPoints().clear();
 
-                endX = (endX + 5 * Math.cos(angle));
-                endY = (endY + 5 * Math.sin(angle));
+        //     shape.getPoints().add(startX - (offset) * Math.cos(angle));
+        //     shape.getPoints().add(startY - (offset) * Math.sin(angle));
 
-                getPoints().add(endX);
-                getPoints().add(endY);
+        //     shape.getPoints().add(startX + (offset/2) * Math.cos(angle + Math.PI / 2));
+        //     shape.getPoints().add(startY + (offset/2) * Math.sin(angle + Math.PI / 2));
 
-                //type shape
-                shape.getPoints().clear();
+        //     shape.getPoints().add(startX + (offset) * Math.cos(angle));
+        //     shape.getPoints().add(startY + (offset) * Math.sin(angle));
 
-                shape.getPoints().add(endX + (offset) * Math.cos(angle + Math.PI / 2));
-                shape.getPoints().add(endY + (offset) * Math.sin(angle + Math.PI / 2));
+        //     shape.getPoints().add(startX + (offset/2) * Math.cos(angle - Math.PI / 2));
+        //     shape.getPoints().add(startY + (offset/2) * Math.sin(angle - Math.PI / 2));
 
-                shape.getPoints().add(endX + (offset) * Math.cos(angle));
-                shape.getPoints().add(endY + (offset) * Math.sin(angle));
+        //     startX = startX - (offset) * Math.cos(angle);
+        //     startY = startY - (offset) * Math.sin(angle);
+        // }
+        // getPoints().add(startX);
+        // getPoints().add(startY);
 
-                shape.getPoints().add(endX + (offset) * Math.cos(angle - Math.PI / 2));
-                shape.getPoints().add(endY + (offset) * Math.sin(angle - Math.PI / 2));
-            }
-            else
-            {
-                getPoints().add(dest.getLayoutX() + dest.getWidth() / 2);
-                getPoints().add(dest.getLayoutY() + dest.getHeight() / 2);
-            }
-        }
+        // //middle for top anchor
+
+        // if (endY > startY)
+        // {
+        //     double shift = source.getWidth() / 2;
+        //     if (endX < startX)
+        //         shift = shift * -1;
+        //     getPoints().add(startX + shift);
+        //     getPoints().add(startY);
+        // }
+        // getPoints().add(getPoints().get(getPoints().size() - 2));
+        // getPoints().add(endY);
+
+        // //end
+        // getPoints().add(endX);
+        // getPoints().add(endY);
+
+        // if (source != dest)
+        // {
+        //     if (type.equals("Generalization") || type.equals("Realization"))
+        //     {
+        //         int offset = 10;
+
+        //         double aimX = dest.getLayoutX() + dest.getWidth() / 2;
+        //         double aimY = dest.getLayoutY() + dest.getHeight() / 2;
+        //         double angle = Math.atan2(aimY - endY, aimX - endX);
+
+        //         endX = (endX + 5 * Math.cos(angle));
+        //         endY = (endY + 5 * Math.sin(angle));
+
+        //         getPoints().add(endX);
+        //         getPoints().add(endY);
+
+        //         //type shape
+        //         shape.getPoints().clear();
+
+        //         shape.getPoints().add(endX + (offset) * Math.cos(angle + Math.PI / 2));
+        //         shape.getPoints().add(endY + (offset) * Math.sin(angle + Math.PI / 2));
+
+        //         shape.getPoints().add(endX + (offset) * Math.cos(angle));
+        //         shape.getPoints().add(endY + (offset) * Math.sin(angle));
+
+        //         shape.getPoints().add(endX + (offset) * Math.cos(angle - Math.PI / 2));
+        //         shape.getPoints().add(endY + (offset) * Math.sin(angle - Math.PI / 2));
+        //     }
+        //     else
+        //     {
+        //         getPoints().add(dest.getLayoutX() + dest.getWidth() / 2);
+        //         getPoints().add(dest.getLayoutY() + dest.getHeight() / 2);
+        //     }
+        // }
 
         //misc
         setStrokeWidth(3);
@@ -364,18 +369,28 @@ public class RelationLine extends Polyline
         return this.dest;
     }
 
+    public Point2D getSourceOffset()
+    {
+        return this.sourceOffset;
+    }
+
+    public Point2D getDestOffset()
+    {
+        return this.destOffset;
+    }
+
     /*
      * This method sets the start of the relationship line.
      * 
      * @param classBox the classbox that the relationship line starts from
      * @param index the index of the relationship anchor that the relationship line starts from
      */
-    public void setStart(ClassBox classBox, Point2D loc)
+    public void setStart(ClassBox classBox, Point2D offset)
     {
         this.source = classBox;
-        this.sourceLoc = loc;
+        this.sourceOffset = offset;
         this.dest = source;
-        this.destLoc = new Point2D(classBox.getLayoutX(), classBox.getLayoutY());
+        this.destOffset = offset;
     }
 
     /*
@@ -384,9 +399,9 @@ public class RelationLine extends Polyline
      * @param classBox the classbox that the relationship line ends at
      * @param index the index of the relationship anchor that the relationship line ends at
      */
-    public void setEnd(ClassBox classBox, Point2D loc)
+    public void setEnd(ClassBox classBox, Point2D offset)
     {
         this.dest = classBox;
-        this.destLoc = loc;
+        this.destOffset = offset;
     }
 }

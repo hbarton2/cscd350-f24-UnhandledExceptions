@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
 import com.unhandledexceptions.Model.ClassItem;
 import com.unhandledexceptions.Model.Data;
@@ -22,7 +23,6 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.Node;
-import javafx.scene.shape.Rectangle;
 import javafx.scene.transform.Scale;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.input.MouseButton;
@@ -186,29 +186,37 @@ public class mainDiagramController
        
         anchorPane.getChildren().add(classBox);
 
-        classBox.setOnMouseClicked(event -> {
-                event.consume();
-            });
+        classBox.setOnMouseMoved(event -> {
+            classBox.getRanchor().setVisible(false);
+            event.consume();
+        });
+        classBox.setOnMouseClicked(event -> event.consume());
+
         // setup mouse drag
         classBox.getDragBox().setOnMousePressed(event -> {
                 classBox.toFront();
                 offsetX = (event.getSceneX() / scaleTransform.getX()) - classBox.getLayoutX();
                 offsetY = (event.getSceneY() / scaleTransform.getY()) - classBox.getLayoutY();
                 event.consume();
-            });
+        });
     
-            classBox.getDragBox().setOnMouseDragged(event -> {
-                double newX = (event.getSceneX() / scaleTransform.getX()) - offsetX;
-                double newY = (event.getSceneY() / scaleTransform.getY()) - offsetY;
-            
-                classBox.setLayoutX(newX);
-                classBox.setLayoutY(newY);
-                data.getClassItems().get(classBox.getClassName().toLowerCase().trim()).setX(newX);
-                data.getClassItems().get(classBox.getClassName().toLowerCase().trim()).setY(newY);
+        classBox.getDragBox().setOnMouseDragged(event -> {
+            double newX = (event.getSceneX() / scaleTransform.getX()) - offsetX;
+            double newY = (event.getSceneY() / scaleTransform.getY()) - offsetY;
+        
+            classBox.setLayoutX(newX);
+            classBox.setLayoutY(newY);
+            data.getClassItems().get(classBox.getClassName().toLowerCase().trim()).setX(newX);
+            data.getClassItems().get(classBox.getClassName().toLowerCase().trim()).setY(newY);
 
-                adjustAnchorPaneSize(newX, newY, classBox);
-                updateRelationLines();
-            });
+            adjustAnchorPaneSize(newX, newY, classBox);
+            updateRelationLines();
+        });
+
+        classBox.getRanchor().setOnMouseClicked(event -> {
+            ranchorClick(event, classBox);
+            event.consume();
+        });
 
         return classBox;
     }
@@ -246,13 +254,15 @@ public class mainDiagramController
         {
             placingRelation.Update(scaleTransform, event);
         }
-        else
-        {
-            for (Node node : anchorPane.getChildren()) {
-                if (node instanceof RelationLine) {
-                    RelationLine line = (RelationLine) node;
-                    line.mouseMoved(event);
-                }
+        for (Node node : anchorPane.getChildren()) {
+            if (node instanceof RelationLine) {
+                RelationLine line = (RelationLine) node;
+                line.mouseMoved(event);
+            }
+            if (node instanceof ClassBox) {
+                ClassBox classBox = (ClassBox) node;
+                if (placingRelation == null || placingRelation.getSource() != classBox)
+                    classBox.mouseMoved(event);
             }
         }
     }
@@ -260,6 +270,15 @@ public class mainDiagramController
     // mouse click on background event
     private void mouseClick(MouseEvent event)
     {
+        if (event.isShiftDown())
+        {
+            String name = "newClass" + new Random().nextInt(100000);
+            baseController.AddClassListener(name);
+            ClassBox classBox = addClass(name);
+            classBox.Update();
+            return;
+        }
+
         if (placingRelation != null && event.getButton() == MouseButton.PRIMARY)
         {
             //user is dragging around a relation line and has clicked the background
@@ -274,13 +293,12 @@ public class mainDiagramController
                 try { Thread.sleep(60);
                 } catch (InterruptedException e) { e.printStackTrace(); }
 
-                int i = (placingRelation.getI1() + 2) % 4;
                 double newX = event.getSceneX();
                 double newY = event.getSceneY() - 35;
                 classBox.setLayoutX(newX / scaleTransform.getX());
                 classBox.setLayoutY(newY / scaleTransform.getY());
 
-                placingRelation.setEnd(classBox, i);
+                placingRelation.setEnd(classBox, Point2D.ZERO);
                 placingRelation.Update(scaleTransform);
                 baseController.getCareTaker().Lock();
                 placingRelation.Save(); //update model
@@ -293,7 +311,7 @@ public class mainDiagramController
             //user is dragging around a relation line and has rightclicked the background
             //stop placing the relation line. just delete it
             //need to find an alternative for our right mouse button challenged friends
-            anchorPane.getChildren().remove(placingRelation);
+            placingRelation.Remove(true);
             placingRelation = null;
         }
         else if (placingRelation == null && event.getButton() == MouseButton.PRIMARY)
@@ -309,12 +327,17 @@ public class mainDiagramController
     }
 
     //mouse click on relation anchor event
-    private void ranchorClick(MouseEvent event, ClassBox classBox, int index)
+    private void ranchorClick(MouseEvent event, ClassBox classBox)
     {
+        //get offset
+        double offsetX = classBox.getRanchor().getCenterX() - classBox.getLayoutX();
+        double offsetY = classBox.getRanchor().getCenterY() - classBox.getLayoutY();
+        Point2D offset = new Point2D(offsetX, offsetY);
+
         if (placingRelation == null)
         {
             RelationLine line = new RelationLine(baseController, anchorPane);
-            line.setStart(classBox, index);
+            line.setStart(classBox, offset);
             
             line.Update(scaleTransform, event);
             anchorPane.getChildren().add(line);
@@ -322,7 +345,7 @@ public class mainDiagramController
         }
         else
         {
-            placingRelation.setEnd(classBox, index);
+            placingRelation.setEnd(classBox, offset);
             placingRelation.Update(scaleTransform);
             placingRelation.Save(); //update model
             placingRelation = null;

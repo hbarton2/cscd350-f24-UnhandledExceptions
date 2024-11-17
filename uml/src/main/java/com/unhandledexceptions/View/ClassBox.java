@@ -2,6 +2,7 @@ package com.unhandledexceptions.View;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -29,6 +30,7 @@ import com.unhandledexceptions.Model.ParameterItem;
 import javafx.scene.control.TitledPane;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -36,6 +38,8 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
 import javafx.util.Pair;
 import javafx.scene.control.ButtonBar;
 
@@ -56,6 +60,7 @@ public class ClassBox extends StackPane implements PropertyChangeListener
     AnchorPane anchorPane;
     TitledPane methodsPane;
     TitledPane fieldsPane;
+    Circle ranchor;
     private ClassItem classItem; // ClassItem object associated with the ClassBox to add listeners
 
     public ClassBox(AnchorPane anchorPane, BaseController baseController, String classNameIn, double boxWidth,
@@ -66,6 +71,10 @@ public class ClassBox extends StackPane implements PropertyChangeListener
         this.className = classNameIn;
         this.classItem = classItem;
         this.classItem.addPropertyChangeListener(this);
+        this.ranchor = new Circle(5);
+        this.ranchor.setFill(Color.BLACK);
+        this.ranchor.setVisible(false);
+        anchorPane.getChildren().add(this.ranchor);
         // createClassBox(classNameIn, boxWidth, boxHeight);
     }
 
@@ -89,6 +98,46 @@ public class ClassBox extends StackPane implements PropertyChangeListener
     public AnchorPane getAnchorPane()
     {
         return this.anchorPane;
+    }
+
+    public void mouseMoved(MouseEvent event)
+    {
+        // Get the bounds of the classBox relative to the AnchorPane
+        Bounds classBoxBounds = localToParent(getBoundsInLocal());
+
+        // Check if the mouse is near the classBox
+        double threshold = 100.0; // Distance threshold for "nearby"
+        boolean isNear = classBoxBounds.intersects(event.getX() - threshold, event.getY() - threshold, threshold * 2, threshold * 2);
+
+        if (isNear) 
+        {
+            // Calculate the closest position for the ranchor on the edge of the classBox
+            double closestX = Math.min(Math.max(event.getX(), classBoxBounds.getMinX()), classBoxBounds.getMaxX());
+            double closestY = Math.min(Math.max(event.getY(), classBoxBounds.getMinY()), classBoxBounds.getMaxY());
+    
+            double spacing = 10;
+            
+            // Snap the ranchor to the nearest edge
+            if (event.getX() < classBoxBounds.getMinX() + spacing) {
+                closestX = classBoxBounds.getMinX() - spacing; // Left edge
+            } else if (event.getX() > classBoxBounds.getMaxX() - spacing) {
+                closestX = classBoxBounds.getMaxX() + spacing; // Right edge
+            }
+            if (event.getY() < classBoxBounds.getMinY() + spacing) {
+                closestY = classBoxBounds.getMinY() - spacing; // Top edge
+            } else if (event.getY() > classBoxBounds.getMaxY() - spacing) {
+                closestY = classBoxBounds.getMaxY() + spacing; // Bottom edge
+            }
+    
+            // Set the ranchor's position
+            ranchor.setCenterX(closestX);
+            ranchor.setCenterY(closestY);
+            ranchor.setVisible(true);
+        } 
+        else 
+        {
+            ranchor.setVisible(false); // Hide the ranchor if the mouse is not near
+        }
     }
 
     public void Update()
@@ -175,12 +224,6 @@ public class ClassBox extends StackPane implements PropertyChangeListener
          AnchorPane anchorPane = this.getAnchorPane();
          anchorPane.getChildren().remove(this);
     }
-
-
-    public void setDragBox(VBox dragBox){
-        this.dragBox = dragBox;
-    }
-
 
     private void NameClicked(String oldName, Label className) {
 
@@ -276,6 +319,15 @@ public class ClassBox extends StackPane implements PropertyChangeListener
 
     public VBox getDragBox() {
         return this.dragBox;
+    }
+
+    public void setDragBox(VBox dragBox){
+        this.dragBox = dragBox;
+    }
+
+    public Circle getRanchor()
+    {
+        return this.ranchor;
     }
 
     /* method to create a delete button, sets the action to call

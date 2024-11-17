@@ -65,7 +65,7 @@ public class ClassBoxBasicBuilder implements ClassBoxBuilderInterface {
             TitledPane methodPane = classBox.createMethodPane();
             contentBox.getChildren().add(methodPane);
         }
-        
+
         return classBox;    //returns the classBox
     }
 }
