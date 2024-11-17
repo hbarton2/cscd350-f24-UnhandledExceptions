@@ -80,6 +80,10 @@ public class ClassBox extends StackPane
 
     public void Update()
     {
+        //rename class: NameClicked, renameClassLabel
+        //delete class: createDeleteButton
+
+        //get class item object
         ClassItem classItem = baseController.getData().getClassItems().get(className.toLowerCase().trim());
         if (classItem == null)
         {
@@ -340,6 +344,7 @@ public class ClassBox extends StackPane
         }
         return null;
     }
+    
 
     // method to rename a class box label
     public void renameClassLabel(String newName) {
