@@ -55,7 +55,12 @@ public class ClassItem implements PropertyChangeListener{
     public static ClassItem copyClassItem(ClassItem other) {
         return new ClassItem(other);
     }
-
+    /**
+     * This method is used to add a new class to the classItemList. The classItemList
+     * @param classItems takes in the HashMap of classItems that are currently empty
+     * @param classItemName takes in the name of the class to be added
+     * @return "good" if the class was added successfully, "Class name must be unique." if the class name is already in use.
+     */
     // Used for tester methods and unit tests currently.
     public static String addClassItem(final HashMap<String, ClassItem> classItems, final String classItemName) {
         String name = classItemName.toLowerCase().trim();// forces all classes to be in lower case and trims all leading
@@ -71,6 +76,7 @@ public class ClassItem implements PropertyChangeListener{
             classItems.put(name, createdClass);
             // fire support for added class item
             createdClass.support.firePropertyChange("classItem", null, createdClass);
+            initialPosition(classItems, createdClass);
             return "good";
         } else {
             // if classItemName is already in use in the classItemList that's passed in.
@@ -78,6 +84,11 @@ public class ClassItem implements PropertyChangeListener{
         }
     }
     //randomized locations for the class items will only work up to 23-24 classes in GUI
+    /**
+     * This method is used to set the initial position of the class items on the GUI
+     * @param classItems to take in the data inside the class items
+     * @param classItem to take in the class item object to set the position
+     */
     public static void initialPosition(HashMap<String, ClassItem> classItems, ClassItem classItem) {
         // take in and loop each class item in the map until it's finished
         boolean finished = false;//not finished going though the list of classes
@@ -100,41 +111,69 @@ public class ClassItem implements PropertyChangeListener{
             classItem.setY(y1);
         }
     }
-
+    /**
+     * This method is the getter for the name of the class item
+     * @return the name of the class item
+     */
     public String getName() {
         return this.name;
     }
 
     // private setter method to force condition checking through renameClassItem
     // made public for IO serialization
+    /**
+     * This method is the setter for the name of the class item
+     * @param name to take in the updated or new name of the class item
+     */
     public void setName(String name) {
         this.name = name;
     }
-
+    /**
+     * This method is the getter for the x position of the class item
+     * @return the x position of the class item
+     */
     public double getX() {
         return this.x;
     }
-
+    /**
+     * This method is the setter for the x position of the class item
+     * @param x to take in the updated x position of the class item
+     */
     public void setX(double x) {
         this.x = x;
     }
-
+    /**
+     * This method is the getter for the y position of the class item
+     * @return the y position of the class item
+     */
     public double getY() {
         return this.y;
     }
-
+    /**
+     * This method is the setter for the y position of the class item
+     * @param y to take in the updated y position of the class item
+     */
     public void setY(double y) {
         this.y = y;
     }
-
+    /**
+     * This method is the getter for the field items of the class item
+     * @return the field item from class item
+     */
     public HashMap<String, FieldItem> getFieldItems() {
         return this.fieldItems;
     }
-
+    /**
+     * This method is the setter for the field items of the class item
+     * @param fieldItems to take in the updated field items of the class item
+     */
     public void setFieldItems(HashMap<String, FieldItem> fieldItems) {
         this.fieldItems = fieldItems;
     }
-
+    /**
+     * This method is the getter for the method items of the class item
+     * @return the method item from class item
+     */
     public HashMap<String, MethodItem> getMethodItems() {
         return this.methodItems;
     }
@@ -145,7 +184,19 @@ public class ClassItem implements PropertyChangeListener{
 
     // check that the oldClassItemName exists in the classItemList
     // check that the newClassItemName is available to use
-
+    /**
+     * This method is to take in the class item list, the relationships, the old class item name.
+     * Once the data is taken in, the method will check if the old class item name exists in the class item list.
+     * @throws IllegalArgumentException if the class item list is null
+     * @throws IllegalArgumentException if the old  and new class item names are blank or null
+     * @param classItemList Hashmap value of ClassItem Object to take in the current class item list
+     * @param relationships Hashmap value of RelationshipItem Object to take in any current relationships that exist
+     * @param oldClassItemName String to take in the previous name of the class item
+     * @param newClassItemName String to take in the updated name of the class item
+     * @return "good" if the new class item name is available to use, 
+     * oldClassItemName + " does not exist." if the old class item name does not exist in the class item list, 
+     * and return newClassItemName + " is already in use."; if the new class item name is a duplicate
+     */
     public static String renameClassItem(final HashMap<String, ClassItem> classItemList,
             HashMap<String, RelationshipItem> relationships, final String oldClassItemName,
             final String newClassItemName) {
@@ -223,6 +274,17 @@ public class ClassItem implements PropertyChangeListener{
      * and the map of relationships from main to remove the relationships
      * corresponding to the deleted class
      */
+    /**
+     * This method takes in the HashMap of class items, relaionship items, and the class item name to be removed.
+     * 
+     * @throws IllegalArgumentException if the classItems HashMap is null
+     * @throws IllegalArgumentException if the classItemName String is blank
+     * 
+     * @param classItems HashMap<String, ClassItem> Passes in the HashMap of class items to be worked with
+     * @param relationships HashMap<String, RelationshipItem> Passes in the HashMap of relationships to remove any relationships that contain the class item name
+     * @param classItemName String Passes in the name of the class item to be removed
+     * @return "good" if the class item passed in to remove was not null was removed successfully, "No class with name " + classItemName + " exists." if the class item name does not exist in the class items HashMap
+     */
     public static String removeClassItem(final HashMap<String, ClassItem> classItems,
             HashMap<String, RelationshipItem> relationships, final String classItemName) {
         // precondition checking
@@ -290,6 +352,20 @@ public class ClassItem implements PropertyChangeListener{
     // }
 
     // method to add a new method to the map for this class item
+    /**
+     * This method is used to add a new method to the class item. 
+     * If the method name already exists in the class item, 
+     * it will return a message that the method name is already in use.
+     * Otherwise the value will be added to the map and passed into the UMLObject factory to be created.
+     * 
+     * @throws IllegalArgumentException if the method name is null or blank
+     * 
+     * @param classItem ClassItem object to take in the class item object
+     * @param methodName String to take in the passed in name of the method
+     * @param returnType String to take in the passed in return type of the method
+     * @return "good" if the method was added successfully, 
+     * "Method name: " + methodName + " already in use." if the method name is already in use
+     */
     public static String addMethod(ClassItem classItem, String methodName, String returnType) {
         // preconditions
         if (methodName == null || methodName.isBlank()) {

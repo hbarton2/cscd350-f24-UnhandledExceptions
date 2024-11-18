@@ -32,7 +32,7 @@ public class ParameterItem implements UMLObject {
     } // blank constructor for IO serialization
 
     // constructor
-    public ParameterItem(String type, String parameterName) {
+    public ParameterItem(String parameterName, String type) {
         if (parameterName == null || parameterName.isBlank()) {
             throw new IllegalArgumentException("Type and Parameter name cannot be null or blank - constructor");
         }
@@ -81,7 +81,6 @@ public class ParameterItem implements UMLObject {
         this.type = type;
     }
 
-    // placeholder toString
     @Override
     public String toString() {
         return this.type + " " + this.parameterName;
