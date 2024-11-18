@@ -392,10 +392,11 @@ public class RelationLine extends Polyline
         
         DropShadow shadow = new DropShadow();
 
+        shadow.setOffsetX(1);
+        shadow.setOffsetY(1);
+        shadow.setRadius(1);
+
         if(partyMode){
-            shadow.setOffsetX(5);
-            shadow.setOffsetY(5);
-            shadow.setRadius(5);
             int max = 255;
             int min = 0;
 
