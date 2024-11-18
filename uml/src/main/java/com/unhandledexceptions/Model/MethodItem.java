@@ -1,15 +1,20 @@
 package com.unhandledexceptions.Model;
 
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.util.HashMap;
 
-public class MethodItem {
+public class MethodItem implements UMLObject {
 	private String methodName;
 	// return type for the method
 	private String type;
 	// hash map to store ParamterItem's with their name as the key
 	private HashMap<String, ParameterItem> parameters;
+	// property change support for updating parameter items
+	private final PropertyChangeSupport support = new PropertyChangeSupport(this);
 
-	public MethodItem() {} //blank constructor for IO serialization
+	public MethodItem() {
+	} // blank constructor for IO serialization
 
 	public MethodItem(String methodName, String type) {
 		// preconditions
@@ -28,12 +33,12 @@ public class MethodItem {
 	}
 
 	// getter to retrieve method name
-	public String getMethodName() {
+	public String getName() {
 		return this.methodName;
 	}
 
 	// setter to set method name
-	public void setMethodName(String newName) {
+	public void setName(String newName) {
 		if (newName == null || newName.isBlank()) {
 			return;
 		}
@@ -44,7 +49,7 @@ public class MethodItem {
 	public String getType() {
 		return this.type;
 	}
-	
+
 	public void setType(String newType) {
 		this.type = newType;
 	}
@@ -76,9 +81,13 @@ public class MethodItem {
 		try {
 
 			// create parameter object
-			ParameterItem parameter = new ParameterItem(type, parameterName);
+			// ParameterItem parameter = new ParameterItem(type, parameterName);
+			ParameterItem parameter = UMLObjectFactory.createUMLObject(UMLObjectFactory.ObjectType.PARAMETERITEM,
+					parameterName, type);
 			// insert new parameter item into map
 			methodItem.getParameters().put(parameterName, parameter);
+			// fire property change event
+			methodItem.support.firePropertyChange("parameterChange", null, parameter);
 
 		} catch (IllegalArgumentException e) {
 			return e.getMessage();
@@ -111,13 +120,15 @@ public class MethodItem {
 
 		// remove parameter from map
 		methodItem.getParameters().remove(parameterName);
-
+		// fire property change event
+		methodItem.support.firePropertyChange("parameterChange", null, parameterName);
 		// return successful remove message
 		return "good";
 	}
 
 	// function to change a parameter name
-	public static String changeParameter(MethodItem methodItem, String oldType, String oldName, String newType, String newName) {
+	public static String changeParameter(MethodItem methodItem, String oldType, String oldName, String newType,
+			String newName) {
 		// preconditions
 		if (oldName == null || newName == null || oldName.isBlank() || newName.isBlank()) {
 			throw new IllegalArgumentException("Parameter name cannot be null or blank");
@@ -145,7 +156,8 @@ public class MethodItem {
 
 			// add new parameter back to map
 			methodItem.getParameters().put(newName, newParam);
-
+			// fire property change event
+			methodItem.support.firePropertyChange("parameterChange", oldName, newName);
 			// return successful rename message
 			return "good";
 		} else {
@@ -154,7 +166,7 @@ public class MethodItem {
 		}
 	}
 
-	public static String renameParameter(MethodItem methodItem, String oldParamName, String newParamName){
+	public static String renameParameter(MethodItem methodItem, String oldParamName, String newParamName) {
 		// preconditions
 		if (oldParamName == null || newParamName == null || oldParamName.isBlank() || newParamName.isBlank()) {
 			throw new IllegalArgumentException("Parameter name cannot be null or blank");
@@ -162,39 +174,40 @@ public class MethodItem {
 
 		newParamName = newParamName.trim();
 
-		if(methodItem.getParameters().containsKey(oldParamName)){
-			
+		if (methodItem.getParameters().containsKey(oldParamName)) {
+
 			ParameterItem newParam = methodItem.getParameter(oldParamName);
 
-			newParam.setParameterName(newParamName);
+			newParam.setName(newParamName);
 
 			methodItem.getParameters().remove(oldParamName);
 
 			methodItem.getParameters().put(newParamName, newParam);
-			
-			//return successfull rename message
+			// fire property change event
+			methodItem.support.firePropertyChange("parameterChange", oldParamName, newParamName);
+			// return successfull rename message
 			return "good";
 		} else {
-			// methodItem does not contain a method with that name.
-			return "RENAMEParameter: " + oldParamName + " does not exist.";
+			// methodItem does not contain a parameter with that name.
+			return "Parameter: " + oldParamName + " does not exist.";
 		}
 	}
-	public static String retypeParameter(MethodItem methodItem, String paramName, String newParamType){
+
+	public static String retypeParameter(MethodItem methodItem, String paramName, String newParamType) {
 		// preconditions
 		if (paramName == null || newParamType == null || paramName.isBlank() || newParamType.isBlank()) {
 			throw new IllegalArgumentException("Parameter name cannot be null or blank");
 		}
 		newParamType = newParamType.trim();
 
-		System.out.println(methodItem.getParameters().keySet());
-
-		if(methodItem.getParameters().containsKey(paramName)){
+		if (methodItem.getParameters().containsKey(paramName)) {
 
 			methodItem.getParameter(paramName).setType(newParamType);
-
+			// fire property change event
+			methodItem.support.firePropertyChange("parameterChange", null, paramName);
 			return "good";
 		} else {
-			return "RETYPEParameter: " + paramName + " does not exist.";
+			return "Parameter: " + paramName + " does not exist.";
 		}
 	}
 
@@ -213,5 +226,13 @@ public class MethodItem {
 		}
 
 		return out.toString();
+	}
+
+	public void addPropertyChangeListener(PropertyChangeListener listener) {
+		support.addPropertyChangeListener(listener);
+	}
+
+	public void removePropertyChangeListener(PropertyChangeListener listener) {
+		support.removePropertyChangeListener(listener);
 	}
 }

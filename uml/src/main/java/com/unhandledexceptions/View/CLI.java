@@ -9,17 +9,31 @@ import jline.console.ConsoleReader;
 import com.unhandledexceptions.Controller.CommandCompleter;
 import java.io.IOException;
 
-public class CLI 
+public final class CLI 
 {
 	BaseController controller;
 	Data data;
-  // Scanner scanner = new Scanner(System.in);
+  private static CLI instance;
 
-	// constructor for the CLI. takes in the data model and creates a new controller from the data
-	public CLI(Data data)
+	// private constructor for the CLI. takes in the data model and creates a new controller from the data
+	private CLI(Data data)
 	{
 		this.data = data;
 		this.controller = new BaseController(data);
+	}
+
+	/**
+	 * This method is used to get the instance of the CLI class.
+	 * If there isn't an instance created, it will create one and if there is already an instance, it returns it. 
+	 * 
+	 * @param Data the data object to store data into the model.
+	 * @return The instance of the CLI. 
+	 */
+	public static CLI getInstance(Data data) {
+		if (instance == null) {
+			instance = new CLI(data);
+		}
+		return instance;
 	}
 
 	private void print(String line)
@@ -76,7 +90,7 @@ public class CLI
 				if (input.length != 2) return "Syntax: " + UI.CommandSyntax(input[0]);
 
 				return (UI.ListClass(
-					data.getClassItems().get(input[1]), data.getRelationshipItems()));
+					data.getClassItems().get(input[1].toLowerCase().trim()), data.getRelationshipItems()));
 			case "h":
 			case "help":
 				UI.Help();
@@ -84,11 +98,21 @@ public class CLI
 			case "save":
 				if (input.length != 2) return "Syntax: " + UI.CommandSyntax(input[0]);
 
-				return data.Save(input[1]);
+				result = data.Save(input[1]);
+				if (result != "good")
+					return result;
+				else
+					println("saved to " + input[1]);
+				break;
 			case "load":
 				if (input.length != 2) return "Syntax: " + UI.CommandSyntax(input[0]);
 
-				return data.Load(input[1]);
+				result = data.Load(input[1]);
+				if (result != "good")
+					return result;
+				else
+					println("successfully loaded " + input[1]);
+				break;
 			case "e":
 			case "exit":
 				UI.Exit();
@@ -257,6 +281,18 @@ public class CLI
 
 				println(UI.ListClass(data.getClassItems().get(input[1]), data.getRelationshipItems()));
 				break;
+			case "undo":
+				result = controller.undoListener();
+				if (result.equals("good"))
+					return "Change Undone.";
+				else
+					return "Nothing to Undo.";
+			case "redo":
+				result = controller.redoListener();
+				if (result.equals("good"))
+					return "Change Redone.";
+				else
+					return "Nothing to Redo.";
 
 			default:
 				return "unknown command";

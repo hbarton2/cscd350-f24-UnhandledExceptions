@@ -2,18 +2,28 @@ package com.unhandledexceptions.Model;
 
 import java.util.HashMap;
 
-public class ClassItem {
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
+
+public class ClassItem implements PropertyChangeListener{
     String name;
+
+    @JsonIgnore // ignore support for serialization, not a POJO
+    private final PropertyChangeSupport support = new PropertyChangeSupport(this);
 
     // Names of FieldItem/MethodItem are keys to Map<k,v>
     private HashMap<String, FieldItem> fieldItems;
     private HashMap<String, MethodItem> methodItems;
     private double x, y;
 
-    public ClassItem() {} //blank constructor for IO serialization
+    public ClassItem() {
+    } // blank constructor for IO serialization
 
     private ClassItem(final String classItemName) {
-        this.name = classItemName;
+        this.name = classItemName.trim();
         this.x = 0;
         this.y = 0;
 
@@ -22,62 +32,148 @@ public class ClassItem {
         this.methodItems = new HashMap<String, MethodItem>();
     }
 
+    /**
+     * The point of this constructor is to make a deep copy of a classItem, that way
+     * when we create a copy it is a completely new object, not a memory address reference
+     * 
+     * @param other a ClassItem object that you wish to copy
+     */
+    private ClassItem(ClassItem other){
+        this.name = other.name;
+        this.fieldItems = new HashMap<String, FieldItem>(other.fieldItems);
+        this.methodItems = new HashMap<String, MethodItem>(other.methodItems);
+        this.x = other.x;
+        this.y = other.y;
+    }
 
-    //Used for tester methods and unit tests currently.
+    /**
+     * The copy method to make a new object that is a copy of a classItem.
+     * 
+     * @param other the ClassItem to be copied
+     * @return the copy object of the parameter other
+     */
+    public static ClassItem copyClassItem(ClassItem other) {
+        return new ClassItem(other);
+    }
+    /**
+     * This method is used to add a new class to the classItemList. The classItemList
+     * @param classItems takes in the HashMap of classItems that are currently empty
+     * @param classItemName takes in the name of the class to be added
+     * @return "good" if the class was added successfully, "Class name must be unique." if the class name is already in use.
+     */
+    // Used for tester methods and unit tests currently.
     public static String addClassItem(final HashMap<String, ClassItem> classItems, final String classItemName) {
         String name = classItemName.toLowerCase().trim();// forces all classes to be in lower case and trims all leading
                                                          // and trailing "space" (refernce .trim() Java API for space
                                                          // definition).
-        /*if the classItemList does not already have a class named classItemName, we
-         create a new ClassItem and add it to the HashMap*/
+        
+        /*
+         * if the classItemList does not already have a class named classItemName, we
+         * create a new ClassItem and add it to the HashMap
+         */
         if (!(classItems.containsKey(name))) {
-            ClassItem createdClass = new ClassItem(name);
-            classItems.put(createdClass.getName(), createdClass);
+            ClassItem createdClass = new ClassItem(classItemName.trim());
+            classItems.put(name, createdClass);
+            // fire support for added class item
+            createdClass.support.firePropertyChange("classItem", null, createdClass);
+            initialPosition(classItems, createdClass);
             return "good";
         } else {
             // if classItemName is already in use in the classItemList that's passed in.
             return "Class name must be unique.";
         }
     }
-
+    //randomized locations for the class items will only work up to 23-24 classes in GUI
+    /**
+     * This method is used to set the initial position of the class items on the GUI
+     * @param classItems to take in the data inside the class items
+     * @param classItem to take in the class item object to set the position
+     */
+    public static void initialPosition(HashMap<String, ClassItem> classItems, ClassItem classItem) {
+        // take in and loop each class item in the map until it's finished
+        boolean finished = false;//not finished going though the list of classes
+        while(!finished){
+            finished = true;//ready to end the loop unless a box is too close to this one
+            double x1 = Math.random() * 900;//boundaries of the GUI box creation
+            double y1 = Math.random() * 565;
+            if(classItems.size() < 18){//hard cap on how many classes can be displayed. can be reoved once scrolling thorugh is working
+                for (HashMap.Entry<String, ClassItem> entry : classItems.entrySet()) {//for loop iterates through list of classes to check distance
+                    double x2 = entry.getValue().getX();
+                    double y2 = entry.getValue().getY();
+                    double distance = Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
+                    if(distance < 150){//if the distance is less than 150 pixels, the loop will start over and try again
+                        finished = false;
+                        break;
+                    }
+                }
+            }
+            classItem.setX(x1);//got throught the loop and found not too close to other classes, set the x and y values
+            classItem.setY(y1);
+        }
+    }
+    /**
+     * This method is the getter for the name of the class item
+     * @return the name of the class item
+     */
     public String getName() {
         return this.name;
     }
 
     // private setter method to force condition checking through renameClassItem
     // made public for IO serialization
+    /**
+     * This method is the setter for the name of the class item
+     * @param name to take in the updated or new name of the class item
+     */
     public void setName(String name) {
         this.name = name;
     }
-
-    public double getX()
-    {
+    /**
+     * This method is the getter for the x position of the class item
+     * @return the x position of the class item
+     */
+    public double getX() {
         return this.x;
     }
-
-    public void setX(double x)
-    {
+    /**
+     * This method is the setter for the x position of the class item
+     * @param x to take in the updated x position of the class item
+     */
+    public void setX(double x) {
         this.x = x;
     }
-
-    public double getY()
-    {
+    /**
+     * This method is the getter for the y position of the class item
+     * @return the y position of the class item
+     */
+    public double getY() {
         return this.y;
     }
-
-    public void setY(double y)
-    {
+    /**
+     * This method is the setter for the y position of the class item
+     * @param y to take in the updated y position of the class item
+     */
+    public void setY(double y) {
         this.y = y;
     }
-
+    /**
+     * This method is the getter for the field items of the class item
+     * @return the field item from class item
+     */
     public HashMap<String, FieldItem> getFieldItems() {
         return this.fieldItems;
     }
-
+    /**
+     * This method is the setter for the field items of the class item
+     * @param fieldItems to take in the updated field items of the class item
+     */
     public void setFieldItems(HashMap<String, FieldItem> fieldItems) {
         this.fieldItems = fieldItems;
     }
-
+    /**
+     * This method is the getter for the method items of the class item
+     * @return the method item from class item
+     */
     public HashMap<String, MethodItem> getMethodItems() {
         return this.methodItems;
     }
@@ -88,9 +184,21 @@ public class ClassItem {
 
     // check that the oldClassItemName exists in the classItemList
     // check that the newClassItemName is available to use
-
+    /**
+     * This method is to take in the class item list, the relationships, the old class item name.
+     * Once the data is taken in, the method will check if the old class item name exists in the class item list.
+     * @throws IllegalArgumentException if the class item list is null
+     * @throws IllegalArgumentException if the old  and new class item names are blank or null
+     * @param classItemList Hashmap value of ClassItem Object to take in the current class item list
+     * @param relationships Hashmap value of RelationshipItem Object to take in any current relationships that exist
+     * @param oldClassItemName String to take in the previous name of the class item
+     * @param newClassItemName String to take in the updated name of the class item
+     * @return "good" if the new class item name is available to use, 
+     * oldClassItemName + " does not exist." if the old class item name does not exist in the class item list, 
+     * and return newClassItemName + " is already in use."; if the new class item name is a duplicate
+     */
     public static String renameClassItem(final HashMap<String, ClassItem> classItemList,
-         HashMap<String, RelationshipItem> relationships, final String oldClassItemName,
+            HashMap<String, RelationshipItem> relationships, final String oldClassItemName,
             final String newClassItemName) {
         if (classItemList == null) {
             throw new IllegalArgumentException("classItemList cannot be null");
@@ -106,25 +214,26 @@ public class ClassItem {
 
         // checks that the old name to be changed exists, and that the name is not a
         // duplicate.
-        if (classItemList.containsKey(oldClassItemName)) {
+        if (classItemList.containsKey(oldClassItemName.toLowerCase().trim())) {
 
             if (!classItemList.containsKey(newClassItemName.toLowerCase().trim())) {
                 // sets the classItem Object that is stored in the value associated with the Map
                 // for the key oldClassItemName to be newClassItemName
                 // sets the new class name without updating the key in the map
-                ((ClassItem) classItemList.get(oldClassItemName)).setName(newClassItemName);
+                ((ClassItem) classItemList.get(oldClassItemName.toLowerCase().trim())).setName(newClassItemName.trim());
                 // ClassItem temp = new ClassItem(newClassItemName);
-                classItemList.put(newClassItemName.toLowerCase().trim(), classItemList.remove(oldClassItemName));
+                classItemList.put(newClassItemName.toLowerCase().trim(), classItemList.remove(oldClassItemName.toLowerCase().trim()));
 
                 // need to update relationships to reflect the new class name in the keys
-                // go through all relationships and update the keys that contain the old class name
+                // go through all relationships and update the keys that contain the old class
+                // name
                 // the keys are source_destination
                 for (HashMap.Entry<String, RelationshipItem> entry : relationships.entrySet()) {
                     String key = entry.getKey();
                     if (key.contains(oldClassItemName)) {
                         // split the key into source and destination
                         String[] split = key.split("_");
-                        if (split[0].equals(oldClassItemName)){
+                        if (split[0].equals(oldClassItemName)) {
                             // create a new key with the new class name
                             String newKey = newClassItemName + "_" + split[1];
                             // get the relationship object
@@ -133,8 +242,7 @@ public class ClassItem {
                             relationships.remove(key);
                             // add the relationship with the new key
                             relationships.put(newKey, relationship);
-                        }
-                        else {
+                        } else {
                             // create a new key with the new class name
                             String newKey = split[0] + "_" + newClassItemName;
                             // get the relationship object
@@ -147,6 +255,8 @@ public class ClassItem {
                     }
                 }
 
+                // fire support for renamed class item
+                classItemList.get(newClassItemName.toLowerCase().trim()).support.firePropertyChange("name", oldClassItemName, newClassItemName);
                 return "good";
             } else {
                 // displayed if newClassItemName is already a key in the HashMap
@@ -164,8 +274,19 @@ public class ClassItem {
      * and the map of relationships from main to remove the relationships
      * corresponding to the deleted class
      */
+    /**
+     * This method takes in the HashMap of class items, relaionship items, and the class item name to be removed.
+     * 
+     * @throws IllegalArgumentException if the classItems HashMap is null
+     * @throws IllegalArgumentException if the classItemName String is blank
+     * 
+     * @param classItems HashMap<String, ClassItem> Passes in the HashMap of class items to be worked with
+     * @param relationships HashMap<String, RelationshipItem> Passes in the HashMap of relationships to remove any relationships that contain the class item name
+     * @param classItemName String Passes in the name of the class item to be removed
+     * @return "good" if the class item passed in to remove was not null was removed successfully, "No class with name " + classItemName + " exists." if the class item name does not exist in the class items HashMap
+     */
     public static String removeClassItem(final HashMap<String, ClassItem> classItems,
-        HashMap<String, RelationshipItem> relationships, final String classItemName) {
+            HashMap<String, RelationshipItem> relationships, final String classItemName) {
         // precondition checking
 
         if (classItems == null) {
@@ -175,15 +296,25 @@ public class ClassItem {
             throw new IllegalArgumentException("classItemName cannot be blank");
         }
 
+        String key = classItemName.toLowerCase().trim();
+
         // if the classItemName to delete is a key inside of the map given, we remove
         // the mapping for the key from the map.
         // .remove returns the previous value associated with the key, or null if it did
         // not exist.
-        if (classItems.remove(classItemName) != null) {
+        if (classItems.containsKey(key)) {
+            //retrive the classItem object to be removed
+            ClassItem classItem = classItems.get(key);
+            //remove the item from the list
+            classItems.remove(key);
+            // fire support for deleted class item
+            classItem.support.firePropertyChange("removeBox", classItemName, null);
+            //classItems.remove(classItemName) != null
             // need to delete relationships corresponding to ClassItem that got removed
             // this goes through all entries and if the key contains the class name, which
             // it should, it gets removed.
-            relationships.entrySet().removeIf(entry -> entry.getKey().contains(classItemName));
+            relationships.entrySet().removeIf(entry -> entry.getKey().contains(key));
+
 
             return "good";
         } else {
@@ -193,21 +324,22 @@ public class ClassItem {
     }
 
     /*
-    // Check if the new name to be used is available (not a duplicate name), if
-    // duplicate, display message.
-    // private static boolean checkValidNewName(final Map<String, ClassItem>
-    private static boolean checkValidNewName(final HashMap<String, ClassItem> classItemList, final String newClassItemName) {
-        if (newClassItemName == null || newClassItemName.isBlank()){
-            System.out.println("Name cannot be blank.");
-           return false;
-       }
-
-        if(!(classItemList.containsKey(newClassItemName))) //if the name is not
-        return true;
-        System.out.println("\"" + newClassItemName + "\" is already in use." );
-        return false;
-    }
-    */
+     * // Check if the new name to be used is available (not a duplicate name), if
+     * // duplicate, display message.
+     * // private static boolean checkValidNewName(final Map<String, ClassItem>
+     * private static boolean checkValidNewName(final HashMap<String, ClassItem>
+     * classItemList, final String newClassItemName) {
+     * if (newClassItemName == null || newClassItemName.isBlank()){
+     * System.out.println("Name cannot be blank.");
+     * return false;
+     * }
+     * 
+     * if(!(classItemList.containsKey(newClassItemName))) //if the name is not
+     * return true;
+     * System.out.println("\"" + newClassItemName + "\" is already in use." );
+     * return false;
+     * }
+     */
     // checks if the oldClassItem is a class already contained in the Map passed in.
     // displays error message when false.
     // private static boolean checkValidOldName(final Map<String, ClassItem>
@@ -220,6 +352,20 @@ public class ClassItem {
     // }
 
     // method to add a new method to the map for this class item
+    /**
+     * This method is used to add a new method to the class item. 
+     * If the method name already exists in the class item, 
+     * it will return a message that the method name is already in use.
+     * Otherwise the value will be added to the map and passed into the UMLObject factory to be created.
+     * 
+     * @throws IllegalArgumentException if the method name is null or blank
+     * 
+     * @param classItem ClassItem object to take in the class item object
+     * @param methodName String to take in the passed in name of the method
+     * @param returnType String to take in the passed in return type of the method
+     * @return "good" if the method was added successfully, 
+     * "Method name: " + methodName + " already in use." if the method name is already in use
+     */
     public static String addMethod(ClassItem classItem, String methodName, String returnType) {
         // preconditions
         if (methodName == null || methodName.isBlank()) {
@@ -236,10 +382,19 @@ public class ClassItem {
         }
 
         // create a new method object with the method name
-        MethodItem newMethod = new MethodItem(methodName, returnType);
+        // MethodItem newMethod = new MethodItem(methodName, returnType);
+        MethodItem newMethod = UMLObjectFactory.createUMLObject(UMLObjectFactory.ObjectType.METHODITEM, methodName,
+                returnType);
 
         // insert new method item into map
         classItem.getMethodItems().put(methodName, newMethod);
+
+        // add classItem as a listener to the new method for parameter changes
+        newMethod.addPropertyChangeListener(classItem);
+
+        // fire support for added method item
+        classItem.support.firePropertyChange("method", returnType, newMethod);
+
 
         // return successful add of method
         return "good";
@@ -263,6 +418,7 @@ public class ClassItem {
 
         // remove method item from hash map
         classItem.getMethodItems().remove(methodName);
+        classItem.support.firePropertyChange("method", classItem, methodName);
 
         // return successful removal of method
         return "good";
@@ -289,13 +445,15 @@ public class ClassItem {
             MethodItem newMethod = classItem.getMethodItems().get(oldName);
 
             // set new method name
-            newMethod.setMethodName(newName);
+            newMethod.setName(newName);
 
             // remove old method from map
             classItem.getMethodItems().remove(oldName);
 
             // add new method item to class
             classItem.getMethodItems().put(newName, newMethod);
+            // fire support for renamed method item
+            classItem.support.firePropertyChange("method", oldName, newName);
 
             // return success
             return "good";
@@ -306,27 +464,29 @@ public class ClassItem {
 
     }
 
-    public static String retypeMethod(ClassItem classItem, String methodName, String newType){
+    public static String retypeMethod(ClassItem classItem, String methodName, String newType) {
         // preconditions
         if (newType == null || newType.isBlank()) {
             return "Method names cannot be null or blank.";
         }
-         newType = newType.trim();
- 
-         // check if the method name is a valid key
-         if (classItem.getMethodItems().containsKey(methodName)) {
-            
+        newType = newType.trim();
+
+        // check if the method name is a valid key
+        if (classItem.getMethodItems().containsKey(methodName)) {
+
             MethodItem newMethod = classItem.getMethodItems().get(methodName);
 
             // changes the type of the method
             newMethod.setType(newType);
-            
-             // return success
-             return "good";
-         } else {
-             // invalid method name, return failure
-             return "Method name: " + methodName + " does not exist.";
-         }
+            // fire support for retype method
+            classItem.support.firePropertyChange("method", newType, newMethod); // fire property change
+
+            // return success
+            return "good";
+        } else {
+            // invalid method name, return failure
+            return "Method name: " + methodName + " does not exist.";
+        }
     }
 
     public static String addField(ClassItem classItem, String type, String fieldName) {
@@ -337,7 +497,7 @@ public class ClassItem {
 
         fieldName = fieldName.toLowerCase().trim();
         // types can be uppercase for example: String name
-        //type = type.toLowerCase().trim();
+        // type = type.toLowerCase().trim();
         type = type.trim();
 
         // check if field already exists
@@ -346,10 +506,13 @@ public class ClassItem {
         }
 
         // create new field item object
-        FieldItem newField = new FieldItem(fieldName, type);
+        // FieldItem newField = new FieldItem(fieldName, type);
+        FieldItem newField = UMLObjectFactory.createUMLObject(UMLObjectFactory.ObjectType.FIELDITEM, fieldName, type);
 
         // add new field item to map
         classItem.getFieldItems().put(fieldName, newField);
+        // fire support for added field item
+        classItem.support.firePropertyChange("field", type, newField);
 
         return "good";
     }
@@ -358,7 +521,7 @@ public class ClassItem {
         // preconditions
         if (fieldName == null || fieldName.isBlank()) {
             return "Field name cannot be null or blank";
-        }   
+        }
 
         // trim leading and trailing whitespace
         fieldName = fieldName.trim();
@@ -370,6 +533,8 @@ public class ClassItem {
 
         // remove field from map
         classItem.getFieldItems().remove(fieldName);
+        // fire support for removed field item
+        classItem.support.firePropertyChange("field", classItem, fieldName);
 
         return "Field name: " + fieldName + " successfully removed.";
     }
@@ -398,10 +563,12 @@ public class ClassItem {
             classItem.getFieldItems().remove(oldName);
 
             // set field objects name to new name
-            newField.setFieldName(newName);
+            newField.setName(newName);
 
             // add new field item into map
             classItem.getFieldItems().put(newName, newField);
+            // fire support for renamed field item
+            classItem.support.firePropertyChange("field", newName, newField);
 
             return "good";
         } else {
@@ -425,6 +592,8 @@ public class ClassItem {
 
             // set field objects type to new type
             Field.setType(newType);
+            // fire support for retype field item
+            classItem.support.firePropertyChange("field", newType, Field);
 
             return "good";
         } else {
@@ -432,8 +601,25 @@ public class ClassItem {
         }
     }
 
-
     public String toString() {
         return this.name;
+    }
+
+    // Property Change Listener methods
+    public void addPropertyChangeListener(PropertyChangeListener listener) {
+        support.addPropertyChangeListener(listener);
+    }
+
+    public void removePropertyChangeListener(PropertyChangeListener listener) {
+        support.removePropertyChangeListener(listener);
+    }
+
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        support.firePropertyChange(evt.getPropertyName(), evt.getOldValue(), evt.getNewValue());
+    }
+
+    public PropertyChangeSupport getSupport() {
+        return support;
     }
 };

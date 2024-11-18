@@ -1,6 +1,6 @@
 package com.unhandledexceptions.Model;
 
-public class ParameterItem {
+public class ParameterItem implements UMLObject {
     // enum to check if the data type is valid
     public enum DataType {
         INT,
@@ -28,30 +28,31 @@ public class ParameterItem {
     private String parameterName;
     private String type;
 
-    public ParameterItem() {} //blank constructor for IO serialization
+    public ParameterItem() {
+    } // blank constructor for IO serialization
 
     // constructor
-    public ParameterItem(String type, String parameterName) {
+    public ParameterItem(String parameterName, String type) {
         if (parameterName == null || parameterName.isBlank()) {
             throw new IllegalArgumentException("Type and Parameter name cannot be null or blank - constructor");
         }
 
-        //if (DataType.isValidType(type)) {
-            this.parameterName = parameterName;
-            this.type = type;
-        //} else {
-        //    throw new IllegalArgumentException("Invalid type in parameter constructor");
-        //}
+        // if (DataType.isValidType(type)) {
+        this.parameterName = parameterName;
+        this.type = type;
+        // } else {
+        // throw new IllegalArgumentException("Invalid type in parameter constructor");
+        // }
 
     }
 
     // getter to retrieve the parameter name
-    public String getParameterName() {
+    public String getName() {
         return this.parameterName;
     }
 
     // setter to set the parameter name
-    public void setParameterName(String parameterName) {
+    public void setName(String parameterName) {
         if (parameterName == null || parameterName.isBlank()) {
             throw new IllegalArgumentException("Parameter name cannot be null or blank");
         }
@@ -60,17 +61,17 @@ public class ParameterItem {
     }
 
     /*
-        public String getParameterType(ParameterItem parameter) {
-            if (parameter == null) {
-                throw new IllegalAccessError("Parameter Item is null");
-            }
-
-            return parameter.type;
-        }
-        
-        replacing this with standardized getter and setter for IO serialization.
-        saving incase it was necessary.
-    */
+     * public String getParameterType(ParameterItem parameter) {
+     * if (parameter == null) {
+     * throw new IllegalAccessError("Parameter Item is null");
+     * }
+     * 
+     * return parameter.type;
+     * }
+     * 
+     * replacing this with standardized getter and setter for IO serialization.
+     * saving incase it was necessary.
+     */
 
     public String getType() {
         return this.type;
@@ -80,7 +81,6 @@ public class ParameterItem {
         this.type = type;
     }
 
-    // placeholder toString
     @Override
     public String toString() {
         return this.type + " " + this.parameterName;

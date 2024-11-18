@@ -1,0 +1,158 @@
+.vbox {
+    -fx-background-color: #2B2B2B;
+}
+
+.anchor-pane {
+    -fx-background-color: #2B2B2B;
+}
+
+.scroll-pane {
+    -fx-background-color: #2B2B2B;
+    -fx-border-color: #2B2B2B;
+    -fx-text-fill: white;
+    -fx-text-base-color: white;
+}
+
+.scroll-pane .viewport {
+    -fx-background-color: #2B2B2B;
+}
+
+.class-box {
+    -fx-border-width: 1px;
+    -fx-background-color: #252525;
+    -fx-padding: 10;
+    -fx-spacing: 1;
+    -fx-border-radius: 5;
+    -fx-background-radius: 5;
+    /* -fx-border-color: linear-gradient(to bottom right, #252525, #3d4ddd);  */
+    -fx-text-fill: white;
+    /* -fx-effect: dropshadow(gaussian, darkblue, 10, 0, 5, 5); */
+} 
+
+/* TitledPane Styles */
+.titled-pane {
+    -fx-font-family: "Arial";
+    -fx-font-size: 14px;
+    -fx-border-color: transparent;
+    -fx-border-width: 1;
+    -fx-background-radius: 4;
+}
+
+.titled-pane > .title {
+    -fx-background-color:transparent; 
+    -fx-border-color: transparent;
+    -fx-font-weight: bold;
+    -fx-padding: 5 10 5 10;
+    -fx-background-radius: 4 4 0 0;
+    -fx-text-fill: white;
+    -fx-text-base-color: white;
+}
+
+.titled-pane > .content {
+    -fx-padding: 10;
+    -fx-background-color: #252525;
+    -fx-text-fill: white;
+}
+
+/* ListView styles for fields and methods */
+.list-view {
+    -fx-background-color: #252525;
+    -fx-border-color: #ddd;
+    -fx-text-fill: white;
+}
+
+.list-view .list-cell {
+    -fx-padding: 5 10;
+    -fx-background-color: transparent;
+    -fx-font-family: "Arial";
+    -fx-font-size: 13px;
+    -fx-border-color: transparent;
+    -fx-text-fill: white;
+}
+
+/* .list-view .list-cell:hover {
+    -fx-background-color: #e6f3ff;
+} */
+
+
+/* Label style for class name */
+.class-name-label {
+    -fx-font-size: 24px; /* Increase font size */
+    -fx-font-weight: bold;
+    -fx-padding: 10px; /* Add padding for spacing */
+    -fx-text-align: center; /* Center text */
+    -fx-alignment: center; /* label centered in its parent */
+    -fx-text-fill: white; /* change text color */
+}
+
+.fields-title-box {
+    -fx-background-color: transparent;
+    -fx-padding: 0;
+    -fx-border-color: transparent;
+    -fx-border-width: 0 0 1 0;
+    -fx-text-fill: white;
+}
+
+.transparent-button {
+    -fx-background-color: transparent; 
+    -fx-border-color: transparent; 
+    -fx-padding: 0;
+    -fx-text-fill: white;
+}
+
+.transparent-button:hover {
+    -fx-effect: dropshadow(gaussian, blue, 5, 0, 0, 0); /* Add drop shadow on hover */
+}
+
+.transparent-button-delete {
+    -fx-background: transparent;
+    -fx-border-color: transparent;
+    -fx-padding: 0;
+}
+
+.transparent-button-delete:hover {
+    -fx-effect: dropshadow(gaussian, red, 5, 0, 0, 0);
+}
+
+.transparent-button-toolbar {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-padding: 0;
+}
+
+.transparent-button-toolbar:hover {
+    -fx-effect: dropshadow(gaussian, rgb(158, 149, 149), 5, 0, 0, 0);
+}
+
+.fields-label {
+    -fx-text-fill:white;
+}
+
+.toolbar-dark {
+    -fx-background-color: #252525;
+    -fx-text-fill: white;
+}
+
+.dark-theme-button {
+    -fx-text-fill: white;
+}
+
+.menubar-dark {
+    -fx-background-color: #252525;
+}
+
+.menu-dark {
+    -fx-background-color: #252525;
+    -fx-text-fill: white;
+    -fx-text-base-color: white;
+}
+
+.menu-dark .label{
+    -fx-text-fill: white;
+    -fx-background-color: transparent;
+}
+
+.menu-dark .context-menu{
+    -fx-background-color: #252525;
+}
+
