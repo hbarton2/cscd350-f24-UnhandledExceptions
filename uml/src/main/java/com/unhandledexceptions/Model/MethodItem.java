@@ -1,5 +1,7 @@
 package com.unhandledexceptions.Model;
 
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.util.HashMap;
 
 public class MethodItem implements UMLObject {
@@ -8,6 +10,8 @@ public class MethodItem implements UMLObject {
 	private String type;
 	// hash map to store ParamterItem's with their name as the key
 	private HashMap<String, ParameterItem> parameters;
+	// property change support for updating parameter items
+	private final PropertyChangeSupport support = new PropertyChangeSupport(this);
 
 	public MethodItem() {
 	} // blank constructor for IO serialization
@@ -82,6 +86,8 @@ public class MethodItem implements UMLObject {
 					parameterName, type);
 			// insert new parameter item into map
 			methodItem.getParameters().put(parameterName, parameter);
+			// fire property change event
+			methodItem.support.firePropertyChange("parameterChange", null, parameter);
 
 		} catch (IllegalArgumentException e) {
 			return e.getMessage();
@@ -114,7 +120,8 @@ public class MethodItem implements UMLObject {
 
 		// remove parameter from map
 		methodItem.getParameters().remove(parameterName);
-
+		// fire property change event
+		methodItem.support.firePropertyChange("parameterChange", null, parameterName);
 		// return successful remove message
 		return "good";
 	}
@@ -149,7 +156,8 @@ public class MethodItem implements UMLObject {
 
 			// add new parameter back to map
 			methodItem.getParameters().put(newName, newParam);
-
+			// fire property change event
+			methodItem.support.firePropertyChange("parameterChange", oldName, newName);
 			// return successful rename message
 			return "good";
 		} else {
@@ -175,12 +183,13 @@ public class MethodItem implements UMLObject {
 			methodItem.getParameters().remove(oldParamName);
 
 			methodItem.getParameters().put(newParamName, newParam);
-
+			// fire property change event
+			methodItem.support.firePropertyChange("parameterChange", oldParamName, newParamName);
 			// return successfull rename message
 			return "good";
 		} else {
-			// methodItem does not contain a method with that name.
-			return "RENAMEParameter: " + oldParamName + " does not exist.";
+			// methodItem does not contain a parameter with that name.
+			return "Parameter: " + oldParamName + " does not exist.";
 		}
 	}
 
@@ -191,15 +200,14 @@ public class MethodItem implements UMLObject {
 		}
 		newParamType = newParamType.trim();
 
-		System.out.println(methodItem.getParameters().keySet());
-
 		if (methodItem.getParameters().containsKey(paramName)) {
 
 			methodItem.getParameter(paramName).setType(newParamType);
-
+			// fire property change event
+			methodItem.support.firePropertyChange("parameterChange", null, paramName);
 			return "good";
 		} else {
-			return "RETYPEParameter: " + paramName + " does not exist.";
+			return "Parameter: " + paramName + " does not exist.";
 		}
 	}
 
@@ -218,5 +226,13 @@ public class MethodItem implements UMLObject {
 		}
 
 		return out.toString();
+	}
+
+	public void addPropertyChangeListener(PropertyChangeListener listener) {
+		support.addPropertyChangeListener(listener);
+	}
+
+	public void removePropertyChangeListener(PropertyChangeListener listener) {
+		support.removePropertyChangeListener(listener);
 	}
 }

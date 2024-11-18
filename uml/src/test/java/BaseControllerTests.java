@@ -31,10 +31,11 @@ public class BaseControllerTests {
     // Test adding a class
     String result = baseController.AddClassListener("TestClass");
     assertEquals("good", result);
+    System.out.println(data.getClassItems().keySet());
     // ensure that the class was added to the data object
     assertTrue(data.getClassItems().containsKey("testclass"));
     // ensure the class name wasn't changed
-    assertEquals("testclass", data.getClassItems().get("testclass").getName());
+    assertEquals("TestClass", data.getClassItems().get("testclass").getName());
   }
 
   // Test renaming a class with the controller
@@ -72,7 +73,7 @@ public class BaseControllerTests {
     // ensure that the relationship was added to the data object
     assertTrue(data.getRelationshipItems().containsKey("testclass1_testclass2"));
     // ensure the relationship type is correct
-    assertEquals("aggregation", data.getRelationshipItems().get("testclass1_testclass2").getType());
+    assertEquals("Aggregation", data.getRelationshipItems().get("testclass1_testclass2").getType());
   }
 
   // Test removing a relationship

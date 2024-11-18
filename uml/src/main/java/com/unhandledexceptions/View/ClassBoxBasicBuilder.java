@@ -1,6 +1,8 @@
 package com.unhandledexceptions.View;
 
 import com.unhandledexceptions.Controller.BaseController;
+import com.unhandledexceptions.Model.ClassItem;
+
 import javafx.geometry.Pos;
 import javafx.scene.control.TitledPane;
 import javafx.scene.layout.AnchorPane;
@@ -18,13 +20,15 @@ public class ClassBoxBasicBuilder implements ClassBoxBuilderInterface {
     private boolean fields = false;
     private boolean methods = false;
     private Rectangle[] ranchors = new Rectangle[4];
+    private ClassItem classItem;
 
-    public ClassBoxBasicBuilder(AnchorPane anchorPane, BaseController baseController, String className, double boxWidth, double boxHeight) {
+    public ClassBoxBasicBuilder(AnchorPane anchorPane, BaseController baseController, String className, double boxWidth, double boxHeight, ClassItem classItem) {
         this.anchorPane = anchorPane;
         this.baseController = baseController;
         this.className = className;
         this.boxWidth = boxWidth;
         this.boxHeight = boxHeight;
+        this.classItem = classItem;
     }
 
     public VBox setup(){
@@ -85,7 +89,7 @@ public class ClassBoxBasicBuilder implements ClassBoxBuilderInterface {
     }
 
     public ClassBox build() {
-        ClassBox classBox = new ClassBox(anchorPane, baseController, className, boxWidth, boxHeight, ranchors);
+        ClassBox classBox = new ClassBox(anchorPane, baseController, className, boxWidth, boxHeight, ranchors, classItem);    //creates a new classBox object
         classBox.getChildren().add(setup());    //adds VBox that is holding all of the content to the classBox
         HBox nameAndDelete = classBox.nameAndDelete(this.className);    //creates nameAndDelete part
         VBox contentBox = (VBox) classBox.lookup("#contentBox");   //grabs container VBox that holds the panes

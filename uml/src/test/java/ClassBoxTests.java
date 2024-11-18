@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 //Project Imports
 import com.unhandledexceptions.Controller.BaseController;
+import com.unhandledexceptions.Model.ClassItem;
 import com.unhandledexceptions.Model.Data;
 import com.unhandledexceptions.View.ClassBox;
 import com.unhandledexceptions.View.ClassBoxBasicBuilder;
@@ -29,13 +30,14 @@ public class ClassBoxTests {
     private String className = "testName";
     private double boxWidth = 200;
     private double boxHeight = 300;
+    private ClassItem classItem = new ClassItem();
 
     @BeforeEach
     public void setUp() throws Exception {
         FxToolkit.registerPrimaryStage();
         anchorPane = new AnchorPane();
         baseController = new BaseController(new Data());
-        classBoxBuilder = new ClassBoxBasicBuilder(anchorPane, baseController, className, boxWidth, boxHeight);
+        classBoxBuilder = new ClassBoxBasicBuilder(anchorPane, baseController, className, boxWidth, boxHeight, classItem);
     }
 
     @Start

@@ -90,7 +90,7 @@ public final class CLI
 				if (input.length != 2) return "Syntax: " + UI.CommandSyntax(input[0]);
 
 				return (UI.ListClass(
-					data.getClassItems().get(input[1]), data.getRelationshipItems()));
+					data.getClassItems().get(input[1].toLowerCase().trim()), data.getRelationshipItems()));
 			case "h":
 			case "help":
 				UI.Help();
@@ -98,11 +98,21 @@ public final class CLI
 			case "save":
 				if (input.length != 2) return "Syntax: " + UI.CommandSyntax(input[0]);
 
-				return data.Save(input[1]);
+				result = data.Save(input[1]);
+				if (result != "good")
+					return result;
+				else
+					println("saved to " + input[1]);
+				break;
 			case "load":
 				if (input.length != 2) return "Syntax: " + UI.CommandSyntax(input[0]);
 
-				return data.Load(input[1]);
+				result = data.Load(input[1]);
+				if (result != "good")
+					return result;
+				else
+					println("successfully loaded " + input[1]);
+				break;
 			case "e":
 			case "exit":
 				UI.Exit();

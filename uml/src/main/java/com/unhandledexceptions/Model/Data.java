@@ -116,8 +116,10 @@ public class Data
 			currentPath = selectedFile.getAbsolutePath();
 			return Load(currentPath);
 		}
-
-		return "uh oh";
+		else
+		{
+			return "user canceled load";
+		}
 	}
 
 	/*
@@ -126,7 +128,10 @@ public class Data
 	 * maps it to a json string, then saves that to the specified file.
 	 */
 	public String Save(String filepath)
-	{		
+	{
+		//jsonify
+		filepath = filepath.endsWith(".json") ? filepath : filepath + ".json";
+
 		//combind both hashmaps into 1 hashmap
 		HashMap<String, Object> items = new HashMap<>();
 		items.put("classItems", classItems);
@@ -181,7 +186,7 @@ public class Data
 		relationshipItems.putAll(objectMapper.convertValue(items.get("relationshipItems"),
 			new TypeReference<HashMap<String, RelationshipItem>>() {}));
 
-		return "successfully loaded " + filepath;
+		return "good";
 	}
 
 	//equals override to assist in comparing objects for unit testing

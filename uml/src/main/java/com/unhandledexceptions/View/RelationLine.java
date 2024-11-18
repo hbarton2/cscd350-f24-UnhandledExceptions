@@ -193,9 +193,12 @@ public class RelationLine extends Polyline
     // saves the relationships between classes into the model using the controller
     public void Save()
     {
-        baseController.AddRelationshipListener(c1.getClassName(), c2.getClassName(), type);
-        baseController.getData().getRelationshipItems().get(c1.getClassName() + "_" + c2.getClassName()).setSourceLoc(i1);
-        baseController.getData().getRelationshipItems().get(c1.getClassName() + "_" + c2.getClassName()).setDestLoc(i2);
+        String c1Name = c1.getClassName().toLowerCase().trim();
+        String c2Name = c2.getClassName().toLowerCase().trim();
+
+        baseController.AddRelationshipListener(c1Name, c2Name, type);
+        baseController.getData().getRelationshipItems().get(c1Name + "_" + c2Name).setSourceLoc(i1);
+        baseController.getData().getRelationshipItems().get(c1Name + "_" + c2Name).setDestLoc(i2);
     }
 
     /*

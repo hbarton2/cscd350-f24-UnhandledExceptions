@@ -46,7 +46,7 @@ public class DataTests
     result = newData.Load(newData.getCurrentPath());
 
     //test if load returned a positive string
-    assertEquals(result, "successfully loaded " + newData.getCurrentPath(), "result should equal successfully loaded " + newData.getCurrentPath());
+    assertEquals(result, "good");
 
     //test the new data is equal to the original data
     assertEquals(origData, newData, "Loaded data should match original data.");
@@ -70,7 +70,7 @@ public class DataTests
     // load data from file
     res = data2.Load("test123.json");
     // make sure loaded successfully 
-    assertEquals("successfully loaded test123.json", res);
+    assertEquals("good", res);
     // make sure class item loaded properly
     assertEquals(data2.getClassItems().size(), 1);
     // delete the test file

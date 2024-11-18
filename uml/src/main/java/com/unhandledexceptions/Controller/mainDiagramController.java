@@ -126,7 +126,7 @@ public class mainDiagramController
                 fileItem.setOnAction(event -> {
                     newMenuClick();
                     data.Load(file.getAbsolutePath());
-                    Load();
+                    LoadAll();
                 });
                 
                 // Add the menu item to the "Open Recent" submenu
@@ -147,12 +147,15 @@ public class mainDiagramController
 
     public void openMenuClick()
     {
-        //clear all
-        newMenuClick();
+        String result = data.Load(anchorPane);
 
-        data.Load(anchorPane);
+        if (result.equals("good"))
+        {
+            //clear all
+            newMenuClick();
 
-        Load();
+            LoadAll();   
+        }
     }
 
     private void ClearAll()
@@ -165,7 +168,7 @@ public class mainDiagramController
         anchorPane.getChildren().removeAll(children);
     }
 
-    private void Load()
+    private void LoadAll()
     {
         //load classes
         HashMap<String, ClassItem> classItems = data.getClassItems();
@@ -204,7 +207,7 @@ public class mainDiagramController
     public ClassBox addClass(String className)
     {
         //creates a classBoxBuilder calls adds the panes we need, then builds it.
-        ClassBoxBasicBuilder classBoxBuilder = new ClassBoxBasicBuilder(anchorPane, baseController, className, boxWidth, boxHeight);
+        ClassBoxBasicBuilder classBoxBuilder = new ClassBoxBasicBuilder(anchorPane, baseController, className, boxWidth, boxHeight, data.getClassItems().get(className.toLowerCase().trim()));
         classBoxBuilder.withFieldPane();
         classBoxBuilder.withMethodPane();
         ClassBox classBox = classBoxBuilder.build();
@@ -218,21 +221,20 @@ public class mainDiagramController
         });
         // setup mouse drag
         classBox.getDragBox().setOnMousePressed(event -> {
-            classBox.toFront();
-            offsetX = (event.getSceneX() / scaleTransform.getX()) - classBox.getLayoutX();
-            offsetY = (event.getSceneY() / scaleTransform.getY()) - classBox.getLayoutY();
-            event.consume();
-        });
-
+                classBox.toFront();
+                offsetX = (event.getSceneX() / scaleTransform.getX()) - classBox.getLayoutX();
+                offsetY = (event.getSceneY() / scaleTransform.getY()) - classBox.getLayoutY();
+                event.consume();
+            });
+    
         classBox.getDragBox().setOnMouseDragged(event -> {
             double newX = (event.getSceneX() / scaleTransform.getX()) - offsetX;
             double newY = (event.getSceneY() / scaleTransform.getY()) - offsetY;
-
+            
             classBox.setLayoutX(newX);
             classBox.setLayoutY(newY);
-            data.getClassItems().get(classBox.getClassName()).setX(newX);
-            data.getClassItems().get(classBox.getClassName()).setY(newY);
-
+            data.getClassItems().get(classBox.getClassName().toLowerCase().trim()).setX(newX);
+            data.getClassItems().get(classBox.getClassName().toLowerCase().trim()).setY(newY);
 
             classBox.setEffect(effectHelper());
 
@@ -429,7 +431,9 @@ public class mainDiagramController
         // gets the result of adding the class
         String result = baseController.AddClassListener(className);
         // parse result for either successful rename or failure
-        if (result == "good") {
+        if (result == "good")
+        {
+            //adds classbox to the view
             ClassBox classBox = addClass(className);
             classBox.Update();
             return classBox;
@@ -456,7 +460,7 @@ public class mainDiagramController
         if (result.equals("good"))
         {
             ClearAll();
-            Load();
+            LoadAll();
         }
     }
 
@@ -466,7 +470,7 @@ public class mainDiagramController
         if (result.equals("good"))
         {
             ClearAll();
-            Load();
+            LoadAll();
         }
     }
     //TODO: change the color of 'file' and 'help' menus to white when dark mode is enabled
