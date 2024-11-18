@@ -503,6 +503,8 @@ public class ClassBox extends StackPane
         HBox titleBox = new HBox(30);
         Label singleMethodName = new Label(methodName);
         Label singleMethodType = new Label(methodType);
+        singleMethodName.getStyleClass().add("fields-label");
+        singleMethodType.getStyleClass().add("fields-label");
 
         singleMethodName.setOnMouseClicked(event -> {
             if(event.getClickCount() == 2){
