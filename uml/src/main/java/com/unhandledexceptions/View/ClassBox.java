@@ -470,6 +470,7 @@ public class ClassBox extends StackPane implements PropertyChangeListener
 
         // Create a label for "Methods:"
         Label methodsLabel = new Label("Methods:");
+        methodsLabel.getStyleClass().add("fields-label");
 
         // Adds label and button to HBox, sets to methodsPane graphic.
         methodsTitleBox.getChildren().addAll(methodsLabel, addMethodsButton);
@@ -583,6 +584,8 @@ public class ClassBox extends StackPane implements PropertyChangeListener
         HBox titleBox = new HBox(30);
         Label singleMethodName = new Label(methodName);
         Label singleMethodType = new Label(methodType);
+        singleMethodName.getStyleClass().add("fields-label");
+        singleMethodType.getStyleClass().add("fields-label");
 
         singleMethodName.setOnMouseClicked(event -> {
             if(event.getClickCount() == 2){
@@ -765,6 +768,7 @@ public class ClassBox extends StackPane implements PropertyChangeListener
         HBox fieldsTitleBox = new HBox(160); // Add spacing between label and button
         Label fieldsLabel = new Label("Fields");
         fieldsLabel.setId("fieldTitleBoxLabel");
+        fieldsLabel.getStyleClass().add("fields-label");
         fieldsTitleBox.setAlignment(Pos.CENTER_LEFT); // Align items to the left
         fieldsTitleBox.getStyleClass().add("fields-title-box");
         fieldsTitleBox.getChildren().addAll(fieldsLabel, addFieldButton);
@@ -977,7 +981,7 @@ public class ClassBox extends StackPane implements PropertyChangeListener
         // set the title and header as a warning
         alert.setTitle("Warning");
         alert.setHeaderText("Are you sure you want to delete this class?");
-        alert.setContentText("This action can not be undone");
+        //alert.setContentText("This action can not be undone");
 
         // return the alert to be instantiated by delete action
         return alert;
