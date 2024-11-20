@@ -177,51 +177,6 @@ public class mainDiagramController
         }
     }
 
-    public ClassBox addClass(String className)
-    {
-        //creates a classBoxBuilder calls adds the panes we need, then builds it.
-        ClassBoxBasicBuilder classBoxBuilder = new ClassBoxBasicBuilder(anchorPane, baseController, className, boxWidth, boxHeight, data.getClassItems().get(className.toLowerCase().trim()));
-        classBoxBuilder.withFieldPane();
-        classBoxBuilder.withMethodPane();
-        ClassBox classBox = classBoxBuilder.build();
-       
-        anchorPane.getChildren().add(classBox);
-
-        classBox.setOnMouseMoved(event -> {
-            classBox.getRanchor().setVisible(false);
-            event.consume();
-        });
-        classBox.setOnMouseClicked(event -> event.consume());
-
-        // setup mouse drag
-        classBox.getDragBox().setOnMousePressed(event -> {
-                classBox.toFront();
-                offsetX = (event.getSceneX() / scaleTransform.getX()) - classBox.getLayoutX();
-                offsetY = (event.getSceneY() / scaleTransform.getY()) - classBox.getLayoutY();
-                event.consume();
-        });
-    
-        classBox.getDragBox().setOnMouseDragged(event -> {
-            double newX = (event.getSceneX() / scaleTransform.getX()) - offsetX;
-            double newY = (event.getSceneY() / scaleTransform.getY()) - offsetY;
-        
-            classBox.setLayoutX(newX);
-            classBox.setLayoutY(newY);
-            data.getClassItems().get(classBox.getClassName().toLowerCase().trim()).setX(newX);
-            data.getClassItems().get(classBox.getClassName().toLowerCase().trim()).setY(newY);
-
-            adjustAnchorPaneSize(newX, newY, classBox);
-            updateRelationLines();
-        });
-
-        classBox.getRanchor().setOnMouseClicked(event -> {
-            ranchorClick(event, classBox);
-            event.consume();
-        });
-
-        return classBox;
-    }
-
     @FXML public void resetZoom(ActionEvent event) {
         event.consume();
         scaleTransform.setX(1.0);
@@ -253,41 +208,12 @@ public class mainDiagramController
     {
         if (placingRelation != null)
         {
-            String[] types = { "Aggregation", "Composition", "Generalization", "Realization" };
-            String currentType = placingRelation.getType();
-            int currentIndex = java.util.Arrays.asList(types).indexOf(currentType);
-
-            if (event.getDeltaY() > 0) { // Scrolling up
-                currentIndex = (currentIndex + 1) % types.length;
-            } else if (event.getDeltaY() < 0) { // Scrolling down
-                currentIndex = (currentIndex - 1 + types.length) % types.length;
-            }
-
-            placingRelation.setType(types[currentIndex]);
-
-            // Create a minimal MouseEvent for just the required X and Y
-            MouseEvent fakeMouseEvent = new MouseEvent(
-                MouseEvent.MOUSE_MOVED,  // Event type
-                event.getX(),            // X coordinate
-                event.getY(),            // Y coordinate
-                0,                       // Screen X (unused, can be 0)
-                0,                       // Screen Y (unused, can be 0)
-                MouseButton.NONE,        // No button pressed
-                0,                       // Click count
-                false,                   // Shift down
-                false,                   // Control down
-                false,                   // Alt down
-                false,                   // Meta down
-                false,                   // Primary button down
-                false,                   // Middle button down
-                false,                   // Secondary button down
-                false,                   // Synthesized
-                false,                   // Popup trigger
-                false,                   // Still since press
-                null                     // Pick result
-            );
-
-            placingRelation.Update(scaleTransform, fakeMouseEvent);
+            if (event.getDeltaY() > 0) // Scrolling up
+                placingRelation.setType(getNextRelationType(placingRelation.getType(), false));
+            else if (event.getDeltaY() < 0) // Scrolling down
+                placingRelation.setType(getNextRelationType(placingRelation.getType(), true));
+            
+            placingRelation.Update(scaleTransform, getFakeMouseEvent(event.getX(), event.getY()));
         }
     }
 
@@ -297,6 +223,7 @@ public class mainDiagramController
         {
             placingRelation.Update(scaleTransform, event);
         }
+
         for (Node node : anchorPane.getChildren()) {
             if (node instanceof RelationLine) {
                 RelationLine line = (RelationLine) node;
@@ -313,7 +240,7 @@ public class mainDiagramController
     // mouse click on background event
     private void mouseClick(MouseEvent event)
     {
-        if (event.isShiftDown())
+        if (placingRelation == null && event.isShiftDown())
         {
             String name = "newClass" + new Random().nextInt(100000);
             baseController.AddClassListener(name);
@@ -393,40 +320,6 @@ public class mainDiagramController
             placingRelation.Update(scaleTransform);
             placingRelation.Save(); //update model
             placingRelation = null;
-        }
-    }
-
-    private ClassBox getClassBoxByName(String className)
-    {
-        for (Node node : anchorPane.getChildren())
-        {
-            if (node instanceof ClassBox)
-            {
-                ClassBox classBox = (ClassBox) node;
-                if (classBox.getClassName().equals(className))
-                    return classBox;
-            }
-        }
-        return null;
-    }
-
-    private void adjustAnchorPaneSize(double newX, double newY, ClassBox classBox) {
-        // Expand AnchorPane if object goes beyond current bounds
-        if (newX < 0) {
-            anchorPane.setPrefWidth(anchorPane.getPrefWidth() - newX);
-            classBox.setLayoutX(0);
-        }
-        if (newY < 0) {
-            anchorPane.setPrefHeight(anchorPane.getPrefHeight() - newY);
-            classBox.setLayoutY(0);
-        }
-
-        if (newX + boxWidth > anchorPane.getPrefWidth()) {
-            anchorPane.setPrefWidth(newX + boxWidth);
-        }
-
-        if (newY + boxHeight > anchorPane.getPrefHeight()) {
-            anchorPane.setPrefHeight(newY + boxHeight);
         }
     }
 
@@ -510,4 +403,122 @@ public class mainDiagramController
         }
     }
 
+    public ClassBox addClass(String className)
+    {
+        //creates a classBoxBuilder calls adds the panes we need, then builds it.
+        ClassBoxBasicBuilder classBoxBuilder = new ClassBoxBasicBuilder(anchorPane, baseController, className, boxWidth, boxHeight, data.getClassItems().get(className.toLowerCase().trim()));
+        classBoxBuilder.withFieldPane();
+        classBoxBuilder.withMethodPane();
+        ClassBox classBox = classBoxBuilder.build();
+       
+        anchorPane.getChildren().add(classBox);
+
+        classBox.setOnMouseMoved(event -> {
+            classBox.getRanchor().setVisible(false);
+            event.consume();
+        });
+        classBox.setOnMouseClicked(event -> event.consume());
+
+        // setup mouse drag
+        classBox.getDragBox().setOnMousePressed(event -> {
+                classBox.toFront();
+                offsetX = (event.getSceneX() / scaleTransform.getX()) - classBox.getLayoutX();
+                offsetY = (event.getSceneY() / scaleTransform.getY()) - classBox.getLayoutY();
+                event.consume();
+        });
+    
+        classBox.getDragBox().setOnMouseDragged(event -> {
+            double newX = (event.getSceneX() / scaleTransform.getX()) - offsetX;
+            double newY = (event.getSceneY() / scaleTransform.getY()) - offsetY;
+        
+            classBox.setLayoutX(newX);
+            classBox.setLayoutY(newY);
+            data.getClassItems().get(classBox.getClassName().toLowerCase().trim()).setX(newX);
+            data.getClassItems().get(classBox.getClassName().toLowerCase().trim()).setY(newY);
+
+            adjustAnchorPaneSize(newX, newY, classBox);
+            updateRelationLines();
+        });
+
+        classBox.getRanchor().setOnMouseClicked(event -> {
+            ranchorClick(event, classBox);
+            event.consume();
+        });
+
+        return classBox;
+    }
+
+    private ClassBox getClassBoxByName(String className)
+    {
+        for (Node node : anchorPane.getChildren())
+        {
+            if (node instanceof ClassBox)
+            {
+                ClassBox classBox = (ClassBox) node;
+                if (classBox.getClassName().equals(className))
+                    return classBox;
+            }
+        }
+        return null;
+    }
+
+    private void adjustAnchorPaneSize(double newX, double newY, ClassBox classBox) {
+        // Expand AnchorPane if object goes beyond current bounds
+        if (newX < 0) {
+            anchorPane.setPrefWidth(anchorPane.getPrefWidth() - newX);
+            classBox.setLayoutX(0);
+        }
+        if (newY < 0) {
+            anchorPane.setPrefHeight(anchorPane.getPrefHeight() - newY);
+            classBox.setLayoutY(0);
+        }
+
+        if (newX + boxWidth > anchorPane.getPrefWidth()) {
+            anchorPane.setPrefWidth(newX + boxWidth);
+        }
+
+        if (newY + boxHeight > anchorPane.getPrefHeight()) {
+            anchorPane.setPrefHeight(newY + boxHeight);
+        }
+    }
+
+    private MouseEvent getFakeMouseEvent(double mouseX, double mouseY)
+    {
+        // Create a minimal MouseEvent for just the required X and Y
+        MouseEvent fakeMouseEvent = new MouseEvent(
+            MouseEvent.MOUSE_MOVED,  // Event type
+            mouseX,            // X coordinate
+            mouseY,            // Y coordinate
+            0,                       // Screen X (unused, can be 0)
+            0,                       // Screen Y (unused, can be 0)
+            MouseButton.NONE,        // No button pressed
+            0,                       // Click count
+            false,                   // Shift down
+            false,                   // Control down
+            false,                   // Alt down
+            false,                   // Meta down
+            false,                   // Primary button down
+            false,                   // Middle button down
+            false,                   // Secondary button down
+            false,                   // Synthesized
+            false,                   // Popup trigger
+            false,                   // Still since press
+            null                     // Pick result
+        );
+
+        return fakeMouseEvent;
+    }
+
+    private String getNextRelationType(String currentType, boolean next)
+    {
+        String[] types = { "Aggregation", "Composition", "Generalization", "Realization" };
+        int currentIndex = java.util.Arrays.asList(types).indexOf(currentType);
+
+        if (next)
+            currentIndex = (currentIndex - 1 + types.length) % types.length;
+        else
+            currentIndex = (currentIndex + 1) % types.length;
+        
+        return types[currentIndex];
+    }
 }
