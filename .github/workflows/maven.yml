@@ -32,4 +32,7 @@ jobs:
     - name: Build with Maven
       working-directory: ./uml
       run: mvn clean install
+    - name: Maven Tests
+      working-directory: ./uml
+      run: mvn test
 
