@@ -1,10 +1,13 @@
 package com.unhandledexceptions.Controller;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+
+import javax.imageio.ImageIO;
 
 import com.unhandledexceptions.Model.ClassItem;
 import com.unhandledexceptions.Model.Data;
@@ -25,6 +28,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.Node;
+import javafx.scene.SnapshotParameters;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.transform.Scale;
 import javafx.scene.control.ScrollPane;
@@ -32,9 +36,11 @@ import javafx.scene.control.ToolBar;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
+import javafx.embed.swing.SwingFXUtils;
 
 public class mainDiagramController
 {
@@ -70,6 +76,7 @@ public class mainDiagramController
         //controller = this;
         data = new Data();
         baseController = new BaseController(data);
+
     }
 
     @FXML private StackPane bgpane;
@@ -347,6 +354,9 @@ public class mainDiagramController
             // if (classBox == null) return;
             // classBox.setLayoutX(event.getSceneX() / scaleTransform.getX());
             // classBox.setLayoutY(event.getSceneY() / scaleTransform.getY());
+
+            
+            //takeScreenshot();
         }
 
     }
@@ -562,6 +572,28 @@ public class mainDiagramController
         shadow.setColor(color);
 
         return shadow;
+    }
+
+    @FXML
+    public void onTakeScreenshot() {
+        
+        takeScreenshot();
+    }
+
+    private void takeScreenshot() {
+
+        double width = anchorPane.getWidth();
+        double height = anchorPane.getHeight();
+
+        WritableImage image = new WritableImage((int) width, (int) height);
+        anchorPane.snapshot(new SnapshotParameters(), image);
+        File file = new File("screenshot.png");
+
+        try {
+            ImageIO.write(SwingFXUtils.fromFXImage(image, null), "png", file);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
 }
