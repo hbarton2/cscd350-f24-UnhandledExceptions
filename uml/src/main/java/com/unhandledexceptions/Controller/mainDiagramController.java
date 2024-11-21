@@ -1,10 +1,14 @@
 package com.unhandledexceptions.Controller;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
+
+import javax.imageio.ImageIO;
 
 import com.unhandledexceptions.Model.ClassItem;
 import com.unhandledexceptions.Model.Data;
@@ -25,16 +29,20 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.Node;
+import javafx.scene.SnapshotParameters;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.transform.Scale;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.ToolBar;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
+import javafx.embed.swing.SwingFXUtils;
 
 public class mainDiagramController
 {
@@ -60,7 +68,7 @@ public class mainDiagramController
     @FXML
     private MenuBar menuBar;
     @FXML
-    private ImageView undoImageView, redoImageView, darkModeImageView, lightModeImageView, partyModeImageView;
+    private ImageView undoImageView, redoImageView, darkModeImageView, lightModeImageView, partyModeImageView, screenshotImageView;
     @FXML
     private Button addClassButton;
     @FXML
@@ -70,6 +78,7 @@ public class mainDiagramController
         //controller = this;
         data = new Data();
         baseController = new BaseController(data);
+
     }
 
     @FXML private StackPane bgpane;
@@ -347,6 +356,9 @@ public class mainDiagramController
             // if (classBox == null) return;
             // classBox.setLayoutX(event.getSceneX() / scaleTransform.getX());
             // classBox.setLayoutY(event.getSceneY() / scaleTransform.getY());
+
+            
+            //takeScreenshot();
         }
 
     }
@@ -479,17 +491,26 @@ public class mainDiagramController
     public void onDarkModeClicked() {
         // toggle dark mode
         if(!darkMode){
+            // remove light theme and add dark theme
             rootVBox.getStylesheets().remove(getClass().getResource("/css/classBoxStyle.css").toExternalForm());
             rootVBox.getStylesheets().add(getClass().getResource("/css/darktheme.css").toExternalForm());
+            // add dark theme to the menu bar
             menuBar.getStyleClass().add("menubar-dark");
+            // add dark theme to the file and help menus
             fileMenu.getStyleClass().add("menu-dark");
             helpMenu.getStyleClass().add("menu-dark");
+            // add dark theme to the toolbar
             toolBar.getStyleClass().add("toolbar-dark");
+            // add dark theme to the add class button
             addClassButton.getStyleClass().add("dark-theme-button");
+            // change the images to dark mode
             undoImageView.setImage(new Image(getClass().getResourceAsStream("/images/undo-arrow-dark.png")));
             redoImageView.setImage(new Image(getClass().getResourceAsStream("/images/redo-arrow-dark.png")));
+            screenshotImageView.setImage(new Image(getClass().getResourceAsStream("/images/snapshot-icon-dark.png")));
             darkModeImageView.setImage(new Image(getClass().getResourceAsStream("/images/dark-mode-toggle-dark.png")));
             lightModeImageView.setImage(new Image(getClass().getResourceAsStream("/images/light-mode-toggle-dark.png")));
+
+            // change the party mode image to dark mode
             if(partyMode){
                 partyModeImageView.setImage(new Image(getClass().getResourceAsStream("/images/party-mode-on.png")));
             } else {
@@ -504,17 +525,26 @@ public class mainDiagramController
     @FXML
     public void onLightModeClicked() {
         if(darkMode){
+            // remove dark theme and add light theme
             rootVBox.getStylesheets().remove(getClass().getResource("/css/darktheme.css").toExternalForm());
             rootVBox.getStylesheets().add(getClass().getResource("/css/classBoxStyle.css").toExternalForm());
+            // remove dark theme from the menu bar
             menuBar.getStyleClass().remove("menubar-dark");
+            // remove dark theme from the file and help menus
             fileMenu.getStyleClass().remove("menu-dark");
             helpMenu.getStyleClass().remove("menu-dark");
+            // remove dark theme from the toolbar
             toolBar.getStyleClass().remove("toolbar-dark");
+            // remove dark theme from the add class button
             addClassButton.getStyleClass().remove("dark-theme-button");
+            // change the images to light mode
             undoImageView.setImage(new Image(getClass().getResourceAsStream("/images/undo-arrow.png")));
             redoImageView.setImage(new Image(getClass().getResourceAsStream("/images/redo-arrow.png")));
+            screenshotImageView.setImage(new Image(getClass().getResourceAsStream("/images/snapshot-icon.png")));
             darkModeImageView.setImage(new Image(getClass().getResourceAsStream("/images/dark-mode-toggle.png")));
             lightModeImageView.setImage(new Image(getClass().getResourceAsStream("/images/light-mode-toggle.png")));
+
+            // change the party mode image to light mode
             if(partyMode){
                 partyModeImageView.setImage(new Image(getClass().getResourceAsStream("/images/party-mode-on.png")));
             } else {
@@ -562,6 +592,40 @@ public class mainDiagramController
         shadow.setColor(color);
 
         return shadow;
+    }
+
+    @FXML
+    public void onTakeScreenshot() {
+        takeScreenshot();
+    }
+
+    private void takeScreenshot() {
+
+        TextInputDialog dialog = new TextInputDialog("screenshot");
+        dialog.setTitle("Save Screenshot");
+        dialog.setHeaderText("Enter the name of the screenshot");
+        dialog.setContentText("File Name:");
+
+        Optional<String> result = dialog.showAndWait();
+        if(result.isPresent()){
+            String filename = result.get();
+            if(!filename.endsWith(".png")){
+                filename += ".png";
+            }
+    
+            double width = anchorPane.getWidth();
+            double height = anchorPane.getHeight();
+
+            WritableImage image = new WritableImage((int) width, (int) height);
+            anchorPane.snapshot(new SnapshotParameters(), image);
+            File file = new File(filename);
+
+            try {
+                ImageIO.write(SwingFXUtils.fromFXImage(image, null), "png", file);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
 }
