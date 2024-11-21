@@ -2,6 +2,7 @@ package com.unhandledexceptions.View;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.geometry.BoundingBox;
 import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -106,11 +107,44 @@ public class ClassBox extends StackPane implements PropertyChangeListener
         Bounds classBoxBounds = localToParent(getBoundsInLocal());
 
         // Check if the mouse is near the classBox
-        double threshold = 100.0; // Distance threshold for "nearby"
-        boolean isNear = classBoxBounds.intersects(event.getX() - threshold, event.getY() - threshold, threshold * 2, threshold * 2);
+        double threshold = 25.0; // Distance threshold for "nearby"
+        boolean isNear = classBoxBounds.intersects(event.getX() - threshold, event.getY() -
+         threshold, threshold * 2, threshold * 2);
 
-        if (isNear) 
+        if (isNear)
         {
+            // make sure we arent near another line connecton
+            Bounds rbounds = ranchor.getBoundsInParent();
+            for (Node node : anchorPane.getChildren()) {
+                if (node instanceof RelationLine) {
+                    RelationLine line = (RelationLine) node;
+                    if (line.getSource() == this)
+                    {
+                        Bounds obounds = new BoundingBox(getLayoutX() + line.getSourceOffset().getX(), getLayoutY() +
+                         line.getSourceOffset().getY(), rbounds.getWidth(), rbounds.getHeight());
+
+                        if (obounds.intersects(event.getX() - threshold, event.getY() -
+                         threshold, threshold * 2, threshold * 2))
+                        {
+                            ranchor.setVisible(false);
+                            return;
+                        }
+                    }
+                    else if (line.getDest() == this)
+                    {
+                        Bounds obounds = new BoundingBox(getLayoutX() + line.getDestOffset().getX(), getLayoutY() +
+                         line.getDestOffset().getY(), rbounds.getWidth(), rbounds.getHeight());
+
+                        if (obounds.intersects(event.getX() - threshold, event.getY() -
+                         threshold, threshold * 2, threshold * 2))
+                        {
+                            ranchor.setVisible(false);
+                            return;
+                        }
+                    }
+                }
+            }
+
             // Calculate the closest position for the ranchor on the edge of the classBox
             double closestX = Math.min(Math.max(event.getX(), classBoxBounds.getMinX()), classBoxBounds.getMaxX());
             double closestY = Math.min(Math.max(event.getY(), classBoxBounds.getMinY()), classBoxBounds.getMaxY());

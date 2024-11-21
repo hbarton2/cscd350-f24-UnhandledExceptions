@@ -18,6 +18,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
+import javafx.scene.shape.Line;
 import javafx.scene.shape.Polyline;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.transform.Scale;
@@ -43,6 +44,7 @@ public class RelationLine extends Polyline
     Button deleteButton;
     ImageView typeIcon;
     Circle ranchor;
+    Rectangle testRect; Line testLine;
 
     // constructor for relationship line
     public RelationLine(BaseController baseController, AnchorPane anchorPane)
@@ -61,7 +63,6 @@ public class RelationLine extends Polyline
         ranchor.setFill(Color.BLACK);
         ranchor.setVisible(false);
         anchorPane.getChildren().add(this.ranchor);
-        ranchor.toBack();
 
         //type button
         typeButton = new Button();
@@ -271,11 +272,12 @@ public class RelationLine extends Polyline
         Bounds sourceBounds = modBounds(source.getBoundsInParent(), 35);
         Bounds destBounds = modBounds(dest.getBoundsInParent(), 35);
 
-        // Rectangle rect = new Rectangle(sourceBounds.getMinX(), sourceBounds.getMinY(), sourceBounds.getWidth(), sourceBounds.getHeight());
-        // rect.setStroke(Color.RED);
-        // rect.setFill(Color.TRANSPARENT);
-        // anchorPane.getChildren().add(rect);
-        // rect.toBack();
+        // anchorPane.getChildren().remove(testRect);
+        // testRect = new Rectangle(sourceBounds.getMinX(), sourceBounds.getMinY(), sourceBounds.getWidth(), sourceBounds.getHeight());
+        // testRect.setStroke(Color.RED);
+        // testRect.setFill(Color.TRANSPARENT);
+        // anchorPane.getChildren().add(testRect);
+        // testRect.toBack();
 
         //get pre-start
         if (sourceOffset.getX() < 0)
@@ -344,8 +346,7 @@ public class RelationLine extends Polyline
         //get source intersection points, if any
         Point2D[] sourcePath = getPathAroundBounds(
             new Point2D(firstX, firstY), new Point2D(lastX, lastY), sourceBounds);
-        
-        //TODO: weird patchest on left and right that dont trigger
+
         //route around source classbox
         if (sourcePath != null)
         {
@@ -357,12 +358,14 @@ public class RelationLine extends Polyline
             }
         }
 
+        Point2D transitionPoint = null;
+
         if (source != dest)
         {
-            //TODO: dest is checking from first to last but it should check from whatever just happened to last
             //get dest intersection points, if any
             Point2D[] destPoints = getPathAroundBounds(
-                new Point2D(firstX, firstY), new Point2D(lastX, lastY), destBounds);
+                new Point2D(getPoints().get(getPoints().size() - 2), getPoints().get(getPoints().size() - 1)),
+                 new Point2D(lastX, lastY), destBounds);
 
             //route around dest classbox
             if (destPoints != null)
@@ -370,8 +373,23 @@ public class RelationLine extends Polyline
                 for (Point2D point : destPoints)
                 {
                     if (point == null) continue;
+
+                    if (transitionPoint == null)
+                    {
+                        transitionPoint = new Point2D(getPoints().get(getPoints().size() - 2), point.getY());
+                        getPoints().add(transitionPoint.getX());
+                        getPoints().add(transitionPoint.getY());
+                    }
+
                     getPoints().add(point.getX());
                     getPoints().add(point.getY());
+                }
+
+                if (transitionPoint == null)
+                {
+                    transitionPoint = new Point2D(getPoints().get(getPoints().size() - 2), lastY);
+                    getPoints().add(transitionPoint.getX());
+                    getPoints().add(transitionPoint.getY());
                 }
             }
         }
@@ -488,10 +506,8 @@ public class RelationLine extends Polyline
      * this method returns both points a line intersects a rectangle (if it does)
      * or null if it doesn't intersect
      */
-    public static Point2D[] getPathAroundBounds(Point2D lineStart, Point2D lineEnd, Bounds bounds)
+    public Point2D[] getPathAroundBounds(Point2D lineStart, Point2D lineEnd, Bounds bounds)
      {
-        Point2D[] hits = new Point2D[2]; // At most 2 intersection points
-
         // Rectangle edges as line segments
         Point2D topLeft = new Point2D(bounds.getMinX(), bounds.getMinY());
         Point2D topRight = new Point2D(bounds.getMaxX(), bounds.getMinY());
@@ -499,7 +515,25 @@ public class RelationLine extends Polyline
         Point2D bottomRight = new Point2D(bounds.getMaxX(), bounds.getMaxY());
         boolean top = false, left = false, right = false, bottom = false;
 
+        //extend line a bit to avoid intersection detection errors
+        double dx = lineEnd.getX() - lineStart.getX();
+        double dy = lineEnd.getY() - lineStart.getY();
+        double length = Math.sqrt(dx*dx+dy*dy);
+        dx = dx / length; dy = dy / length;
+        lineStart = lineStart.subtract(dx * 10, dy * 10);
+        lineEnd = lineEnd.add(dx * 10, dy * 10);
+
+        //tester line
+        // anchorPane.getChildren().remove(testLine);
+        // testLine = new Line();
+        // testLine.setStartX(lineStart.getX()); testLine.setStartY(lineStart.getY());
+        // testLine.setEndX(lineEnd.getX()); testLine.setEndY(lineEnd.getY());
+        // testLine.setStroke(Color.RED);
+        // anchorPane.getChildren().add(testLine);
+        // testLine.toBack();
+
         // Check intersection with each edge
+        Point2D[] hits = new Point2D[2]; // At most 2 intersection points
         int count = 0;
         if (count < 2 && (hits[count] = lineSegmentIntersection(lineStart, lineEnd, topLeft, topRight)) != null) { count++; top = true; }
         if (count < 2 && (hits[count] = lineSegmentIntersection(lineStart, lineEnd, topRight, bottomRight)) != null) { count++; right = true; }
@@ -578,7 +612,7 @@ public class RelationLine extends Polyline
      * returns the point where a line intersects another, if it does
      * null if it doesn't
      */
-    private static Point2D lineSegmentIntersection(Point2D p1, Point2D p2, Point2D p3, Point2D p4)
+    private Point2D lineSegmentIntersection(Point2D p1, Point2D p2, Point2D p3, Point2D p4)
     {
         // Line (p1, p2) and line (p3, p4)
         double a1 = p2.getY() - p1.getY();
@@ -615,7 +649,7 @@ public class RelationLine extends Polyline
      * helper for lineSegmentIntersection
      * returns true if point is between the line formed by start and end
      */
-    private static boolean isBetween(Point2D start, Point2D end, Point2D point)
+    private boolean isBetween(Point2D start, Point2D end, Point2D point)
     {
         double crossProduct = (point.getX() - start.getX()) * (end.getY() - start.getY()) -
                               (point.getY() - start.getY()) * (end.getX() - start.getX());
