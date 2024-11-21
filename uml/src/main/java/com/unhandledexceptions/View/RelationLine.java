@@ -342,38 +342,17 @@ public class RelationLine extends Polyline
         getPoints().add(firstX);
         getPoints().add(firstY);
 
-        //middle for source top
-        if (sourceSide == side.N)
-        {
-            if (lastY > firstY)
-            {
-                if (lastX < firstX)
-                    getPoints().add(sourceBounds.getMinX() - 20);
-                else
-                    getPoints().add(sourceBounds.getMaxX() + 20);
-
-                getPoints().add(firstY);
-
-                //getPoints().add(sourceBounds.getMaxX() + 20);
-                //getPoints().add(lastY);
-            }
-            getPoints().add(getPoints().get(getPoints().size() - 2));
-            getPoints().add(lastY);
-        }
-        else if (sourceSide == side.E)
-        {
-
-        }
-        else if (sourceSide == side.S)
-        {
-            getPoints().add(firstX);
-            getPoints().add(lastY);
-        }
-        else if (sourceSide == side.W)
-        {
-
-        }
-
+        //middle =====================================================================================
+        //get source intersection points, if any
+        Point2D[] sourcePoints = findLineRectangleIntersections(
+            new Point2D(firstX, firstY), new Point2D(lastX, lastY),
+             sourceBounds.getMinX(), sourceBounds.getMinY(), sourceBounds.getMaxX(), sourceBounds.getMaxY());
+        //get dest intersection points, if any
+        Point2D[] destPoints = findLineRectangleIntersections(
+            new Point2D(firstX, firstY), new Point2D(lastX, lastY),
+             destBounds.getMinX(), destBounds.getMinY(), destBounds.getMaxX(), destBounds.getMaxY());
+        
+        //next
 
         //get post-end
         if (source != dest)
@@ -473,5 +452,86 @@ public class RelationLine extends Polyline
     {
         this.dest = classBox;
         this.destOffset = offset;
+    }
+
+    /*
+     * this method returns both points a line intersects a rectangle (if it does)
+     * or null if it doesn't intersect
+     */
+    public static Point2D[] findLineRectangleIntersections(Point2D lineStart,
+     Point2D lineEnd, double rectX, double rectY, double rectWidth, double rectHeight)
+     {
+        Point2D[] result = new Point2D[2]; // At most 2 intersection points
+
+        // Rectangle edges as line segments
+        Point2D topLeft = new Point2D(rectX, rectY);
+        Point2D topRight = new Point2D(rectX + rectWidth, rectY);
+        Point2D bottomLeft = new Point2D(rectX, rectY + rectHeight);
+        Point2D bottomRight = new Point2D(rectX + rectWidth, rectY + rectHeight);
+
+        // Check intersection with each edge
+        int count = 0;
+        if (count < 2 && (result[count] = lineSegmentIntersection(lineStart, lineEnd, topLeft, topRight)) != null) count++;
+        if (count < 2 && (result[count] = lineSegmentIntersection(lineStart, lineEnd, topRight, bottomRight)) != null) count++;
+        if (count < 2 && (result[count] = lineSegmentIntersection(lineStart, lineEnd, bottomRight, bottomLeft)) != null) count++;
+        if (count < 2 && (result[count] = lineSegmentIntersection(lineStart, lineEnd, bottomLeft, topLeft)) != null) count++;
+
+        return count > 0 ? result : null; // Return intersections or null if no intersection
+    }
+
+    /*
+     * helper for findLineRectangleIntersections
+     * returns the point where a line intersects another, if it does
+     * null if it doesn't
+     */
+    private static Point2D lineSegmentIntersection(Point2D p1, Point2D p2, Point2D p3, Point2D p4)
+    {
+        // Line (p1, p2) and line (p3, p4)
+        double a1 = p2.getY() - p1.getY();
+        double b1 = p1.getX() - p2.getX();
+        double c1 = a1 * p1.getX() + b1 * p1.getY();
+
+        double a2 = p4.getY() - p3.getY();
+        double b2 = p3.getX() - p4.getX();
+        double c2 = a2 * p3.getX() + b2 * p3.getY();
+
+        double determinant = a1 * b2 - a2 * b1;
+
+        if (determinant == 0) {
+            // Lines are parallel
+            return null;
+        }
+
+        // Intersection point
+        double x = (b2 * c1 - b1 * c2) / determinant;
+        double y = (a1 * c2 - a2 * c1) / determinant;
+
+        Point2D intersection = new Point2D(x, y);
+
+        // Check if the intersection is within both line segments
+        if (isBetween(p1, p2, intersection) && isBetween(p3, p4, intersection)) {
+            return intersection;
+        }
+
+        return null;
+    }
+
+    /*
+     * helper for lineSegmentIntersection
+     * returns true if point is between the line formed by start and end
+     */
+    private static boolean isBetween(Point2D start, Point2D end, Point2D point)
+    {
+        double crossProduct = (point.getX() - start.getX()) * (end.getY() - start.getY()) -
+                              (point.getY() - start.getY()) * (end.getX() - start.getX());
+        if (Math.abs(crossProduct) > 1e-6) return false; // Not collinear
+
+        double dotProduct = (point.getX() - start.getX()) * (end.getX() - start.getX()) +
+                            (point.getY() - start.getY()) * (end.getY() - start.getY());
+        if (dotProduct < 0) return false;
+
+        double squaredLengthBA = (end.getX() - start.getX()) * (end.getX() - start.getX()) +
+                                 (end.getY() - start.getY()) * (end.getY() - start.getY());
+        return dotProduct <= squaredLengthBA;
     }
 }
