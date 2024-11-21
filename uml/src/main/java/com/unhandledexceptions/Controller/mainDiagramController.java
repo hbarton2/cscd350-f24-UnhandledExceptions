@@ -2,10 +2,12 @@ package com.unhandledexceptions.Controller;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.foreign.Linker.Option;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.imageio.ImageIO;
 
@@ -32,6 +34,7 @@ import javafx.scene.SnapshotParameters;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.transform.Scale;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.ToolBar;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
@@ -582,17 +585,30 @@ public class mainDiagramController
 
     private void takeScreenshot() {
 
-        double width = anchorPane.getWidth();
-        double height = anchorPane.getHeight();
+        TextInputDialog dialog = new TextInputDialog("screenshot");
+        dialog.setTitle("Save Screenshot");
+        dialog.setHeaderText("Enter the name of the screenshot");
+        dialog.setContentText("File Name:");
 
-        WritableImage image = new WritableImage((int) width, (int) height);
-        anchorPane.snapshot(new SnapshotParameters(), image);
-        File file = new File("screenshot.png");
+        Optional<String> result = dialog.showAndWait();
+        if(result.isPresent()){
+            String filename = result.get();
+            if(!filename.endsWith(".png")){
+                filename += ".png";
+            }
+    
+            double width = anchorPane.getWidth();
+            double height = anchorPane.getHeight();
 
-        try {
-            ImageIO.write(SwingFXUtils.fromFXImage(image, null), "png", file);
-        } catch (IOException e) {
-            e.printStackTrace();
+            WritableImage image = new WritableImage((int) width, (int) height);
+            anchorPane.snapshot(new SnapshotParameters(), image);
+            File file = new File(filename);
+
+            try {
+                ImageIO.write(SwingFXUtils.fromFXImage(image, null), "png", file);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
