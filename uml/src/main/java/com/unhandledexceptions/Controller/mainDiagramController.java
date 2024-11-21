@@ -2,7 +2,6 @@ package com.unhandledexceptions.Controller;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.foreign.Linker.Option;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -579,7 +578,6 @@ public class mainDiagramController
 
     @FXML
     public void onTakeScreenshot() {
-        
         takeScreenshot();
     }
 
