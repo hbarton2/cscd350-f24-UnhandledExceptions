@@ -8,6 +8,7 @@ import javax.swing.JPanel;
 import com.unhandledexceptions.Controller.BaseController;
 
 import javafx.application.Platform;
+import javafx.geometry.BoundingBox;
 import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
 import javafx.scene.control.Button;
@@ -18,6 +19,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Polyline;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.transform.Scale;
 import javafx.scene.transform.Transform;
 
@@ -223,7 +225,7 @@ public class RelationLine extends Polyline
                 double startY = ((source.getLayoutY() + sourceOffset.getY())) / scaleTransform.getY();
                 double endX = (dest.getLayoutX() + destOffset.getX()) / scaleTransform.getX();
                 double endY = ((dest.getLayoutY() + destOffset.getY())) / scaleTransform.getY();
-                update(startX, startY, endX, endY);
+                update(scaleTransform, startX, startY, endX, endY);
             }
         });
     }
@@ -243,7 +245,7 @@ public class RelationLine extends Polyline
                 double startY = ((source.getLayoutY() + sourceOffset.getY())) / scaleTransform.getY();
                 double endX = event.getX() / scaleTransform.getX();
                 double endY = event.getY() / scaleTransform.getY();
-                update(startX, startY, endX, endY);
+                update(scaleTransform, startX, startY, endX, endY);
             }
         });
     }
@@ -257,7 +259,7 @@ public class RelationLine extends Polyline
      * @param endX the ending X coordinate of the line
      * @param endY the ending Y coordinate of the line
      */
-    private void update(double startX, double startY, double endX, double endY)
+    private void update(Scale scaleTransform, double startX, double startY, double endX, double endY)
     {
         toBack();
         getPoints().clear();
@@ -266,24 +268,26 @@ public class RelationLine extends Polyline
         double preY = startY, firstY = startY;
         double postX = endX, lastX = endX;
         double postY = endY, lastY = endY;
-        Bounds sourceBounds = source.getBoundsInParent();
-        Bounds destBounds = dest.getBoundsInParent();
-        enum side {N,E,S,W};
-        side sourceSide = side.N, destSide = side.N;
+        Bounds sourceBounds = modBounds(source.getBoundsInParent(), 35);
+        Bounds destBounds = modBounds(dest.getBoundsInParent(), 35);
+
+        // Rectangle rect = new Rectangle(sourceBounds.getMinX(), sourceBounds.getMinY(), sourceBounds.getWidth(), sourceBounds.getHeight());
+        // rect.setStroke(Color.RED);
+        // rect.setFill(Color.TRANSPARENT);
+        // anchorPane.getChildren().add(rect);
+        // rect.toBack();
 
         //get pre-start
         if (sourceOffset.getX() < 0)
         {
             firstX = startX - 20;
             preX = startX + 10;
-            sourceSide = side.W;
             typeIcon.setRotate(0);
         }
         else if (sourceOffset.getX() > source.getWidth())
         {
             firstX = startX + 20;
             preX = startX - 10;
-            sourceSide = side.E;
             typeIcon.setRotate(180);
         }
         else if (sourceOffset.getY() < 0)
@@ -291,14 +295,12 @@ public class RelationLine extends Polyline
             firstY = startY - 20;
             preY = startY + 10;
             typeIcon.setRotate(90);
-            sourceSide = side.N;
         }
         else if (sourceOffset.getY() > source.getHeight())
         {
             firstY = startY + 20;
             preY = startY - 10;
             typeIcon.setRotate(-90);
-            sourceSide = side.S;
         }
 
         //get post-end
@@ -309,28 +311,24 @@ public class RelationLine extends Polyline
                 lastX = endX - 20;
                 postX = endX + 10;
                 if (type.equals("Generalization") || type.equals("Realization")) typeIcon.setRotate(0);
-                destSide = side.W;
             }
             else if (destOffset.getX() > dest.getWidth())
             {
                 lastX = endX + 20;
                 postX = endX - 10;
                 if (type.equals("Generalization") || type.equals("Realization"))typeIcon.setRotate(180);
-                destSide = side.E;
             }
             else if (destOffset.getY() < 0)
             {
                 lastY = endY - 20;
                 postY = endY + 10;
                 if (type.equals("Generalization") || type.equals("Realization"))typeIcon.setRotate(90);
-                destSide = side.N;
             }
             else if (destOffset.getY() > dest.getHeight())
             {
                 lastY = endY + 20;
                 postY = endY - 10;
                 if (type.equals("Generalization") || type.equals("Realization"))typeIcon.setRotate(-90);
-                destSide = side.S;
             }
         }
 
@@ -344,16 +342,41 @@ public class RelationLine extends Polyline
 
         //middle =====================================================================================
         //get source intersection points, if any
-        Point2D[] sourcePoints = findLineRectangleIntersections(
-            new Point2D(firstX, firstY), new Point2D(lastX, lastY),
-             sourceBounds.getMinX(), sourceBounds.getMinY(), sourceBounds.getMaxX(), sourceBounds.getMaxY());
-        //get dest intersection points, if any
-        Point2D[] destPoints = findLineRectangleIntersections(
-            new Point2D(firstX, firstY), new Point2D(lastX, lastY),
-             destBounds.getMinX(), destBounds.getMinY(), destBounds.getMaxX(), destBounds.getMaxY());
+        Point2D[] sourcePath = getPathAroundBounds(
+            new Point2D(firstX, firstY), new Point2D(lastX, lastY), sourceBounds);
         
-        //next
+        //TODO: weird patchest on left and right that dont trigger
+        //route around source classbox
+        if (sourcePath != null)
+        {
+            for (Point2D point : sourcePath)
+            {
+                if (point == null) continue;
+                getPoints().add(point.getX());
+                getPoints().add(point.getY());
+            }
+        }
 
+        if (source != dest)
+        {
+            //TODO: dest is checking from first to last but it should check from whatever just happened to last
+            //get dest intersection points, if any
+            Point2D[] destPoints = getPathAroundBounds(
+                new Point2D(firstX, firstY), new Point2D(lastX, lastY), destBounds);
+
+            //route around dest classbox
+            if (destPoints != null)
+            {
+                for (Point2D point : destPoints)
+                {
+                    if (point == null) continue;
+                    getPoints().add(point.getX());
+                    getPoints().add(point.getY());
+                }
+            }
+        }
+
+        //end =====================================================================================
         //get post-end
         if (source != dest)
         {
@@ -395,7 +418,14 @@ public class RelationLine extends Polyline
             getStrokeDashArray().addAll(10.0, 10.0);
         
     }
-    
+
+    //helper function for resizing a bounds
+    private Bounds modBounds(Bounds bounds, double amount)
+    {
+        return new BoundingBox(bounds.getMinX() - amount, bounds.getMinY() - amount,
+                            bounds.getWidth() + (amount * 2), bounds.getHeight() + (amount * 2));
+    }
+
     // default getters and setters
     public String getType()
     {
@@ -458,25 +488,89 @@ public class RelationLine extends Polyline
      * this method returns both points a line intersects a rectangle (if it does)
      * or null if it doesn't intersect
      */
-    public static Point2D[] findLineRectangleIntersections(Point2D lineStart,
-     Point2D lineEnd, double rectX, double rectY, double rectWidth, double rectHeight)
+    public static Point2D[] getPathAroundBounds(Point2D lineStart, Point2D lineEnd, Bounds bounds)
      {
-        Point2D[] result = new Point2D[2]; // At most 2 intersection points
+        Point2D[] hits = new Point2D[2]; // At most 2 intersection points
 
         // Rectangle edges as line segments
-        Point2D topLeft = new Point2D(rectX, rectY);
-        Point2D topRight = new Point2D(rectX + rectWidth, rectY);
-        Point2D bottomLeft = new Point2D(rectX, rectY + rectHeight);
-        Point2D bottomRight = new Point2D(rectX + rectWidth, rectY + rectHeight);
+        Point2D topLeft = new Point2D(bounds.getMinX(), bounds.getMinY());
+        Point2D topRight = new Point2D(bounds.getMaxX(), bounds.getMinY());
+        Point2D bottomLeft = new Point2D(bounds.getMinX(), bounds.getMaxY());
+        Point2D bottomRight = new Point2D(bounds.getMaxX(), bounds.getMaxY());
+        boolean top = false, left = false, right = false, bottom = false;
 
         // Check intersection with each edge
         int count = 0;
-        if (count < 2 && (result[count] = lineSegmentIntersection(lineStart, lineEnd, topLeft, topRight)) != null) count++;
-        if (count < 2 && (result[count] = lineSegmentIntersection(lineStart, lineEnd, topRight, bottomRight)) != null) count++;
-        if (count < 2 && (result[count] = lineSegmentIntersection(lineStart, lineEnd, bottomRight, bottomLeft)) != null) count++;
-        if (count < 2 && (result[count] = lineSegmentIntersection(lineStart, lineEnd, bottomLeft, topLeft)) != null) count++;
+        if (count < 2 && (hits[count] = lineSegmentIntersection(lineStart, lineEnd, topLeft, topRight)) != null) { count++; top = true; }
+        if (count < 2 && (hits[count] = lineSegmentIntersection(lineStart, lineEnd, topRight, bottomRight)) != null) { count++; right = true; }
+        if (count < 2 && (hits[count] = lineSegmentIntersection(lineStart, lineEnd, bottomRight, bottomLeft)) != null) { count++; bottom = true; }
+        if (count < 2 && (hits[count] = lineSegmentIntersection(lineStart, lineEnd, bottomLeft, topLeft)) != null) { count++; left = true; }
 
-        return count > 0 ? result : null; // Return intersections or null if no intersection
+        //result
+        Point2D[] result = new Point2D[2];
+
+        //handle only 1 edge hit
+        if (hits[1] == null)
+        {
+            // if (top) { result[0] = topLeft; result[1] = bottomLeft; }
+            // if (left) { result[0] = topLeft; result[1] = topRight; }
+            // if (right) { result[0] = bottomRight; result[1] = bottomLeft; }
+            // if (bottom) { result[0] = bottomRight; result[1] = topRight; }
+
+            return result;
+        }
+
+        //make sure first intersection is actually first
+        if (hits[0].distance(lineStart) > hits[1].distance(lineStart))
+        {
+            Point2D swap = hits[0];
+            hits[0] = hits[1];
+            hits[1] = swap;
+        }
+
+        //intersection though parallel sides
+        if (top && bottom) 
+        {
+            double leftDistance = (hits[0].getX() - topLeft.getX()) + (hits[1].getX() - topLeft.getX());
+            double rightDistance = (topRight.getX() - hits[0].getX()) + (topRight.getX() - hits[1].getX());
+            if (leftDistance < rightDistance)
+            {
+                result[0] = new Point2D(topLeft.getX(), hits[0].getY());
+                result[1] = new Point2D(topLeft.getX(), hits[1].getY());
+            }
+            else
+            {
+                result[0] = new Point2D(topRight.getX(), hits[0].getY());
+                result[1] = new Point2D(topRight.getX(), hits[1].getY());
+            }
+
+            return result;
+        }
+        if (left && right) 
+        {
+            double topDistance = (hits[0].getY() - topLeft.getY()) + (hits[1].getY() - topLeft.getY());
+            double bottomDistance = (bottomLeft.getY() - hits[0].getY()) + (bottomLeft.getY() - hits[1].getY());
+            if (topDistance < bottomDistance)
+            {
+                result[0] = new Point2D(hits[0].getX(), topLeft.getY());
+                result[1] = new Point2D(hits[1].getX(), topLeft.getY());
+            }
+            else
+            {
+                result[0] = new Point2D(hits[0].getX(), bottomLeft.getY());
+                result[1] = new Point2D(hits[1].getX(), bottomLeft.getY());
+            }
+
+            return result;
+        }
+
+        //intersection though connected sides
+        if (top && left) { result[0] = topLeft; }
+        if (top && right) { result[0] = topRight; }
+        if (bottom && left) { result[0] = bottomLeft; }
+        if (bottom && right) { result[0] = bottomRight; }
+        
+        return result;
     }
 
     /*
@@ -497,8 +591,8 @@ public class RelationLine extends Polyline
 
         double determinant = a1 * b2 - a2 * b1;
 
-        if (determinant == 0) {
-            // Lines are parallel
+        if (determinant == 0) 
+        {// Lines are parallel
             return null;
         }
 
@@ -509,7 +603,8 @@ public class RelationLine extends Polyline
         Point2D intersection = new Point2D(x, y);
 
         // Check if the intersection is within both line segments
-        if (isBetween(p1, p2, intersection) && isBetween(p3, p4, intersection)) {
+        if (isBetween(p1, p2, intersection) && isBetween(p3, p4, intersection)) 
+        {
             return intersection;
         }
 

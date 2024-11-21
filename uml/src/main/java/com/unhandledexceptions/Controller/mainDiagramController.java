@@ -206,15 +206,15 @@ public class mainDiagramController
 
     private void mouseScroll(ScrollEvent event)
     {
-        if (placingRelation != null)
-        {
-            if (event.getDeltaY() > 0) // Scrolling up
-                placingRelation.setType(getNextRelationType(placingRelation.getType(), false));
-            else if (event.getDeltaY() < 0) // Scrolling down
-                placingRelation.setType(getNextRelationType(placingRelation.getType(), true));
+        // if (placingRelation != null)
+        // {
+        //     if (event.getDeltaY() > 0) // Scrolling up
+        //         placingRelation.setType(getNextRelationType(placingRelation.getType(), false));
+        //     else if (event.getDeltaY() < 0) // Scrolling down
+        //         placingRelation.setType(getNextRelationType(placingRelation.getType(), true));
             
-            placingRelation.Update(scaleTransform, getFakeMouseEvent(event.getX(), event.getY()));
-        }
+        //     placingRelation.Update(scaleTransform, getFakeMouseEvent(event.getX(), event.getY()));
+        // }
     }
 
     private void mouseMove(MouseEvent event)
