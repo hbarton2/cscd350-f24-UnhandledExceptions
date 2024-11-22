@@ -35,3 +35,15 @@ Pattern 7: Observer (2nd Instance)
 Pattern 8: Private Class Data
   RelationshipItem.java(9-12, 133-181)
   Justification: Our RelationshipItem file's fields are declared private and the only way to retrieve or manipulate them is through getters and setters. 
+
+Pattern 9: Private Class Data (2nd Instance)
+  FieldItem.java(4-5, 18-33)
+  Justification: Our FieldItem file's fields are declared private and the only way to retrieve or manipulate them is through getters and setters.
+
+Pattern 10: Private Class Data (3rd Instance)
+  MethodItem.java(8-14, 35-63)
+  Justification: Our MethodItem file's fields are declared private and the only way to retrieve or manipulate them is through getters and setters.
+
+Pattern 11: Private Class Data (4th Instance)
+  ParameterItem.ajva(28-29, 49-82)
+  Justification: Our ParameterItem file's fields are declared private and the only way to retrieve or manipulate them is through getters and setters.
