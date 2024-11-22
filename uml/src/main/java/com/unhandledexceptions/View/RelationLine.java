@@ -1,5 +1,16 @@
 package com.unhandledexceptions.View;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.PriorityQueue;
+import java.util.Set;
+
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -8,7 +19,6 @@ import javax.swing.JPanel;
 import com.unhandledexceptions.Controller.BaseController;
 
 import javafx.application.Platform;
-import javafx.geometry.BoundingBox;
 import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
 import javafx.scene.control.Button;
@@ -32,6 +42,8 @@ import javafx.scene.transform.Transform;
 
 public class RelationLine extends Polyline
 {
+    private static final int CELL_SIZE = 10; // Grid resolution
+    
     private Point2D sourceOffset, destOffset;
     // classboxes that the relation line connects
     private ClassBox source, dest;
@@ -269,8 +281,6 @@ public class RelationLine extends Polyline
         double preY = startY, firstY = startY;
         double postX = endX, lastX = endX;
         double postY = endY, lastY = endY;
-        Bounds sourceBounds = modBounds(source.getBoundsInParent(), 35);
-        Bounds destBounds = modBounds(dest.getBoundsInParent(), 35);
 
         // anchorPane.getChildren().remove(testRect);
         // testRect = new Rectangle(sourceBounds.getMinX(), sourceBounds.getMinY(), sourceBounds.getWidth(), sourceBounds.getHeight());
@@ -343,56 +353,8 @@ public class RelationLine extends Polyline
         getPoints().add(firstY);
 
         //middle =====================================================================================
-        //get source intersection points, if any
-        Point2D[] sourcePath = getPathAroundBounds(
-            new Point2D(firstX, firstY), new Point2D(lastX, lastY), sourceBounds);
 
-        //route around source classbox
-        if (sourcePath != null)
-        {
-            for (Point2D point : sourcePath)
-            {
-                if (point == null) continue;
-                getPoints().add(point.getX());
-                getPoints().add(point.getY());
-            }
-        }
-
-        Point2D transitionPoint = null;
-
-        if (source != dest)
-        {
-            //get dest intersection points, if any
-            Point2D[] destPoints = getPathAroundBounds(
-                new Point2D(getPoints().get(getPoints().size() - 2), getPoints().get(getPoints().size() - 1)),
-                 new Point2D(lastX, lastY), destBounds);
-
-            //route around dest classbox
-            if (destPoints != null)
-            {
-                for (Point2D point : destPoints)
-                {
-                    if (point == null) continue;
-
-                    if (transitionPoint == null)
-                    {
-                        transitionPoint = new Point2D(getPoints().get(getPoints().size() - 2), point.getY());
-                        getPoints().add(transitionPoint.getX());
-                        getPoints().add(transitionPoint.getY());
-                    }
-
-                    getPoints().add(point.getX());
-                    getPoints().add(point.getY());
-                }
-
-                if (transitionPoint == null)
-                {
-                    transitionPoint = new Point2D(getPoints().get(getPoints().size() - 2), lastY);
-                    getPoints().add(transitionPoint.getX());
-                    getPoints().add(transitionPoint.getY());
-                }
-            }
-        }
+        drawPath(firstX, firstY, lastX, lastY);
 
         //end =====================================================================================
         //get post-end
@@ -437,12 +399,12 @@ public class RelationLine extends Polyline
         
     }
 
-    //helper function for resizing a bounds
-    private Bounds modBounds(Bounds bounds, double amount)
-    {
-        return new BoundingBox(bounds.getMinX() - amount, bounds.getMinY() - amount,
-                            bounds.getWidth() + (amount * 2), bounds.getHeight() + (amount * 2));
-    }
+    // //helper function for resizing a bounds
+    // private Bounds modBounds(Bounds bounds, double amount)
+    // {
+    //     return new BoundingBox(bounds.getMinX() - amount, bounds.getMinY() - amount,
+    //                         bounds.getWidth() + (amount * 2), bounds.getHeight() + (amount * 2));
+    // }
 
     // default getters and setters
     public String getType()
@@ -502,165 +464,152 @@ public class RelationLine extends Polyline
         this.destOffset = offset;
     }
 
-    /*
-     * this method returns both points a line intersects a rectangle (if it does)
-     * or null if it doesn't intersect
-     */
-    public Point2D[] getPathAroundBounds(Point2D lineStart, Point2D lineEnd, Bounds bounds)
-     {
-        // Rectangle edges as line segments
-        Point2D topLeft = new Point2D(bounds.getMinX(), bounds.getMinY());
-        Point2D topRight = new Point2D(bounds.getMaxX(), bounds.getMinY());
-        Point2D bottomLeft = new Point2D(bounds.getMinX(), bounds.getMaxY());
-        Point2D bottomRight = new Point2D(bounds.getMaxX(), bounds.getMaxY());
-        boolean top = false, left = false, right = false, bottom = false;
+    //a-star pathfinding
+    private void drawPath(double startX, double startY, double endX, double endY)
+    {
+        // Convert points to grid coordinates
+        int startCol = (int) (startX / CELL_SIZE);
+        int startRow = (int) (startY / CELL_SIZE);
+        int endCol = (int) (endX / CELL_SIZE);
+        int endRow = (int) (endY / CELL_SIZE);
 
-        //extend line a bit to avoid intersection detection errors
-        double dx = lineEnd.getX() - lineStart.getX();
-        double dy = lineEnd.getY() - lineStart.getY();
-        double length = Math.sqrt(dx*dx+dy*dy);
-        dx = dx / length; dy = dy / length;
-        lineStart = lineStart.subtract(dx * 10, dy * 10);
-        lineEnd = lineEnd.add(dx * 10, dy * 10);
+        // Perform A* pathfinding
+        List<Node> path = findPath(startCol, startRow, endCol, endRow);
 
-        //tester line
-        // anchorPane.getChildren().remove(testLine);
-        // testLine = new Line();
-        // testLine.setStartX(lineStart.getX()); testLine.setStartY(lineStart.getY());
-        // testLine.setEndX(lineEnd.getX()); testLine.setEndY(lineEnd.getY());
-        // testLine.setStroke(Color.RED);
-        // anchorPane.getChildren().add(testLine);
-        // testLine.toBack();
-
-        // Check intersection with each edge
-        Point2D[] hits = new Point2D[2]; // At most 2 intersection points
-        int count = 0;
-        if (count < 2 && (hits[count] = lineSegmentIntersection(lineStart, lineEnd, topLeft, topRight)) != null) { count++; top = true; }
-        if (count < 2 && (hits[count] = lineSegmentIntersection(lineStart, lineEnd, topRight, bottomRight)) != null) { count++; right = true; }
-        if (count < 2 && (hits[count] = lineSegmentIntersection(lineStart, lineEnd, bottomRight, bottomLeft)) != null) { count++; bottom = true; }
-        if (count < 2 && (hits[count] = lineSegmentIntersection(lineStart, lineEnd, bottomLeft, topLeft)) != null) { count++; left = true; }
-
-        //result
-        Point2D[] result = new Point2D[2];
-
-        //handle only 1 edge hit
-        if (hits[1] == null)
+        if (path != null)
         {
-            // if (top) { result[0] = topLeft; result[1] = bottomLeft; }
-            // if (left) { result[0] = topLeft; result[1] = topRight; }
-            // if (right) { result[0] = bottomRight; result[1] = bottomLeft; }
-            // if (bottom) { result[0] = bottomRight; result[1] = topRight; }
-
-            return result;
-        }
-
-        //make sure first intersection is actually first
-        if (hits[0].distance(lineStart) > hits[1].distance(lineStart))
-        {
-            Point2D swap = hits[0];
-            hits[0] = hits[1];
-            hits[1] = swap;
-        }
-
-        //intersection though parallel sides
-        if (top && bottom) 
-        {
-            double leftDistance = (hits[0].getX() - topLeft.getX()) + (hits[1].getX() - topLeft.getX());
-            double rightDistance = (topRight.getX() - hits[0].getX()) + (topRight.getX() - hits[1].getX());
-            if (leftDistance < rightDistance)
-            {
-                result[0] = new Point2D(topLeft.getX(), hits[0].getY());
-                result[1] = new Point2D(topLeft.getX(), hits[1].getY());
+            // Convert path to polyline
+            Polyline polyline = new Polyline();
+            for (Node node : path) {
+                polyline.getPoints().addAll(node.x * CELL_SIZE + CELL_SIZE / 2.0,
+                                            node.y * CELL_SIZE + CELL_SIZE / 2.0);
             }
-            else
-            {
-                result[0] = new Point2D(topRight.getX(), hits[0].getY());
-                result[1] = new Point2D(topRight.getX(), hits[1].getY());
-            }
-
-            return result;
+            polyline.setStroke(Color.BLUE);
+            polyline.setStrokeWidth(2);
+            anchorPane.getChildren().add(polyline);
         }
-        if (left && right) 
-        {
-            double topDistance = (hits[0].getY() - topLeft.getY()) + (hits[1].getY() - topLeft.getY());
-            double bottomDistance = (bottomLeft.getY() - hits[0].getY()) + (bottomLeft.getY() - hits[1].getY());
-            if (topDistance < bottomDistance)
-            {
-                result[0] = new Point2D(hits[0].getX(), topLeft.getY());
-                result[1] = new Point2D(hits[1].getX(), topLeft.getY());
-            }
-            else
-            {
-                result[0] = new Point2D(hits[0].getX(), bottomLeft.getY());
-                result[1] = new Point2D(hits[1].getX(), bottomLeft.getY());
-            }
-
-            return result;
-        }
-
-        //intersection though connected sides
-        if (top && left) { result[0] = topLeft; }
-        if (top && right) { result[0] = topRight; }
-        if (bottom && left) { result[0] = bottomLeft; }
-        if (bottom && right) { result[0] = bottomRight; }
-        
-        return result;
     }
 
-    /*
-     * helper for findLineRectangleIntersections
-     * returns the point where a line intersects another, if it does
-     * null if it doesn't
-     */
-    private Point2D lineSegmentIntersection(Point2D p1, Point2D p2, Point2D p3, Point2D p4)
+    private List<Node> findPath(int startCol, int startRow, int endCol, int endRow)
     {
-        // Line (p1, p2) and line (p3, p4)
-        double a1 = p2.getY() - p1.getY();
-        double b1 = p1.getX() - p2.getX();
-        double c1 = a1 * p1.getX() + b1 * p1.getY();
-
-        double a2 = p4.getY() - p3.getY();
-        double b2 = p3.getX() - p4.getX();
-        double c2 = a2 * p3.getX() + b2 * p3.getY();
-
-        double determinant = a1 * b2 - a2 * b1;
-
-        if (determinant == 0) 
-        {// Lines are parallel
-            return null;
+         // Check if start and end are the same
+        if (startCol == endCol && startRow == endRow) {
+            // Return a path with just the start node (no pathfinding needed)
+            Node startNode = getNode(startCol, startRow, null, 0, endCol, endRow, new HashMap<>());
+            return Collections.singletonList(startNode); // Return the start node as the path
         }
 
-        // Intersection point
-        double x = (b2 * c1 - b1 * c2) / determinant;
-        double y = (a1 * c2 - a2 * c1) / determinant;
+        PriorityQueue<Node> openSet = new PriorityQueue<>(Comparator.comparingDouble(n -> n.gCost + n.hCost));
+        Map<String, Node> allNodes = new HashMap<>();
 
-        Point2D intersection = new Point2D(x, y);
+        Node startNode = getNode(startCol, startRow, null, 0, endCol, endRow, allNodes);
+        Node endNode = getNode(endCol, endRow, null, 0, endCol, endRow, allNodes);
 
-        // Check if the intersection is within both line segments
-        if (isBetween(p1, p2, intersection) && isBetween(p3, p4, intersection)) 
+        openSet.add(startNode);
+        Set<Node> closedSet = new HashSet<>();
+
+        while (!openSet.isEmpty())
         {
-            return intersection;
+            Node current = openSet.poll();
+
+            // Check if we've reached the destination
+            if (current.equals(endNode))
+            {
+                return reconstructPath(current);
+            }
+            closedSet.add(current);
+
+            // Check neighbors
+            for (int[] dir : new int[][]{{0, -1}, {0, 1}, {-1, 0}, {1, 0}})
+            {
+                int neighborX = current.x + dir[0];
+                int neighborY = current.y + dir[1];
+
+                // Skip blocked or invalid neighbors
+                if (isBlocked(neighborX, neighborY)) continue;
+
+                Node neighbor = getNode(neighborX, neighborY, current, current.gCost + 1, endCol, endRow, allNodes);
+
+                if (closedSet.contains(neighbor)) continue;
+
+                if (!openSet.contains(neighbor)) {
+                    openSet.add(neighbor);
+                }
+            }
         }
 
-        return null;
+        return null; // No path found
     }
 
-    /*
-     * helper for lineSegmentIntersection
-     * returns true if point is between the line formed by start and end
-     */
-    private boolean isBetween(Point2D start, Point2D end, Point2D point)
+    private Node getNode(int x, int y, Node parent, double gCost, int endCol, int endRow, Map<String, Node> allNodes)
     {
-        double crossProduct = (point.getX() - start.getX()) * (end.getY() - start.getY()) -
-                              (point.getY() - start.getY()) * (end.getX() - start.getX());
-        if (Math.abs(crossProduct) > 1e-6) return false; // Not collinear
+        String key = x + "," + y;
+        Node node = allNodes.get(key);
+        if (node == null)
+        {
+            node = new Node(x, y, gCost, Math.abs(endCol - x) + Math.abs(endRow - y), parent);
+            allNodes.put(key, node);
+        }
+        return node;
+    }
 
-        double dotProduct = (point.getX() - start.getX()) * (end.getX() - start.getX()) +
-                            (point.getY() - start.getY()) * (end.getY() - start.getY());
-        if (dotProduct < 0) return false;
+    private boolean isBlocked(int col, int row)
+    {
+        double x = col * CELL_SIZE;
+        double y = row * CELL_SIZE;
+        for (javafx.scene.Node node : anchorPane.getChildren())
+        {
+            if (node instanceof javafx.scene.shape.Shape) {
+                Bounds bounds = node.getBoundsInParent();
+                if (bounds.intersects(x, y, CELL_SIZE, CELL_SIZE))
+                {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 
-        double squaredLengthBA = (end.getX() - start.getX()) * (end.getX() - start.getX()) +
-                                 (end.getY() - start.getY()) * (end.getY() - start.getY());
-        return dotProduct <= squaredLengthBA;
+    private List<Node> reconstructPath(Node node)
+    {
+        List<Node> path = new ArrayList<>();
+        while (node != null)
+        {
+            path.add(node);
+            node = node.parent;
+        }
+        Collections.reverse(path);
+        return path;
+    }
+
+    static class Node
+    {
+        int x, y;
+        double gCost, hCost;
+        Node parent;
+
+        Node(int x, int y, double gCost, double hCost, Node parent)
+        {
+            this.x = x;
+            this.y = y;
+            this.gCost = gCost;
+            this.hCost = hCost;
+            this.parent = parent;
+        }
+
+        @Override
+        public boolean equals(Object obj)
+        {
+            if (this == obj) return true;
+            if (obj == null || getClass() != obj.getClass()) return false;
+            Node node = (Node) obj;
+            return x == node.x && y == node.y;
+        }
+
+        @Override
+        public int hashCode()
+        {
+            return Objects.hash(x, y);
+        }
     }
 }
