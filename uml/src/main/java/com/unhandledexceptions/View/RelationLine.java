@@ -479,14 +479,11 @@ public class RelationLine extends Polyline
         if (path != null)
         {
             // Convert path to polyline
-            Polyline polyline = new Polyline();
+            //Polyline polyline = new Polyline();
             for (Node node : path) {
-                polyline.getPoints().addAll(node.x * CELL_SIZE + CELL_SIZE / 2.0,
+                getPoints().addAll(node.x * CELL_SIZE + CELL_SIZE / 2.0,
                                             node.y * CELL_SIZE + CELL_SIZE / 2.0);
             }
-            polyline.setStroke(Color.BLUE);
-            polyline.setStrokeWidth(2);
-            anchorPane.getChildren().add(polyline);
         }
     }
 
