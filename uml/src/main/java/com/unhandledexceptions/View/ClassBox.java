@@ -149,18 +149,26 @@ public class ClassBox extends StackPane implements PropertyChangeListener
             double closestX = Math.min(Math.max(event.getX(), classBoxBounds.getMinX()), classBoxBounds.getMaxX());
             double closestY = Math.min(Math.max(event.getY(), classBoxBounds.getMinY()), classBoxBounds.getMaxY());
     
-            double spacing = 15;
-            
+            //testing
+            double horizontalDistance = Math.min(Math.abs(closestY - classBoxBounds.getMinY()), Math.abs(closestY - classBoxBounds.getMaxY()));
+            double verticalDistance = Math.min(Math.abs(closestX - classBoxBounds.getMinX()), Math.abs(closestX - classBoxBounds.getMaxX()));
+            double distanceToEdgeMiddle = Math.min(horizontalDistance, verticalDistance);
+            double maxDistance = Math.max(classBoxBounds.getWidth(), classBoxBounds.getHeight()) / 2;
+            double spacing = 15 + (distanceToEdgeMiddle / maxDistance) * (125 - 15);
+            spacing = Math.max(15, Math.min(125, spacing));
+
+            Bounds modBounds = RelationLine.modBounds(classBoxBounds, spacing);
+
             // Snap the ranchor to the nearest edge
-            if (event.getX() < classBoxBounds.getMinX() + spacing) {
-                closestX = classBoxBounds.getMinX() - spacing; // Left edge
-            } else if (event.getX() > classBoxBounds.getMaxX() - spacing) {
-                closestX = classBoxBounds.getMaxX() + spacing; // Right edge
+            if (event.getX() < classBoxBounds.getMinX()) {
+                closestX = modBounds.getMinX(); // Left edge
+            } else if (event.getX() > classBoxBounds.getMaxX()) {
+                closestX = modBounds.getMaxX(); // Right edge
             }
-            if (event.getY() < classBoxBounds.getMinY() + spacing) {
-                closestY = classBoxBounds.getMinY() - spacing; // Top edge
-            } else if (event.getY() > classBoxBounds.getMaxY() - spacing) {
-                closestY = classBoxBounds.getMaxY() + spacing; // Bottom edge
+            else if (event.getY() < classBoxBounds.getMinY()) {
+                closestY = modBounds.getMinY(); // Top edge
+            } else if (event.getY() > classBoxBounds.getMaxY()) {
+                closestY = modBounds.getMaxY(); // Bottom edge
             }
     
             // Set the ranchor's position
