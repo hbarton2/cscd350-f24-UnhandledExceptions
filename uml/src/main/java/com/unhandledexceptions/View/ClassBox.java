@@ -692,6 +692,7 @@ public class ClassBox extends StackPane implements PropertyChangeListener
      * <ul>
      *   <li>Add new fields using a "+" button. Prompts the user to input a type and name.</li>
      *   <li>Double-click an existing field to rename it via an input dialog.</li>
+     *   <li>Delete selected list item with Delete Key input, confirmed via comfirmation box.</li>
      *   <li>Updates the model using the {@code baseController.AddFieldListener()} method.</li>
      *   <li>Displays errors if invalid input is provided or if the addition/update fails.</li>
      * </ul>
