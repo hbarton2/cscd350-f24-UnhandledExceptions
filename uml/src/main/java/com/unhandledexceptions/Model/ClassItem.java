@@ -528,7 +528,7 @@ public class ClassItem implements PropertyChangeListener{
 
         // check if field exists
         if (!classItem.getFieldItems().containsKey(fieldName)) {
-            return "good";
+            return "Field " + fieldName + " does not exist.";
         }
 
         // remove field from map
@@ -536,7 +536,7 @@ public class ClassItem implements PropertyChangeListener{
         // fire support for removed field item
         classItem.support.firePropertyChange("field", classItem, fieldName);
 
-        return "Field name: " + fieldName + " successfully removed.";
+        return "good";
     }
 
     public static String renameField(ClassItem classItem, String oldName, String newName) {
