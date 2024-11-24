@@ -37,6 +37,7 @@ public class UI
 						+ "[newparametertype] [newparametername]");
 		commandSyntax.put("undo", "undo");
 		commandSyntax.put("redo", "redo");
+		commandSyntax.put("screenshot", "screenshot");
 	}
 
 	// nicer way to get syntax strings
@@ -157,6 +158,8 @@ public class UI
 		if (!verbose) System.out.print("Load: ");
 		System.out.print("load [filename]\n");
 		if (verbose) System.out.println("\t- Loads a previously saved project.");
+		System.out.print("screenshot\n");
+		if (verbose) System.out.println("\t- Takes your uml and converts it to an image.");
 		if (!verbose) System.out.print("Exit: ");
 		System.out.print("e or exit\n");
 		if (verbose) System.out.println("\t- Enough work for now.");

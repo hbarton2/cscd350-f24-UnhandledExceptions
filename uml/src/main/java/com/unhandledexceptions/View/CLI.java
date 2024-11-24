@@ -293,6 +293,12 @@ public final class CLI
 					return "Change Redone.";
 				else
 					return "Nothing to Redo.";
+			case "screenshot":
+				result = controller.screenshotListener();
+				if (result.equals("good"))
+					return "Screenshot success.";
+				else
+					return "Screenshot failed.";
 
 			default:
 				return "unknown command";
