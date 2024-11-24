@@ -495,7 +495,7 @@ public class ClassItem implements PropertyChangeListener{
             return "Field name or type cannot be null or blank";
         }
 
-        fieldName = fieldName.toLowerCase().trim();
+        fieldName = fieldName.toLowerCase().trim().replace(" ", "");
         // types can be uppercase for example: String name
         // type = type.toLowerCase().trim();
         type = type.trim();
