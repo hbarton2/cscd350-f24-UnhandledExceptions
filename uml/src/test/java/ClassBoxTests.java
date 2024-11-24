@@ -101,8 +101,12 @@ public class ClassBoxTests {
     //    // baseController.AddFieldListener( className, "fieldType", "fieldName");
         
     //     //make sure that field was added to the class
-    //     ClassItem classItem = baseController.getData().getClassItems().get(classBox.getClassName());
+    //     ClassItem classItem = baseController.getData().getClassItems().get(classBox.getClassName()); //getting error that classItem is null?
     //     assertTrue(classItem.getFieldItems().containsKey("fieldName"));
+
+    //     //delete the field that was added via the gui 
+
+    //     //assert that the field is no longer contained in the fieldItem hashMap
     // }
 
 }
