@@ -2,6 +2,7 @@
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
+import java.io.File;
 
 // Project imports
 import com.unhandledexceptions.Controller.BaseController;
@@ -117,6 +118,21 @@ public class BaseControllerTests {
     assertTrue(data.getClassItems().get("testclass").getFieldItems().get("testfield").getName().equals("testfield"));
     // ensure the field type is correct
     assertEquals("int", data.getClassItems().get("testclass").getFieldItems().get("testfield").getType());
+  }
+
+  // Test taking a screenshot of the UML
+  @Test
+  public void screenshotListenerTest() {
+    // take the screenshot and assert that it was successfull
+    String result = baseController.screenshotListener("test.png");
+    assertTrue(result.equals("good"));
+
+    // check if file was created
+    File screenshotFile = new File("../../../test.png");
+    assertTrue(screenshotFile.exists());
+
+    // delete the file so the test didn't manipulate the project
+    screenshotFile.delete();
   }
 
   
