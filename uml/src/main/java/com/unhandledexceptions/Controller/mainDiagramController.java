@@ -48,7 +48,6 @@ public class mainDiagramController
 {
     //private mainDiagramController controller;
     
-    private Data data;
     private BaseController baseController;
     private final double boxWidth = 200; // Width of the boxes
     private final double boxHeight = 300; // Height of the content box
@@ -75,20 +74,24 @@ public class mainDiagramController
     private Menu fileMenu, helpMenu;
 
     public mainDiagramController() {
-        //controller = this;
-        data = new Data();
-        baseController = new BaseController(data);
-
+        //set basecontroller for saftey. will be overwritten by setBaseController
+        baseController = new BaseController(new Data());
     }
 
-    //TODO: Corey read this
+    //manually set the baseController
+    public void setBaseController(BaseController baseController)
+    {
+        this.baseController = baseController;
+    }
+
+    //Corey read this
     /*
      * this constructor is for coupling with the BaseController class implemented in the CLI
      */
-    public mainDiagramController(Data data, BaseController baseController) {
-        this.data = data;
-        this.baseController = baseController;
-    }
+    // public mainDiagramController(Data data, BaseController baseController) {
+    //     this.data = data;
+    //     this.baseController = baseController;
+    // }
 
     @FXML private StackPane bgpane;
     @FXML private AnchorPane anchorPane;
@@ -106,21 +109,18 @@ public class mainDiagramController
     @FXML private void initialize()
     {
         //controller = this;
-        data = new Data();
-        baseController = new BaseController(data);
         anchorPane.getTransforms().add(scaleTransform);
         scrollPane.addEventFilter(ScrollEvent.SCROLL, this::handleZoom);
         anchorPane.setOnMouseMoved(event -> mouseMove(event));
         anchorPane.setOnMouseClicked(event -> mouseClick(event));
         scrollPane.getStyleClass().add("scroll-pane");
         anchorPane.getStyleClass().add("anchor-pane");
-
         rootVBox.getStyleClass().add("vbox");
     }
 
     public void newMenuClick()
     {
-        data.Clear();
+        baseController.getData().Clear();
 
         ClearAll();
     }
@@ -143,7 +143,7 @@ public class mainDiagramController
                 // Set an action for each menu item (e.g., to open the file)
                 fileItem.setOnAction(event -> {
                     newMenuClick();
-                    data.Load(file.getAbsolutePath());
+                    baseController.getData().Load(file.getAbsolutePath());
                     LoadAll();
                 });
                 
@@ -155,17 +155,17 @@ public class mainDiagramController
 
     public void saveMenuClick()
     {
-        data.Save(anchorPane);
+        baseController.getData().Save(anchorPane);
     }
 
     public void saveAsMenuClick()
     {
-        data.SaveAs(anchorPane);
+        baseController.getData().SaveAs(anchorPane);
     }
 
     public void openMenuClick()
     {
-        String result = data.Load(anchorPane);
+        String result = baseController.getData().Load(anchorPane);
 
         if (result.equals("good"))
         {
@@ -204,14 +204,6 @@ public class mainDiagramController
      * @param filename the file name to save the screenshot as
      */
     public void screenshotFromCLI(String filename) {
-        // loads the contents into the anchorPane
-        String tempName = filename + ".json";
-        data.Load(tempName);
-        LoadAll();
-        // takes a screenshot of the current view specified by file name
-        if(!filename.endsWith(".png")){
-            filename += ".png";
-        }
      
          double width = anchorPane.getWidth();
          double height = anchorPane.getHeight();
@@ -247,10 +239,10 @@ public class mainDiagramController
     // }
     
 
-    private void LoadAll()
+    public void LoadAll()
     {
         //load classes
-        HashMap<String, ClassItem> classItems = data.getClassItems();
+        HashMap<String, ClassItem> classItems = baseController.getData().getClassItems();
         for (Map.Entry<String, ClassItem> entry : classItems.entrySet()) {
             ClassBox classBox = addClass(entry.getKey());
             classBox.setLayoutX(entry.getValue().getX());
@@ -259,7 +251,7 @@ public class mainDiagramController
         }
 
         // load relationships
-        HashMap<String, RelationshipItem> relationItems = data.getRelationshipItems();
+        HashMap<String, RelationshipItem> relationItems = baseController.getData().getRelationshipItems();
         for (Map.Entry<String, RelationshipItem> entry : relationItems.entrySet()) {
             ClassBox source = getClassBoxByName(entry.getValue().getSource().getName());
             int sourceLoc = entry.getValue().getSourceLoc();
@@ -286,7 +278,9 @@ public class mainDiagramController
     public ClassBox addClass(String className)
     {
         //creates a classBoxBuilder calls adds the panes we need, then builds it.
-        ClassBoxBasicBuilder classBoxBuilder = new ClassBoxBasicBuilder(anchorPane, baseController, className, boxWidth, boxHeight, data.getClassItems().get(className.toLowerCase().trim()));
+        ClassBoxBasicBuilder classBoxBuilder = new ClassBoxBasicBuilder(
+            anchorPane, baseController, className, boxWidth, boxHeight,
+             baseController.getData().getClassItems().get(className.toLowerCase().trim()));
         classBoxBuilder.withFieldPane();
         classBoxBuilder.withMethodPane();
         ClassBox classBox = classBoxBuilder.build();
@@ -312,8 +306,8 @@ public class mainDiagramController
             
             classBox.setLayoutX(newX);
             classBox.setLayoutY(newY);
-            data.getClassItems().get(classBox.getClassName().toLowerCase().trim()).setX(newX);
-            data.getClassItems().get(classBox.getClassName().toLowerCase().trim()).setY(newY);
+            baseController.getData().getClassItems().get(classBox.getClassName().toLowerCase().trim()).setX(newX);
+            baseController.getData().getClassItems().get(classBox.getClassName().toLowerCase().trim()).setY(newY);
 
             classBox.setEffect(effectHelper());
 

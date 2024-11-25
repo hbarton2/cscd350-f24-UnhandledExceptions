@@ -4,24 +4,20 @@ import com.unhandledexceptions.Model.ClassItem;
 import com.unhandledexceptions.Model.MethodItem;
 import com.unhandledexceptions.Model.Data;
 import com.unhandledexceptions.Model.RelationshipItem;
-import java.util.function.Supplier;
+import com.unhandledexceptions.View.GUI;
 
-import java.io.File;
+import java.util.function.Supplier;
 
 public class BaseController
 {
     // our controller gets passed in a data object for storage from the CLI which gets passed a data object from main
     Data data;
     Caretaker careTaker;
-    // Needed to couple maindiagramcontroller with basecontroller in order to call screenshotFromCLI
-    mainDiagramController mainController;
 
     public BaseController(Data data)
     {
         this.data = data;
         this.careTaker = new Caretaker(data);
-        // takes in data and this basecontroller object to pass in to mainDiagramController
-        this.mainController = new mainDiagramController(data, this);
     }
 
     public Data getData()
@@ -200,13 +196,16 @@ public class BaseController
      * @return a string message indicating success or failure
      */
     public String screenshotListener(String fileName) {
-        try {
-            File tempFile = new File(fileName);
-            data.Save(fileName);
-            mainController.screenshotFromCLI(fileName);
-            tempFile.delete();
+        try 
+        {
+            GUI.setBaseController(this);
+            GUI.setScreenshotMode(true);
+            GUI.main();
+
             return "good";
-        } catch (Exception e) {
+        }
+        catch (Exception e)
+        {
             e.printStackTrace();
             return "Screenshot Unsuccessful";
         }
