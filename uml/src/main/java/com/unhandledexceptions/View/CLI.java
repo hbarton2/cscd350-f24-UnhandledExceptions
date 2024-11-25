@@ -294,7 +294,8 @@ public final class CLI
 				else
 					return "Nothing to Redo.";
 			case "screenshot":
-				result = controller.screenshotListener();
+				//TODO: implement screenshot functionality for taking in file name
+				//result = controller.screenshotListener(replace with file name);
 				if (result.equals("good"))
 					return "Screenshot success.";
 				else

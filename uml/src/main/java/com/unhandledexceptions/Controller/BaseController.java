@@ -6,16 +6,22 @@ import com.unhandledexceptions.Model.Data;
 import com.unhandledexceptions.Model.RelationshipItem;
 import java.util.function.Supplier;
 
+import java.io.File;
+
 public class BaseController
 {
     // our controller gets passed in a data object for storage from the CLI which gets passed a data object from main
     Data data;
     Caretaker careTaker;
+    // Needed to couple maindiagramcontroller with basecontroller in order to call screenshotFromCLI
+    mainDiagramController mainController;
 
     public BaseController(Data data)
     {
         this.data = data;
-        careTaker = new Caretaker(data);
+        this.careTaker = new Caretaker(data);
+        // takes in data and this basecontroller object to pass in to mainDiagramController
+        this.mainController = new mainDiagramController(data, this);
     }
 
     public Data getData()
@@ -181,5 +187,28 @@ public class BaseController
 
     public String redoListener() {
         return this.careTaker.redo();
+    }
+
+    //TODO: Corey please read this
+    /**
+     * this method will take user input for screenshotting in the CLI with a file name.
+     * It saves the tempFile json to be loaded and screenshotted in the gui, then after it's successfull, it gets deleted.
+     * 
+     * THIS DOES NOT WORK YET, IT IS A WORK IN PROGRESS
+     * 
+     * @param fileName the name the user wants the screenshot to be called
+     * @return a string message indicating success or failure
+     */
+    public String screenshotListener(String fileName) {
+        try {
+            File tempFile = new File(fileName);
+            data.Save(fileName);
+            mainController.screenshotFromCLI(fileName);
+            tempFile.delete();
+            return "good";
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "Screenshot Unsuccessful";
+        }
     }
 }
