@@ -123,16 +123,18 @@ public class BaseControllerTests {
   // Test taking a screenshot of the UML
   @Test
   public void screenshotListenerTest() {
+    // add a class so there is something to take a screenshot of
+    baseController.AddClassListener("testclass1");
     // take the screenshot and assert that it was successfull
-    String result = baseController.screenshotListener("test.png");
+    String result = baseController.screenshotListener("test");
     assertTrue(result.equals("good"));
 
     // check if file was created
-    File screenshotFile = new File("../../../test.png");
+    File screenshotFile = new File("../../test.png");
     assertTrue(screenshotFile.exists());
 
-    // delete the file so the test didn't manipulate the project
-    screenshotFile.delete();
+    // delete the files so the test didn't manipulate the project
+    //screenshotFile.delete();
   }
 
   
