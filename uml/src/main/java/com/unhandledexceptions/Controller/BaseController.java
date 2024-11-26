@@ -200,6 +200,7 @@ public class BaseController
         {
             GUI.setBaseController(this);
             GUI.setScreenshotMode(true);
+            GUI.setScreenshotFile(fileName);
             GUI.main();
 
             return "good";

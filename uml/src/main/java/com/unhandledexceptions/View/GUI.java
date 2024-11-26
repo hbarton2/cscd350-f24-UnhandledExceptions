@@ -18,6 +18,8 @@ public class GUI extends Application
 {
     private static BaseController baseController;
     private static boolean screenshotMode;
+    // File name for screenshot
+    private static String screenshotFileName;
     //holds reference to the main stage (the GUI window)
     private static Stage stage;
 
@@ -33,6 +35,10 @@ public class GUI extends Application
     public static void setScreenshotMode(boolean value)
     {
         screenshotMode = value;
+    }
+
+    public static void setScreenshotFile(String fileName) {
+        screenshotFileName = fileName;
     }
 
     @Override
@@ -63,7 +69,7 @@ public class GUI extends Application
             stage.show();
             stage.setOpacity(0);
             controller.LoadAll();
-            controller.screenshotFromCLI("screenshot.png");
+            controller.screenshotFromCLI(screenshotFileName);
             Platform.exit();
 
             // Restore original streams

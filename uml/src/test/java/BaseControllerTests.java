@@ -129,12 +129,12 @@ public class BaseControllerTests {
     String result = baseController.screenshotListener("test");
     assertTrue(result.equals("good"));
 
-    // check if file was created
-    File screenshotFile = new File("../../test.png");
+    // check if file was created uml\src\test\java\BaseControllerTests.java
+    File screenshotFile = new File("test.png");
     assertTrue(screenshotFile.exists());
 
     // delete the files so the test didn't manipulate the project
-    //screenshotFile.delete();
+    screenshotFile.delete();
   }
 
   

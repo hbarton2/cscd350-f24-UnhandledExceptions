@@ -204,13 +204,17 @@ public class mainDiagramController
      * @param filename the file name to save the screenshot as
      */
     public void screenshotFromCLI(String filename) {
+        String screenFileName = filename;
+        if (!filename.endsWith(".png")) {
+            screenFileName += ".png";
+        }
      
          double width = anchorPane.getWidth();
          double height = anchorPane.getHeight();
  
          WritableImage image = new WritableImage((int) width, (int) height);
          anchorPane.snapshot(new SnapshotParameters(), image);
-         File file = new File(filename);
+         File file = new File(screenFileName);
  
          try {
              ImageIO.write(SwingFXUtils.fromFXImage(image, null), "png", file);

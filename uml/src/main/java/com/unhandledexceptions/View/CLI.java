@@ -294,8 +294,10 @@ public final class CLI
 				else
 					return "Nothing to Redo.";
 			case "screenshot":
-				//TODO: implement screenshot functionality for taking in file name
-				result = controller.screenshotListener("screenshot.png");
+				if (input.length < 2) {
+					return "Syntax: " + UI.CommandSyntax(input[0]);
+				}
+				result = controller.screenshotListener(input[1]);
 				if (result.equals("good"))
 					return "Screenshot success.";
 				else
