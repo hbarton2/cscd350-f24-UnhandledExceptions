@@ -185,12 +185,9 @@ public class BaseController
         return this.careTaker.redo();
     }
 
-    //TODO: Corey please read this
     /**
-     * this method will take user input for screenshotting in the CLI with a file name.
-     * It saves the tempFile json to be loaded and screenshotted in the gui, then after it's successfull, it gets deleted.
-     * 
-     * THIS DOES NOT WORK YET, IT IS A WORK IN PROGRESS
+     * This method will take user input for screenshotting in the CLI with a file name.
+     * The method sets modes and file name in the GUI to take a screenshot, because we are now launching a GUI thread when we call this method.
      * 
      * @param fileName the name the user wants the screenshot to be called
      * @return a string message indicating success or failure

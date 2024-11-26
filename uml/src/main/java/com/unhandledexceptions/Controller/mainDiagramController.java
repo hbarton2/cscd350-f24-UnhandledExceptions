@@ -84,15 +84,6 @@ public class mainDiagramController
         this.baseController = baseController;
     }
 
-    //Corey read this
-    /*
-     * this constructor is for coupling with the BaseController class implemented in the CLI
-     */
-    // public mainDiagramController(Data data, BaseController baseController) {
-    //     this.data = data;
-    //     this.baseController = baseController;
-    // }
-
     @FXML private StackPane bgpane;
     @FXML private AnchorPane anchorPane;
     @FXML private ScrollPane scrollPane;
@@ -186,29 +177,20 @@ public class mainDiagramController
         anchorPane.getChildren().removeAll(children);
     }
 
-    //TODO: Corey read this plz
+   
     /**
-     * This method is used to take a screenshot of the current view and save it as a .png file
-     * The Idea was to load the saved file from the CLI, load it into the GUI view, then screenshot it.
-     * I figured this is where the logic for that would happen. I may have been wrong idk
-     * 
-     * We would load the file from CLI,
-     * then we would call loadALL() to load the classes and relationships into the view
-     * 
-     * I took the screenshot logic from the GUI screenshot method and refactored it to just create 
-     * the snapshot given a file name that way no problems with a dialog box appear. 
-     * 
-     * THIS METHOD BREAKS WITH LOADING FROM THE FILE AND I DON'T KNOW WHY
-     * please help.
+     * This method is the screenshot logic for taking a screenshot from the CLI.
+     * It is a copy of the GUI screenshot method, minus the dialog window prompting for a file name.
      * 
      * @param filename the file name to save the screenshot as
      */
     public void screenshotFromCLI(String filename) {
+        // Ensures the file name ends with .png since that is the image format
         String screenFileName = filename;
         if (!filename.endsWith(".png")) {
             screenFileName += ".png";
         }
-     
+        // Logic for taking a screenshot of GUI window
          double width = anchorPane.getWidth();
          double height = anchorPane.getHeight();
  
@@ -222,26 +204,6 @@ public class mainDiagramController
              e.printStackTrace();
          }
     }
-
-    // private void screenshotCLIHelper(String filename) {
-    //     if(!filename.endsWith(".png")){
-    //        filename += ".png";
-    //     }
-    
-    //     double width = anchorPane.getWidth();
-    //     double height = anchorPane.getHeight();
-
-    //     WritableImage image = new WritableImage((int) width, (int) height);
-    //     anchorPane.snapshot(new SnapshotParameters(), image);
-    //     File file = new File(filename);
-
-    //     try {
-    //         ImageIO.write(SwingFXUtils.fromFXImage(image, null), "png", file);
-    //     } catch (IOException e) {
-    //         e.printStackTrace();
-    //     }
-    // }
-    
 
     public void LoadAll()
     {
