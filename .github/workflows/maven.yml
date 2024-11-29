@@ -34,7 +34,7 @@ jobs:
       - name: Maven Tests
         working-directory: ./uml
         run: mvn test jacoco:report
-      -name: Upload coverage report to CodeCov
+      - name: Upload coverage report to CodeCov
         uses: codecov/codecov-action@v4.2.0
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
