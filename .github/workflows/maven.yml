@@ -35,7 +35,7 @@ jobs:
         working-directory: ./uml
         run: mvn test jacoco:report
       - name: List files in target dir
-        run: ls -R ./uml/target/site
+        run: ls -R ./uml/target
       - name: Upload coverage report to CodeCov
         uses: codecov/codecov-action@v4.2.0
         with:
