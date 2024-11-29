@@ -128,15 +128,21 @@
                     </execution>
                 </executions>
             </plugin>
-         <plugin>
+            <!-- Jacoco for CodeCov plugin -->
+            <plugin>
                <groupId>org.jacoco</groupId>
                <artifactId>jacoco-maven-plugin</artifactId>
-               <version>0.8.10</version> <!-- Use the latest version -->
+               <version>0.8.11</version>
                <executions>
                  <execution>
                    <goals>
                      <goal>prepare-agent</goal>
                    </goals>
+                   <configuration>
+                    <includes>
+                     <include>com/unhandledexceptions/Model/**</include>    <!-- Only get coverage for Model-->
+                    </includes>
+                   </configuration>
                  </execution>
                  <execution>
                    <id>report</id>
@@ -144,6 +150,11 @@
                    <goals>
                      <goal>report</goal>
                    </goals>
+                   <configuration>
+                    <includes>
+                        <include>com/unhandledexceptions/Model/**</include>  <!-- Only upload the Model coverage to CodeCov-->
+                    </includes>
+                   </configuration>
                  </execution>
                </executions>
              </plugin>
