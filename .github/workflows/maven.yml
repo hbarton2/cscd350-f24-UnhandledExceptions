@@ -33,9 +33,12 @@ jobs:
         run: mvn clean install
       - name: Maven Tests
         working-directory: ./uml
-        run: mvn test jacoco:report
+        run: mvn test 
+      - name: Jacoco reports
+        working-directory: ./uml
+        run: mvn jacoco:report
       - name: List files in target dir
-        run: ls -R ./uml/target
+        run: ls -R uml\target\site\jacoco\jacoco.xml
       - name: Upload coverage report to CodeCov
         uses: codecov/codecov-action@v4.2.0
         with:
