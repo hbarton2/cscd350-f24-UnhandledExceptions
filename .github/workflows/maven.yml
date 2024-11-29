@@ -33,4 +33,4 @@ jobs:
         run: mvn clean install
       - name: Maven Tests
         working-directory: ./uml
-        run: mvn test
+        run: mvn test jacoco:report
