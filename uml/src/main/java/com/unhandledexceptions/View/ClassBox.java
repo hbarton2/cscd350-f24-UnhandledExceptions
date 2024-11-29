@@ -798,37 +798,6 @@ public class ClassBox extends StackPane implements PropertyChangeListener
             }
         });
         
-        // fieldsList.setOnMouseClicked(event -> {
-        //     if (event.getClickCount() == 3) { // Detect triple-click
-        //         String selectedItem = fieldsList.getSelectionModel().getSelectedItem();
-        //         if (selectedItem != null) {
-        //             Alert warning = deleteFieldWarning();
-
-        //                // get confirmation for delete
-        //             Optional<ButtonType> result = warning.showAndWait();
-
-        //             if (result.isPresent() && result.get() == ButtonType.OK) {
-        //                 // user accepted, get the field name
-        //                 String className = getClassBoxName(); 
-        //                 String[] parseField = selectedItem.split(" ");
-        //                 String fieldName = parseField[1];
-                    
-        //                 // call controller delete passing this class name and fieldName
-        //                 String modelUpdated = baseController.RemoveFieldListener(className, fieldName);
-        //                 // parse result for either successful rename or failure
-        //                 if (!(modelUpdated == "good"))
-        //                 {
-        //                     System.out.println(modelUpdated);
-        //                     showError(modelUpdated);
-        //                 }
-
-        //             } else {
-        //                 // user denied, cancel action
-        //                 return;
-        //             }
-        //                 }
-        //     }
-        // });
     
         // Create an HBox to hold the fields label and the add button
         HBox fieldsTitleBox = new HBox(160); // Add spacing between label and button
@@ -1040,14 +1009,22 @@ public class ClassBox extends StackPane implements PropertyChangeListener
         });
     }
 
-    // method to display warning when deleting a class box
+  /**
+ * Creates and configures a confirmation alert to warn the user about class deletion.
+ * 
+ * <p>This method sets up an {@link javafx.scene.control.Alert} of type 
+ * {@link javafx.scene.control.Alert.AlertType#CONFIRMATION} with a warning title and 
+ * header text. The alert is intended to confirm the user's intention before proceeding 
+ * with a delete action.</p>
+ *
+ * @return an {@link javafx.scene.control.Alert} configured with a warning message.
+ */
     private Alert deleteClassWarning() {
         // create an alert box
         Alert alert = new Alert(AlertType.CONFIRMATION);
         // set the title and header as a warning
         alert.setTitle("Warning");
         alert.setHeaderText("Are you sure you want to delete this class?");
-        //alert.setContentText("This action can not be undone");
 
         // return the alert to be instantiated by delete action
         return alert;
