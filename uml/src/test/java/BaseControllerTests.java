@@ -127,7 +127,7 @@ public class BaseControllerTests {
     baseController.AddClassListener("testclass1");
     // take the screenshot and assert that it was successfull
     String result = baseController.screenshotListener("test");
-    assertTrue(result.equals("good"));
+    assertEquals("good", result);
 
     // check if file was created uml\src\test\java\BaseControllerTests.java
     File screenshotFile = new File("test.png");

@@ -37,7 +37,7 @@ public class UI
 						+ "[newparametertype] [newparametername]");
 		commandSyntax.put("undo", "undo");
 		commandSyntax.put("redo", "redo");
-		commandSyntax.put("screenshot", "screenshot");
+		commandSyntax.put("screenshot", "screenshot [filename]");
 	}
 
 	// nicer way to get syntax strings
