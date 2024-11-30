@@ -293,6 +293,15 @@ public final class CLI
 					return "Change Redone.";
 				else
 					return "Nothing to Redo.";
+			case "screenshot":
+				if (input.length < 2) {
+					return "Syntax: " + UI.CommandSyntax(input[0]);
+				}
+				result = controller.screenshotListener(input[1]);
+				if (result.equals("good"))
+					return "Screenshot success.";
+				else
+					return "Screenshot failed.";
 
 			default:
 				return "unknown command";

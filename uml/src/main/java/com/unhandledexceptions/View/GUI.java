@@ -1,53 +1,107 @@
 package com.unhandledexceptions.View;
 
-import java.io.IOException;
+import java.io.PrintStream;
 
 import com.unhandledexceptions.Controller.BaseController;
+import com.unhandledexceptions.Controller.mainDiagramController;
 import com.unhandledexceptions.Model.Data;
+
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
 public class GUI extends Application
 {
-    //unsure how we'll implement data yet. I believe it will be in each scenes controller.
-    Data data;
-    BaseController controller;
+    private static BaseController baseController;
+    private static boolean screenshotMode;
+    // File name for screenshot
+    private static String screenshotFileName;
     //holds reference to the main stage (the GUI window)
     private static Stage stage;
-    public GUI (){
-        this.controller = new BaseController(data);
+
+    // Save original streams
+    private static final PrintStream originalOut = System.out;
+    private static final PrintStream originalErr = System.err;
+
+    public static void setBaseController(BaseController controller)
+    {
+        baseController = controller;
     }
 
-    public static void setRoot(String fxml) throws IOException{
-        setRoot(fxml, stage.getTitle());
+    public static void setScreenshotMode(boolean value)
+    {
+        screenshotMode = value;
     }
 
-    static void setRoot(String fxml, String title) throws IOException{
-        Scene scene = new Scene(loadFXML(fxml));
-        stage.setTitle(title);
-        stage.setScene(scene);
-        stage.show();
-        stage.setAlwaysOnTop(true);
-        stage.setAlwaysOnTop(false);
-        stage.requestFocus();
+    public static void setScreenshotFile(String fileName) {
+        screenshotFileName = fileName;
     }
 
-    private static Parent loadFXML (String fxml) throws IOException{
-        FXMLLoader fxmlLoader = new FXMLLoader(GUI.class.getResource("/fxml/" + fxml + ".fxml"));       
-        Parent root = fxmlLoader.load();
-        return root;
-    }
     @Override
-    public void start(Stage startUp) throws Exception {
+    public void start(Stage startUp) throws Exception
+    {
         stage = startUp;
-        setRoot("mainDiagram", "Unhandled Exceptions UML");
 
+        //load fxml
+        FXMLLoader fxmlLoader = new FXMLLoader(GUI.class.getResource("/fxml/" + "mainDiagram" + ".fxml"));       
+        Parent root = fxmlLoader.load();
+
+        //inject a baseController manually if it has been set
+        mainDiagramController controller = fxmlLoader.getController();
+        if (baseController == null)
+            controller.setBaseController(new BaseController(new Data()));
+        else
+            controller.setBaseController(baseController);
+        
+        //setup scene
+        Scene scene = new Scene(root);
+        stage.setTitle("Unhandled Exceptions UML");
+        stage.setScene(scene);
+
+        //if screenshotmode, run it silently, take the shot, exit
+        if (screenshotMode)
+        {
+            stage.initStyle(StageStyle.UTILITY);
+            stage.show();
+            stage.setOpacity(0);
+            controller.LoadAll();
+            controller.screenshotFromCLI(screenshotFileName);
+            Platform.exit();
+
+            // Restore original streams
+            System.setOut(originalOut);
+            System.setErr(originalErr);
+        }
+        else
+        {    
+            stage.show();
+            stage.setAlwaysOnTop(true);
+            stage.setAlwaysOnTop(false);
+            stage.requestFocus();
+        }
     }
 
-    public static void main(){
+    public static void main()
+    {
+        if (screenshotMode)
+        {
+            // Suppress JavaFX console output if in screenshot mode
+            System.setErr(new PrintStream(new NullOutputStream()));
+            System.setOut(new PrintStream(new NullOutputStream()));
+        }
+
         launch();
+    }
+
+    // Custom OutputStream to suppress output
+    private static class NullOutputStream extends java.io.OutputStream {
+        @Override
+        public void write(int b) {
+            // Do nothing
+        }
     }
 }
