@@ -1,24 +1,63 @@
-// Testing imports needed
-import org.junit.jupiter.api.BeforeEach;
+// Testing imports
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
+//import org.junit.jupiter.api.BeforeEach;
 
-//import java.util.HashMap;
 import com.unhandledexceptions.Model.MethodItem;
-//import com.unhandledexceptions.Model.ParameterItem;
+
 
 public class MethodItemTests {
-    //private HashMap<String, ParameterItem> parameterMap;
-    //private String type;
-    //private String methodName;
-    private MethodItem methodItem;
-    //private ClassItem classMap;
-
-    @BeforeEach
-    public void setUp(){
-        //parameterMap = new HashMap<String, ParameterItem>();
-        MethodItem.addParameter(methodItem, "testerType", "testerName");
+    // Test MethodItem constructor
+    @Test
+    public void testMethodItemConstructor() {
+        // Create the MethodItem
+        MethodItem methodItem = new MethodItem("methodName", "type");
+        // Assert we have the right types, these also test getters for name and types
+        assertEquals("methodName", methodItem.getName());
+        assertEquals("type", methodItem.getType());
     }
-    //test to see if add method works properly for a unique parameter
-    //@Test
-    //public void testAddParam(){
-    //}
+
+    // Test MethodItem constructor with null method name
+    @Test
+    public void testIncorrectMethodItemConstructor() {
+        // Ensure that an IllegalArgumentException is thrown when the method name is null
+        assertThrows(IllegalArgumentException.class, () -> {
+            @SuppressWarnings("unused")
+            MethodItem methodItem = new MethodItem(null, "type");
+        });
+    }
+
+    // Test setName
+    @Test
+    public void testSetName() {
+        // Create the MethodItem
+        MethodItem methodItem = new MethodItem("methodName", "type");
+        // Set the name
+        methodItem.setName("newName");
+        // Assert we have the right name
+        assertEquals("newName", methodItem.getName());
+    }
+
+    // Test setName with null input
+    @Test
+    public void testSetNullName() {
+        // Create the MethodItem
+        MethodItem methodItem = new MethodItem("methodName", "type");
+        // Set the name
+        methodItem.setName(null);
+        // Assert we have the right name
+        assertEquals("methodName", methodItem.getName());
+    }
+
+    // Test setType
+    @Test
+    public void testSetType() {
+        // Create the MethodItem
+        MethodItem methodItem = new MethodItem("methodName", "type");
+        // Set the type
+        methodItem.setType("newType");
+        // Assert we have the right type
+        assertEquals("newType", methodItem.getType());
+    }
+
 }
