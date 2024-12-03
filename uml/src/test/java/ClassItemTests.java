@@ -122,6 +122,38 @@ public class ClassItemTests {
     // rename the class to a name that already exists
     assertEquals("testerclass is already in use.", ClassItem.renameClassItem(classMap, relationshipMap, "testclass", "testerclass"));
   }
+  @Test
+  public void testRenameClassItemListNull() {
+    assertThrows(IllegalArgumentException.class, () -> {
+      ClassItem.renameClassItem(null, relationshipMap, "testclass", "testerclass");
+    });
+  }
+  @Test
+  public void testRenameClassItemNewNameIsBlank() {
+    assertThrows(IllegalArgumentException.class, () -> {
+      ClassItem.renameClassItem(classMap, relationshipMap, "testclass", "");
+    });
+  }
+  //Test is expecting a NullPointerException... not an IllegalArgumentException
+  @Test
+  public void testRenameClassItemNewNameIsNull() {
+    assertThrows(NullPointerException.class, () -> {
+      ClassItem.renameClassItem(classMap, relationshipMap, "testclass", null);
+    });
+  }
+  @Test
+  public void testRenameClassItemOldNameIsBlank() {
+    assertThrows(IllegalArgumentException.class, () -> {
+      ClassItem.renameClassItem(classMap, relationshipMap, "", "testclass1");
+    });
+  }
+  @Test
+  public void testRenameClassItemOldNameIsNull() {
+    assertThrows(NullPointerException.class, () -> {
+      ClassItem.renameClassItem(classMap, relationshipMap, null, "testclass1");
+    });
+  }
+
 
   @Test
   public void testAddMethod() {
