@@ -128,19 +128,6 @@
                     </execution>
                 </executions>
             </plugin>
-            <!-- Surefire to exclude GUI tests -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <version>3.1.2</version>
-                <configuration>
-                    <excludes>
-                        <exclude>**/ObserverTests.java</exclude>
-                        <exclude>**/ClassBoxTests.java</exclude>
-                        <!-- Add more excludes if needed -->
-                    </excludes>
-                </configuration>
-            </plugin>
             <!-- Jacoco for CodeCov plugin -->
             <plugin>
                <groupId>org.jacoco</groupId>
