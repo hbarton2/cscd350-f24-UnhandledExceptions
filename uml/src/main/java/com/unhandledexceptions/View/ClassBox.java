@@ -580,6 +580,38 @@ public class ClassBox extends StackPane implements PropertyChangeListener
                 }
             }
         });
+
+        methodParamList.setOnKeyPressed(event -> { // Detect triple-click
+            if(event.getCode() == KeyCode.DELETE){
+                String selectedItem = methodParamList.getSelectionModel().getSelectedItem();
+                if (selectedItem != null) {
+                    Alert warning = deleteWarning("Parameter");
+                    // get confirmation for delete
+                    Optional<ButtonType> result = warning.showAndWait();
+
+                    if (result.isPresent() && result.get() == ButtonType.OK) {
+                        // user accepted, get the method name
+                        String className = getClassBoxName(); 
+                        String[] parseParam = selectedItem.split(" ");
+                        String paramType = parseParam[0];
+                        String paramName = parseParam[1];
+                    
+                        // call controller delete passing this class name and the method we're in, and the selected parameter name and type.
+                        String modelUpdated = baseController.RemoveParameterListener(className, methodName, paramName, paramType);
+                        // parse result for either successful rename or failure
+                        if (!(modelUpdated == "good"))
+                        {
+                            System.out.println(modelUpdated);
+                            showError(modelUpdated);
+                        }
+
+                    } else {
+                        // user denied, cancel action
+                        return;
+                    }
+            }
+            }
+        });
     
 
         HBox titleBox = new HBox(30);
@@ -770,7 +802,7 @@ public class ClassBox extends StackPane implements PropertyChangeListener
             if(event.getCode() == KeyCode.DELETE){
                 String selectedItem = fieldsList.getSelectionModel().getSelectedItem();
                 if (selectedItem != null) {
-                    Alert warning = deleteFieldWarning();
+                    Alert warning = deleteWarning("Field");
 
                     // get confirmation for delete
                     Optional<ButtonType> result = warning.showAndWait();
@@ -1031,12 +1063,12 @@ public class ClassBox extends StackPane implements PropertyChangeListener
     }
        
     // method to display warning when deleting a class box
-    private Alert deleteFieldWarning() {
+    private Alert deleteWarning(String type) {
         // create an alert box
         Alert alert = new Alert(AlertType.CONFIRMATION);
         // set the title and header as a warning
         alert.setTitle("Warning");
-        alert.setHeaderText("Are you sure you want to delete this Field?");
+        alert.setHeaderText("Are you sure you want to delete this " + type + "?");
         //alert.setContentText("This action can not be undone");
 
         // return the alert to be instantiated by delete action
