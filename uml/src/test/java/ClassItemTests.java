@@ -3,9 +3,12 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 
+import java.beans.PropertyChangeListener;
 import java.util.HashMap;
 import com.unhandledexceptions.Model.ClassItem; 
 import com.unhandledexceptions.Model.RelationshipItem;
+
+import javafx.beans.property.Property;
 
 
 
@@ -14,6 +17,7 @@ public class ClassItemTests {
   // classMap to store the class objects
   private HashMap<String, ClassItem> classMap;
   private HashMap<String, RelationshipItem> relationshipMap;
+  private PropertyChangeListener mockListener;
 
   // test setup before each class runs
   @BeforeEach
@@ -119,8 +123,74 @@ public class ClassItemTests {
     assertEquals("testerclass is already in use.", ClassItem.renameClassItem(classMap, relationshipMap, "testclass", "testerclass"));
   }
 
+  @Test
+  public void testAddMethod() {
+    // add a method to the class
+    classMap.get("testerclass").addMethod(classMap.get("testerclass"), "testmethod", "testType");
 
+    // make sure the method is in the class
+    assertTrue(classMap.get("testerclass").getMethodItems().containsKey("testmethod"));
+  }
 
-   
+  @Test
+  public void testAddMethodNullName() {
+    // add a method with a null name
+    IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () -> {
+      classMap.get("testerclass").addMethod(classMap.get("testerclass"), null, "testType");
+    });
 
+    // make sure the exception is thrown
+    assertEquals("Method name cannot be null or blank", e.getMessage());
+  }
+
+  @Test
+  public void testAddMethodAlreadyExists() {
+    // add a method to the class
+    classMap.get("testerclass").addMethod(classMap.get("testerclass"), "testmethod", "testType");
+
+    // add the same method again
+    assertEquals("Method name: testmethod already in use.", classMap.get("testerclass").addMethod(classMap.get("testerclass"), "testmethod", "testType"));
+  }
+
+  @Test
+  public void testRemoveMethod() {
+    // add a method to the class
+    classMap.get("testerclass").addMethod(classMap.get("testerclass"), "testmethod", "testType");
+
+    // remove the method
+    classMap.get("testerclass").removeMethod(classMap.get("testerclass"), "testmethod");
+
+    // make sure the method is removed
+    assertFalse(classMap.get("testerclass").getMethodItems().containsKey("testmethod"));
+  }
+  
+  @Test
+  public void testRemoveMethodNullName () {
+    // remove a method with a null name
+    IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () -> {
+      classMap.get("testerclass").removeMethod(classMap.get("testerclass"), null);
+    });
+
+    // make sure the exception is thrown
+    assertEquals("Method name cannot be null or blank", e.getMessage());
+  }
+
+  @Test
+  public void testRemoveMethodDoesNotExist() {
+    // remove a method that does not exist
+    assertEquals("Method name: testmethod does not exist", classMap.get("testerclass").removeMethod(classMap.get("testerclass"), "testmethod"));
+  }
+
+  @Test
+  public void testRenameMethod() {
+    // add a method to the class
+    classMap.get("testerclass").addMethod(classMap.get("testerclass"), "testmethod", "testType");
+
+    // rename the method
+    classMap.get("testerclass").renameMethod(classMap.get("testerclass"), "testmethod", "newmethod");
+
+    // make sure the method is renamed
+    assertTrue(classMap.get("testerclass").getMethodItems().containsKey("newmethod"));
+    
+  }
 }
