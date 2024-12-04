@@ -37,6 +37,7 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.ToolBar;
 import javafx.scene.effect.DropShadow;
+import javafx.scene.effect.InnerShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
@@ -234,7 +235,7 @@ public class mainDiagramController
 
                 Platform.runLater(new Runnable() {
                     @Override public void run() {
-                        rLine.Update(scaleTransform, true);
+                        rLine.Update(scaleTransform, true, darkMode, partyMode);
                     }
                 });
             }
@@ -264,7 +265,7 @@ public class mainDiagramController
         for (Node node : anchorPane.getChildren()) {
             if (node instanceof RelationLine) {
                 RelationLine line = (RelationLine) node;
-                line.Update(scaleTransform, true);
+                line.Update(scaleTransform, true, darkMode, partyMode);
             }
         }
     }
@@ -274,7 +275,7 @@ public class mainDiagramController
             if (node instanceof RelationLine) {
                 RelationLine line = (RelationLine) node;
                 if (line.getSource() == classBox || line.getDest() == classBox)
-                    line.Update(scaleTransform, false);
+                    line.Update(scaleTransform, false, darkMode, partyMode);
             }
         }
     }
@@ -282,7 +283,7 @@ public class mainDiagramController
     private void mouseMove(MouseEvent event) {
         if (placingRelation != null)
         {
-            placingRelation.Update(scaleTransform, false, event);
+            placingRelation.Update(scaleTransform, false, event, darkMode, partyMode);
         }
 
         for (Node node : anchorPane.getChildren()) {
@@ -333,7 +334,7 @@ public class mainDiagramController
                 classBox.setLayoutY(newY / scaleTransform.getY());
 
                 placingRelation.setEnd(classBox, Point2D.ZERO);
-                placingRelation.Update(scaleTransform, true);
+                placingRelation.Update(scaleTransform, true, darkMode, partyMode);
                 baseController.getCareTaker().Lock();
                 placingRelation.Save(); //update model
                 baseController.getCareTaker().Unlock();
@@ -375,14 +376,14 @@ public class mainDiagramController
             RelationLine line = new RelationLine(baseController, anchorPane);
             line.setStart(classBox, offset);
             
-            line.Update(scaleTransform, false, event);
+            line.Update(scaleTransform, false, event, darkMode, partyMode);
             anchorPane.getChildren().add(line);
             placingRelation = line;
         }
         else
         {
             placingRelation.setEnd(classBox, offset);
-            placingRelation.Update(scaleTransform, true);
+            placingRelation.Update(scaleTransform, true, darkMode, partyMode);
             placingRelation.Save(); //update model
             placingRelation = null;
         }
@@ -571,6 +572,29 @@ public class mainDiagramController
         return shadow;
     }
 
+    public InnerShadow effectHelperInner(){
+        InnerShadow shadow = new InnerShadow();
+
+        Color color = (darkMode) ? darkColor : lightColor;
+
+        shadow.setRadius(10);
+
+        if(partyMode){
+            int max = 255;
+            int min = 0;
+
+            int r= (int)(Math.random() * (max - min + 1)) + min;
+            int g = (int)(Math.random() * (max - min + 1)) + min;
+            int b = (int)(Math.random() * (max - min + 1)) + min;
+
+            color = Color.rgb(r, g, b);
+        }
+
+        shadow.setColor(color);
+
+        return shadow;
+    }
+
     @FXML
     public void onTakeScreenshot() {
         takeScreenshot();
@@ -646,6 +670,8 @@ public class mainDiagramController
 
         classBox.getDragBox().setOnMouseReleased(event -> {
             updateRelationLines();
+            classBox.setEffect(effectHelper());
+            anchorPane.setEffect(effectHelperInner());
         });
 
         classBox.getRanchor().setOnMouseClicked(event -> {
