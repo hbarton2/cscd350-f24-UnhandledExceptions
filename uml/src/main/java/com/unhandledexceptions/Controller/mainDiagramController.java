@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Random;
 import java.util.Optional;
 
 import javax.imageio.ImageIO;
@@ -43,6 +42,7 @@ import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
+import javafx.application.Platform;
 import javafx.embed.swing.SwingFXUtils;
 
 public class mainDiagramController
@@ -232,12 +232,12 @@ public class mainDiagramController
                 rLine.setEnd(dest, destLoc);
                 rLine.setType(entry.getValue().getType());
                 anchorPane.getChildren().add(rLine);
-                rLine.Update(scaleTransform, true, darkMode, partyMode);
-                // Platform.runLater(new Runnable() {
-                //     @Override public void run() {
-                //         rLine.Update(scaleTransform, true, darkMode, partyMode);
-                //     }
-                // });
+                
+                Platform.runLater(new Runnable() {
+                    @Override public void run() {
+                        rLine.Update(scaleTransform, true, darkMode, partyMode);
+                    }
+                });
             }
         }
     }
