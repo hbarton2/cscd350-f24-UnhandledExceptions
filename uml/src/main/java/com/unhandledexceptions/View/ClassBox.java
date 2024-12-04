@@ -815,9 +815,6 @@ public class ClassBox extends StackPane implements PropertyChangeListener
                     
                         // call controller delete passing this class name and fieldName
                         String modelUpdated = baseController.RemoveFieldListener(className, fieldName);
-                        //DELETE
-                        System.out.println(classItem.getFieldItems().toString());
-                        //
                         // parse result for either successful rename or failure
                         if (!(modelUpdated == "good"))
                         {
