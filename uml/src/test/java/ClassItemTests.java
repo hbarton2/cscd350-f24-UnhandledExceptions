@@ -225,4 +225,80 @@ public class ClassItemTests {
     assertTrue(classMap.get("testerclass").getMethodItems().containsKey("newmethod"));
     
   }
+
+  @Test
+  public void testRenameMethodNullName() {
+    // rename a method with a null name
+    assertEquals("Method names cannot be null or blank.", classMap.get(classMap.get("testerclass")).renameMethod(classMap.get("testerclass"), null, "newmethod"));
+  }
+
+  @Test
+  public void testRenameMethodAlreadyExists() {
+    // add a method to the class
+    classMap.get("testerclass").addMethod(classMap.get("testerclass"), "testmethod", "testType");
+
+    // attempt rename with existing method name
+    assertEquals("Method name: testmethod already in use.", classMap.get("testerclass").renameMethod(classMap.get("testerclass"), "testmethod", "testmethod"));
+  }
+  @Test
+  public void testRenameField() {
+    // add a field to the class
+    classMap.get("testerclass").addField(classMap.get("testerclass"), "testtype", "testfield");
+
+    // rename the field
+    classMap.get("testerclass").renameField(classMap.get("testerclass"), "testfield", "newfield");
+
+    // make sure the field is renamed
+    assertTrue(classMap.get("testerclass").getFieldItems().containsKey("newfield"));
+  }
+
+  @Test
+  public void testRenameFieldNullName() {
+    // rename a field with a null name
+    classMap.get("testerclass").addField(classMap.get("testerclass"), "testtype", "testfield");
+
+    assertEquals("Field names cannot be null or blank", classMap.get(classMap.get("testerclass")).renameField(classMap.get("testerclass"), null, "newfield"));
+  }
+
+  @Test
+  public void testRetypeField() {
+    // add a field to the class
+    classMap.get("testerclass").addField(classMap.get("testerclass"), "testtype", "testfield");
+
+    // retype the field
+    classMap.get("testerclass").retypeField(classMap.get("testerclass"), "testfield", "newtype");
+
+    // make sure the field is retyped
+    assertEquals("newtype", classMap.get("testerclass").getFieldItems().get("testfield").getType());
+  }
+
+  @Test
+  public void testRetypeMethod() {
+    // add a method to the class
+    classMap.get("testerclass").addMethod(classMap.get("testerclass"), "testmethod", "testType");
+
+    // retype the method
+    classMap.get("testerclass").retypeMethod(classMap.get("testerclass"), "testmethod", "newType");
+
+    // make sure the method is retyped
+    assertEquals("newType", classMap.get("testerclass").getMethodItems().get("testmethod").getType());
+  }
+
+  @Test
+  public void testRemoveField() {
+    // add a field to the class
+    classMap.get("testerclass").addField(classMap.get("testerclass"), "testtype", "testfield");
+
+    // remove the field
+    classMap.get("testerclass").removeField(classMap.get("testerclass"), "testfield");
+
+    // make sure the field is removed
+    assertFalse(classMap.get("testerclass").getFieldItems().containsKey("testfield"));
+  }
+
+  @Test
+  public void testRemoveFieldNullName() {
+    // make sure the exception is thrown
+    assertEquals("Field name cannot be null or blank", classMap.get("testerclass").removeField(classMap.get("testerclass"), null));
+  }
 }
