@@ -82,8 +82,6 @@ public class RelationLine extends Polyline
         ranchor.setVisible(false);
         anchorPane.getChildren().add(this.ranchor);
 
-
-
         //type button
         typeButton = new Button();
         ImageView typeImage = new ImageView("/images/link-image.png");
@@ -546,14 +544,14 @@ public class RelationLine extends Polyline
                 int neighborY = current.y + dir[1];
                 String newDirection = dir[0] == -1 ? "W" : dir[0] == 1 ? "E" : dir[1] == -1 ? "N" : "S";
 
-                // // Skip directions that don't match the current direction unless blocked or overshooting
-                // if (current.direction != null && !current.direction.equals(newDirection)) {
-                //     // Allow direction change only if blocked or overshooting
-                //     if (!isBlocked(current.x + dx(current.direction), current.y + dy(current.direction))
-                //             && !isOvershooting(current, endCol, endRow)) {
-                //         continue;
-                //     }
-                // }
+                // Skip directions that don't match the current direction unless blocked or overshooting
+                if (current.direction != null && !current.direction.equals(newDirection)) {
+                    // Allow direction change only if blocked or overshooting
+                    if (!isBlocked(current.x + dx(current.direction), current.y + dy(current.direction))
+                            && !isOvershooting(current, endCol, endRow)) {
+                        continue;
+                    }
+                }
 
                 // Skip blocked or invalid neighbors
                 if (isBlocked(neighborX, neighborY)) continue;
@@ -572,33 +570,33 @@ public class RelationLine extends Polyline
         return null; // No path found
     }
 
-    // private boolean isOvershooting(Node current, double endCol, double endRow) {
-    //     if (current.direction == null) return false;
+    private boolean isOvershooting(Node current, double endCol, double endRow) {
+        if (current.direction == null) return false;
     
-    //     switch (current.direction) {
-    //         case "N": return current.y <= endRow;
-    //         case "S": return current.y >= endRow;
-    //         case "E": return current.x >= endCol;
-    //         case "W": return current.x <= endCol;
-    //         default: return false;
-    //     }
-    // }
+        switch (current.direction) {
+            case "N": return current.y <= endRow;
+            case "S": return current.y >= endRow;
+            case "E": return current.x >= endCol;
+            case "W": return current.x <= endCol;
+            default: return false;
+        }
+    }
 
-    // private int dx(String direction) {
-    //     switch (direction) {
-    //         case "W": return -1;
-    //         case "E": return 1;
-    //         default: return 0;
-    //     }
-    // }
+    private int dx(String direction) {
+        switch (direction) {
+            case "W": return -1;
+            case "E": return 1;
+            default: return 0;
+        }
+    }
 
-    // private int dy(String direction) {
-    //     switch (direction) {
-    //         case "N": return -1;
-    //         case "S": return 1;
-    //         default: return 0;
-    //     }
-    // }
+    private int dy(String direction) {
+        switch (direction) {
+            case "N": return -1;
+            case "S": return 1;
+            default: return 0;
+        }
+    }
 
     private Node getNode(int x, int y, Node parent, double gCost, int endCol, int endRow, Map<String, Node> allNodes, Node endNode)
     {
@@ -632,7 +630,7 @@ public class RelationLine extends Polyline
         {
             if (node instanceof ClassBox)
             {
-                Bounds bounds = modBounds(node.getBoundsInParent(), 30);
+                Bounds bounds = modBounds(node.getBoundsInParent(), 10);
                 if (bounds.intersects(x, y, CELL_SIZE, CELL_SIZE))
                 {
                     return true;

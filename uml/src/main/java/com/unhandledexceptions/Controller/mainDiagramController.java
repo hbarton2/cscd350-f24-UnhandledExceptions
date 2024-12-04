@@ -32,7 +32,6 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.Node;
 import javafx.scene.SnapshotParameters;
-import javafx.scene.shape.Rectangle;
 import javafx.scene.transform.Scale;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextInputDialog;
@@ -389,26 +388,6 @@ public class mainDiagramController
         }
     }
 
-    private void adjustAnchorPaneSize(double newX, double newY, ClassBox classBox) {
-        // Expand AnchorPane if object goes beyond current bounds
-        if (newX < 0) {
-            anchorPane.setPrefWidth(anchorPane.getPrefWidth() - newX);
-            classBox.setLayoutX(0);
-        }
-        if (newY < 0) {
-            anchorPane.setPrefHeight(anchorPane.getPrefHeight() - newY);
-            classBox.setLayoutY(0);
-        }
-
-        if (newX + boxWidth > anchorPane.getPrefWidth()) {
-            anchorPane.setPrefWidth(newX + boxWidth);
-        }
-
-        if (newY + boxHeight > anchorPane.getPrefHeight()) {
-            anchorPane.setPrefHeight(newY + boxHeight);
-        }
-    }
-
     private void handleZoom(ScrollEvent event) {
         if (event.isControlDown()) {
 
@@ -629,7 +608,8 @@ public class mainDiagramController
     public ClassBox addClass(String className)
     {
         //creates a classBoxBuilder calls adds the panes we need, then builds it.
-        ClassBoxBasicBuilder classBoxBuilder = new ClassBoxBasicBuilder(anchorPane, baseController, className, boxWidth, boxHeight, data.getClassItems().get(className.toLowerCase().trim()));
+        ClassBoxBasicBuilder classBoxBuilder = new ClassBoxBasicBuilder(anchorPane, baseController, className,
+                 boxWidth, boxHeight, baseController.getData().getClassItems().get(className.toLowerCase().trim()));
         classBoxBuilder.withFieldPane();
         classBoxBuilder.withMethodPane();
         ClassBox classBox = classBoxBuilder.build();
@@ -656,8 +636,8 @@ public class mainDiagramController
         
             classBox.setLayoutX(newX);
             classBox.setLayoutY(newY);
-            data.getClassItems().get(classBox.getClassName().toLowerCase().trim()).setX(newX);
-            data.getClassItems().get(classBox.getClassName().toLowerCase().trim()).setY(newY);
+            baseController.getData().getClassItems().get(classBox.getClassName().toLowerCase().trim()).setX(newX);
+            baseController.getData().getClassItems().get(classBox.getClassName().toLowerCase().trim()).setY(newY);
 
             adjustAnchorPaneSize(newX, newY, classBox);
             updateRelationLines(classBox);
