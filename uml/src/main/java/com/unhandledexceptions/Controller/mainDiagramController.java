@@ -296,8 +296,8 @@ public class mainDiagramController
     private void ranchorClick(MouseEvent event, ClassBox classBox)
     {
         //get offset
-        double offsetX = classBox.getRanchor().getCenterX() - classBox.getLayoutX();
-        double offsetY = classBox.getRanchor().getCenterY() - classBox.getLayoutY();
+        int offsetX = (int) (classBox.getRanchor().getCenterX() - classBox.getLayoutX());
+        int offsetY = (int) (classBox.getRanchor().getCenterY() - classBox.getLayoutY());
         Point2D offset = new Point2D(offsetX, offsetY);
         //System.out.println(offset.toString());
 

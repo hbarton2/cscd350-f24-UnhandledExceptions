@@ -19,6 +19,7 @@ import javax.swing.JPanel;
 import com.unhandledexceptions.Controller.BaseController;
 
 import javafx.application.Platform;
+import javafx.collections.ObservableList;
 import javafx.geometry.BoundingBox;
 import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
@@ -32,6 +33,7 @@ import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Polyline;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.shape.Shape;
 import javafx.scene.transform.Scale;
 import javafx.scene.transform.Transform;
 
@@ -43,6 +45,9 @@ import javafx.scene.transform.Transform;
 
 public class RelationLine extends Polyline
 {
+    //temp
+    List<Rectangle> testRects = new ArrayList<>();
+
     private static final int CELL_SIZE = 10; // Grid resolution
     
     private Point2D sourceOffset, destOffset;
@@ -472,10 +477,10 @@ public class RelationLine extends Polyline
     private void drawPath(double startX, double startY, double endX, double endY)
     {
         // Convert points to grid coordinates
-        double startCol = (startX / CELL_SIZE);
-        double startRow = (startY / CELL_SIZE);
-        double endCol = (endX / CELL_SIZE);
-        double endRow = (endY / CELL_SIZE);
+        int startCol = (int) (startX / CELL_SIZE);
+        int startRow = (int) (startY / CELL_SIZE);
+        int endCol = (int) (endX / CELL_SIZE);
+        int endRow = (int) (endY / CELL_SIZE);
 
         // Perform a-star pathfinding
         List<Node> path = findPath(startCol, startRow, endCol, endRow);
@@ -483,18 +488,23 @@ public class RelationLine extends Polyline
         if (path != null)
         {
             // Convert path to polyline
-            //Polyline polyline = new Polyline();
-            for (Node node : path) {
-                getPoints().addAll(node.x * CELL_SIZE,
-                                            node.y * CELL_SIZE);
-            }
+            for (Node node : path)
+                getPoints().addAll((double) node.x * CELL_SIZE, (double) node.y * CELL_SIZE);
         }
     }
 
-    private List<Node> findPath(double startCol, double startRow, double endCol, double endRow)
+    private List<Node> findPath(int startCol, int startRow, int endCol, int endRow)
     {
+        //testing
+        for (Rectangle rect : testRects)
+        {
+            anchorPane.getChildren().remove(rect);
+            rect = null;
+        }
+        testRects.clear();
+
          // Check if start and end are the same
-        if (startCol == endCol && startRow == endRow) {
+         if (startCol == endCol && startRow == endRow) {
             // Return a path with just the start node (no pathfinding needed)
             Node startNode = getNode(startCol, startRow, null, 0, endCol, endRow, new HashMap<>(), null);
             return Collections.singletonList(startNode); // Return the start node as the path
@@ -515,6 +525,11 @@ public class RelationLine extends Polyline
         {
             Node current = openSet.poll();
 
+            //System.out.println("openSet: " + openSet.size());
+            //System.out.println("closedSet: " + closedSet.size());
+            if (closedSet.size() > 10000 || openSet.size() > 10000)
+                return null;
+
             // Check if we've reached the destination
             if (current.equals(endNode))
             {
@@ -525,18 +540,18 @@ public class RelationLine extends Polyline
             // Check neighbors
             for (int[] dir : new int[][]{{0, -1}, {0, 1}, {-1, 0}, {1, 0}})
             {
-                double neighborX = current.x + dir[0];
-                double neighborY = current.y + dir[1];
+                int neighborX = current.x + dir[0];
+                int neighborY = current.y + dir[1];
                 String newDirection = dir[0] == -1 ? "W" : dir[0] == 1 ? "E" : dir[1] == -1 ? "N" : "S";
 
-                // Skip directions that don't match the current direction unless blocked or overshooting
-                if (current.direction != null && !current.direction.equals(newDirection)) {
-                    // Allow direction change only if blocked or overshooting
-                    if (!isBlocked(current.x + dx(current.direction), current.y + dy(current.direction))
-                            && !isOvershooting(current, endCol, endRow)) {
-                        continue;
-                    }
-                }
+                // // Skip directions that don't match the current direction unless blocked or overshooting
+                // if (current.direction != null && !current.direction.equals(newDirection)) {
+                //     // Allow direction change only if blocked or overshooting
+                //     if (!isBlocked(current.x + dx(current.direction), current.y + dy(current.direction))
+                //             && !isOvershooting(current, endCol, endRow)) {
+                //         continue;
+                //     }
+                // }
 
                 // Skip blocked or invalid neighbors
                 if (isBlocked(neighborX, neighborY)) continue;
@@ -555,35 +570,35 @@ public class RelationLine extends Polyline
         return null; // No path found
     }
 
-    private boolean isOvershooting(Node current, double endCol, double endRow) {
-        if (current.direction == null) return false;
+    // private boolean isOvershooting(Node current, double endCol, double endRow) {
+    //     if (current.direction == null) return false;
     
-        switch (current.direction) {
-            case "N": return current.y <= endRow;
-            case "S": return current.y >= endRow;
-            case "E": return current.x >= endCol;
-            case "W": return current.x <= endCol;
-            default: return false;
-        }
-    }
+    //     switch (current.direction) {
+    //         case "N": return current.y <= endRow;
+    //         case "S": return current.y >= endRow;
+    //         case "E": return current.x >= endCol;
+    //         case "W": return current.x <= endCol;
+    //         default: return false;
+    //     }
+    // }
 
-    private int dx(String direction) {
-        switch (direction) {
-            case "W": return -1;
-            case "E": return 1;
-            default: return 0;
-        }
-    }
+    // private int dx(String direction) {
+    //     switch (direction) {
+    //         case "W": return -1;
+    //         case "E": return 1;
+    //         default: return 0;
+    //     }
+    // }
 
-    private int dy(String direction) {
-        switch (direction) {
-            case "N": return -1;
-            case "S": return 1;
-            default: return 0;
-        }
-    }
+    // private int dy(String direction) {
+    //     switch (direction) {
+    //         case "N": return -1;
+    //         case "S": return 1;
+    //         default: return 0;
+    //     }
+    // }
 
-    private Node getNode(double x, double y, Node parent, double gCost, double endCol, double endRow, Map<String, Node> allNodes, Node endNode)
+    private Node getNode(int x, int y, Node parent, double gCost, int endCol, int endRow, Map<String, Node> allNodes, Node endNode)
     {
         String key = x + "," + y;
         Node node = allNodes.get(key);
@@ -597,20 +612,52 @@ public class RelationLine extends Polyline
             node.parent = parent;
         }
 
+        //testing
+        // Rectangle r = new Rectangle((x * CELL_SIZE), (y * CELL_SIZE), CELL_SIZE, CELL_SIZE);
+        // r.setStroke(Color.RED);
+        // r.setFill(Color.TRANSPARENT);
+        // testRects.add(r);
+        // anchorPane.getChildren().add(r);
+
         return node;
     }
 
-    private boolean isBlocked(double col, double row)
+    private boolean isBlocked(int col, int row)
     {
         double x = col * CELL_SIZE;
         double y = row * CELL_SIZE;
         for (javafx.scene.Node node : anchorPane.getChildren())
         {
-            if (node instanceof ClassBox) {
-                Bounds bounds = modBounds(node.getBoundsInParent(), 15);
+            if (node instanceof ClassBox)
+            {
+                Bounds bounds = modBounds(node.getBoundsInParent(), 30);
                 if (bounds.intersects(x, y, CELL_SIZE, CELL_SIZE))
                 {
                     return true;
+                }
+            }
+            else if (node instanceof RelationLine && node != this)
+            {
+                Rectangle curNode = new Rectangle(x, y, CELL_SIZE, CELL_SIZE);
+                RelationLine line = (RelationLine) node;
+                
+                ObservableList<Double> points = line.getPoints(); // Get the points of the relation line
+
+                // Iterate through the polyline segments
+                for (int i = 0; i < points.size() - 2; i += 2)
+                {
+                    double x1 = points.get(i);
+                    double y1 = points.get(i + 1);
+                    double x2 = points.get(i + 2);
+                    double y2 = points.get(i + 3);
+
+                    // Create a line for the current segment
+                    Line segment = new Line(x1, y1, x2, y2);
+
+                    // Check if the rectangle intersects the segment
+                    Shape intersection = Shape.intersect(curNode, segment);
+                    if (intersection.getBoundsInLocal().getWidth() > 0 || intersection.getBoundsInLocal().getHeight() > 0)
+                        return true; // Rectangle is touching the polyline
                 }
             }
         }
@@ -631,12 +678,12 @@ public class RelationLine extends Polyline
 
     static class Node
     {
-        double x, y;
+        int x, y;
         double gCost, hCost;
         Node parent;
         String direction;
 
-        Node(double x, double y, double gCost, double hCost, Node parent, String direction)
+        Node(int x, int y, double gCost, double hCost, Node parent, String direction)
         {
             this.x = x;
             this.y = y;
@@ -653,13 +700,13 @@ public class RelationLine extends Polyline
             if (obj == null || getClass() != obj.getClass()) return false;
             Node node = (Node) obj;
 
-            int ix = (int) x;
-            int iy = (int) y;
-            int inx = (int) node.x;
-            int iny = (int) node.y;
+            // int ix = (int) x;
+            // int iy = (int) y;
+            // int inx = (int) node.x;
+            // int iny = (int) node.y;
 
-            return ix == inx && iy == iny;
-            //return x == node.x && y == node.y;
+            // return ix == inx && iy == iny;
+            return x == node.x && y == node.y;
         }
 
         @Override
