@@ -91,22 +91,4 @@ public class ClassBoxTests {
         VBox contentBox = (VBox) classBox.lookup("#contentBox");
         assertEquals(3, contentBox.getChildren().size()); // 1 for class name label + 1 for field pane + 1 for method pane
     }
-
-    //test that we can delete a field from a classbox
-    // @Test
-    // public void testClassBoxDeleteField() {
-    //     classBoxBuilder.withFieldPane();
-    //     ClassBox classBox = classBoxBuilder.build();
-    //     //add field to classBox
-    //    // baseController.AddFieldListener( className, "fieldType", "fieldName");
-        
-    //     //make sure that field was added to the class
-    //     ClassItem classItem = baseController.getData().getClassItems().get(classBox.getClassName()); //getting error that classItem is null?
-    //     assertTrue(classItem.getFieldItems().containsKey("fieldName"));
-
-    //     //delete the field that was added via the gui 
-
-    //     //assert that the field is no longer contained in the fieldItem hashMap
-    // }
-
 }

@@ -581,7 +581,7 @@ public class ClassBox extends StackPane implements PropertyChangeListener
             }
         });
 
-        methodParamList.setOnKeyPressed(event -> { // Detect triple-click
+        methodParamList.setOnKeyPressed(event -> { // Detect 'Del' Key press
             if(event.getCode() == KeyCode.DELETE){
                 String selectedItem = methodParamList.getSelectionModel().getSelectedItem();
                 if (selectedItem != null) {
@@ -772,7 +772,7 @@ public class ClassBox extends StackPane implements PropertyChangeListener
         
         // Enable double-click renaming for items in the ListView
         fieldsList.setOnMouseClicked(event -> {
-            if (event.getClickCount() == 2) { // Detect double-click
+            if (event.getClickCount() == 2) { // Detect 'Del' Key press
                     String selectedItem = fieldsList.getSelectionModel().getSelectedItem();
                     if (selectedItem != null) {
                         // Split the selected item to get old name and type
@@ -815,6 +815,9 @@ public class ClassBox extends StackPane implements PropertyChangeListener
                     
                         // call controller delete passing this class name and fieldName
                         String modelUpdated = baseController.RemoveFieldListener(className, fieldName);
+                        //DELETE
+                        System.out.println(classItem.getFieldItems().toString());
+                        //
                         // parse result for either successful rename or failure
                         if (!(modelUpdated == "good"))
                         {
