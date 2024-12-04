@@ -17,6 +17,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import com.unhandledexceptions.Controller.BaseController;
+import com.unhandledexceptions.Model.RelationshipItem;
 
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
@@ -51,7 +52,8 @@ public class RelationLine extends Polyline
 
     private static final int CELL_SIZE = 10; // Grid resolution
     
-    private Point2D sourceOffset, destOffset;
+    //private Point2D sourceOffset, destOffset; not serializable!!
+    private double sourceX, sourceY, destX, destY;
     // classboxes that the relation line connects
     private ClassBox source, dest;
     // type of relationship (Aggregation, Composition, Generalization, Realization)
@@ -146,7 +148,7 @@ public class RelationLine extends Polyline
             Point2D pointOnSegment = getClosestPointOnSegment(event.getSceneX(), event.getSceneY(), x1, y1, x2, y2);
             distance = pointOnSegment.distance(event.getSceneX(), event.getSceneY()-50);
             
-            if (distance < 100 && distance < minDistance)
+            if (distance < 25 && distance < minDistance)
             {
                 minDistance = distance;
                 nearestPoint = pointOnSegment;
@@ -228,8 +230,11 @@ public class RelationLine extends Polyline
         String c2Name = dest.getClassName().toLowerCase().trim();
 
         baseController.AddRelationshipListener(c1Name, c2Name, type);
-        baseController.getData().getRelationshipItems().get(c1Name + "_" + c2Name).setSourceLoc(sourceOffset);
-        baseController.getData().getRelationshipItems().get(c1Name + "_" + c2Name).setDestLoc(destOffset);
+        RelationshipItem r = baseController.getData().getRelationshipItems().get(c1Name + "_" + c2Name);
+        r.setSourceX(getSourceOffset().getX());
+        r.setSourceY(getSourceOffset().getY());
+        r.setDestX(getDestOffset().getX());
+        r.setDestY(getDestOffset().getY());
     }
 
     /*
@@ -244,10 +249,10 @@ public class RelationLine extends Polyline
     {
         Platform.runLater(new Runnable() {
             @Override public void run() {
-                double startX = (source.getLayoutX() + sourceOffset.getX()) / scaleTransform.getX();
-                double startY = ((source.getLayoutY() + sourceOffset.getY())) / scaleTransform.getY();
-                double endX = (dest.getLayoutX() + destOffset.getX()) / scaleTransform.getX();
-                double endY = ((dest.getLayoutY() + destOffset.getY())) / scaleTransform.getY();
+                double startX = (source.getLayoutX() + getSourceOffset().getX()) / scaleTransform.getX();
+                double startY = ((source.getLayoutY() + getSourceOffset().getY())) / scaleTransform.getY();
+                double endX = (dest.getLayoutX() + getDestOffset().getX()) / scaleTransform.getX();
+                double endY = ((dest.getLayoutY() + getDestOffset().getY())) / scaleTransform.getY();
                 update(scaleTransform, startX, startY, endX, endY, pathfinding, darkMode, partyMode);
             }
         });
@@ -264,8 +269,8 @@ public class RelationLine extends Polyline
     {
         Platform.runLater(new Runnable() {
             @Override public void run() {
-                double startX = (source.getLayoutX() + sourceOffset.getX()) / scaleTransform.getX();
-                double startY = ((source.getLayoutY() + sourceOffset.getY())) / scaleTransform.getY();
+                double startX = (source.getLayoutX() + getSourceOffset().getX()) / scaleTransform.getX();
+                double startY = ((source.getLayoutY() + getSourceOffset().getY())) / scaleTransform.getY();
                 double endX = event.getX() / scaleTransform.getX();
                 double endY = event.getY() / scaleTransform.getY();
                 update(scaleTransform, startX, startY, endX, endY, pathfinding, darkMode, partyMode);
@@ -300,25 +305,25 @@ public class RelationLine extends Polyline
         // testRect.toBack();
 
         //get pre-start
-        if (sourceOffset.getX() < 0)
+        if (getSourceOffset().getX() < 0)
         {
             firstX = startX - 20;
             preX = startX + 10;
             typeIcon.setRotate(0);
         }
-        else if (sourceOffset.getX() > source.getWidth())
+        else if (getSourceOffset().getX() > source.getWidth())
         {
             firstX = startX + 20;
             preX = startX - 10;
             typeIcon.setRotate(180);
         }
-        else if (sourceOffset.getY() < 0)
+        else if (getSourceOffset().getY() < 0)
         {
             firstY = startY - 20;
             preY = startY + 10;
             typeIcon.setRotate(90);
         }
-        else if (sourceOffset.getY() > source.getHeight())
+        else if (getSourceOffset().getY() > source.getHeight())
         {
             firstY = startY + 20;
             preY = startY - 10;
@@ -328,25 +333,25 @@ public class RelationLine extends Polyline
         //get post-end
         if (source != dest)
         {
-            if (destOffset.getX() < 0)
+            if (getDestOffset().getX() < 0)
             {
                 lastX = endX - 20;
                 postX = endX + 10;
                 if (type.equals("Generalization") || type.equals("Realization")) typeIcon.setRotate(0);
             }
-            else if (destOffset.getX() > dest.getWidth())
+            else if (getDestOffset().getX() > dest.getWidth())
             {
                 lastX = endX + 20;
                 postX = endX - 10;
                 if (type.equals("Generalization") || type.equals("Realization"))typeIcon.setRotate(180);
             }
-            else if (destOffset.getY() < 0)
+            else if (getDestOffset().getY() < 0)
             {
                 lastY = endY - 20;
                 postY = endY + 10;
                 if (type.equals("Generalization") || type.equals("Realization"))typeIcon.setRotate(90);
             }
-            else if (destOffset.getY() > dest.getHeight())
+            else if (getDestOffset().getY() > dest.getHeight())
             {
                 lastY = endY + 20;
                 postY = endY - 10;
@@ -454,12 +459,26 @@ public class RelationLine extends Polyline
 
     public Point2D getSourceOffset()
     {
-        return this.sourceOffset;
+        Point2D sourceOffset = new Point2D(this.sourceX, this.sourceY);
+        return sourceOffset;
     }
 
     public Point2D getDestOffset()
     {
-        return this.destOffset;
+        Point2D destOffset = new Point2D(this.destX, this.destY);
+        return destOffset;
+    }
+
+    public void setSourceOffset(Point2D sourceOffset)
+    {
+        this.sourceX = sourceOffset.getX();
+        this.sourceY = sourceOffset.getY();
+    }
+
+    public void setDestOffset(Point2D destOffset)
+    {
+        this.destX = destOffset.getX();
+        this.destY = destOffset.getY();
     }
 
     /*
@@ -471,9 +490,9 @@ public class RelationLine extends Polyline
     public void setStart(ClassBox classBox, Point2D offset)
     {
         this.source = classBox;
-        this.sourceOffset = offset;
+        setSourceOffset(offset);
         this.dest = source;
-        this.destOffset = offset;
+        setDestOffset(offset);
     }
 
     /*
@@ -485,7 +504,7 @@ public class RelationLine extends Polyline
     public void setEnd(ClassBox classBox, Point2D offset)
     {
         this.dest = classBox;
-        this.destOffset = offset;
+        setDestOffset(offset);
     }
 
     //a-star pathfinding

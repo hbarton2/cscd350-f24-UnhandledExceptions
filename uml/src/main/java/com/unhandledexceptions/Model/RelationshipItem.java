@@ -1,7 +1,6 @@
 package com.unhandledexceptions.Model;
 
 import java.util.HashMap;
-import javafx.geometry.Point2D;
 
 public class RelationshipItem
 {
@@ -9,14 +8,14 @@ public class RelationshipItem
     private ClassItem source;
     private ClassItem destination;
     private String type;
-    private Point2D sourceLoc, destLoc;
+    //private Point2D sourceLoc, destLoc;
+    private double sourceX, sourceY, destX, destY;
     
     public RelationshipItem() {} //blank constructor for IO serialization
 
     public RelationshipItem(final ClassItem source, final ClassItem destination, final String type)
     {
-        sourceLoc = Point2D.ZERO;
-        destLoc = Point2D.ZERO;
+        sourceX = 0; sourceY = 0; destX = 0; destY = 0;
         // checking for null values and throwing an exception if the source or destination are null
         // we can't have a relationship with only a source or only a destination
         if(source == null || destination == null){
@@ -40,8 +39,10 @@ public class RelationshipItem
         this.source = relationship.source;
         this.destination = relationship.destination;
         this.type = relationship.type;
-        this.sourceLoc = relationship.sourceLoc;
-        this.destLoc = relationship.destLoc;
+        setSourceX(relationship.getSourceX());
+        setSourceY(relationship.getSourceY());
+        setDestX(relationship.getDestX());
+        setDestY(relationship.getDestY());
     }
 
     /**
@@ -150,25 +151,38 @@ public class RelationshipItem
         this.destination = destination;
     }
 
-    public Point2D getSourceLoc()
-    {
-        return this.sourceLoc;
-    }
+    public double getSourceX() { return this.sourceX; }
+    public double getSourceY() { return this.sourceY; }
+    public double getDestX() { return this.destX; }
+    public double getDestY() { return this.destY; }
+    public void setSourceX(double sourceX) { this.sourceX = sourceX; }
+    public void setSourceY(double sourceY) { this.sourceY = sourceY; }
+    public void setDestX(double destX) { this.destX = destX; }
+    public void setDestY(double destY) { this.destY = destY; }
 
-    public void setSourceLoc(Point2D sourceLoc)
-    {
-        this.sourceLoc = sourceLoc;
-    }
+    // public Point2D getSourceOffset()
+    // {
+    //     Point2D sourceOffset = new Point2D(this.sourceX, this.sourceY);
+    //     return sourceOffset;
+    // }
 
-    public Point2D getDestLoc()
-    {
-        return this.destLoc;
-    }
+    // public Point2D getDestOffset()
+    // {
+    //     Point2D destOffset = new Point2D(this.destX, this.destY);
+    //     return destOffset;
+    // }
 
-    public void setDestLoc(Point2D destLoc)
-    {
-        this.destLoc = destLoc;
-    }
+    // public void setSourceOffset(Point2D sourceOffset)
+    // {
+    //     this.sourceX = sourceOffset.getX();
+    //     this.sourceY = sourceOffset.getY();
+    // }
+
+    // public void setDestOffset(Point2D destOffset)
+    // {
+    //     this.destX = destOffset.getX();
+    //     this.destY = destOffset.getY();
+    // }
 
     public String getType() {
         return this.type;

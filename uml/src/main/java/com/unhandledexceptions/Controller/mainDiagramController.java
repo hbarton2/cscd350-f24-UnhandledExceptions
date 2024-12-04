@@ -18,7 +18,6 @@ import com.unhandledexceptions.View.ClassBox;
 import com.unhandledexceptions.View.ClassBoxBasicBuilder;
 import com.unhandledexceptions.View.RelationLine;
 
-import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Point2D;
@@ -187,24 +186,25 @@ public class mainDiagramController
      * @param filename the file name to save the screenshot as
      */
     public void screenshotFromCLI(String filename) {
-        // Ensures the file name ends with .png since that is the image format
-        String screenFileName = filename;
-        if (!filename.endsWith(".png")) {
-            screenFileName += ".png";
-        }
-        // Logic for taking a screenshot of GUI window
-         double width = anchorPane.getWidth();
-         double height = anchorPane.getHeight();
- 
-         WritableImage image = new WritableImage((int) width, (int) height);
-         anchorPane.snapshot(new SnapshotParameters(), image);
-         File file = new File(screenFileName);
- 
-         try {
-             ImageIO.write(SwingFXUtils.fromFXImage(image, null), "png", file);
-         } catch (IOException e) {
-             e.printStackTrace();
-         }
+
+            // Ensures the file name ends with .png since that is the image format
+            String screenFileName = filename;
+            if (!filename.endsWith(".png")) {
+                screenFileName += ".png";
+            }
+            // Logic for taking a screenshot of GUI window
+            double width = anchorPane.getWidth();
+            double height = anchorPane.getHeight();
+    
+            WritableImage image = new WritableImage((int) width, (int) height);
+            anchorPane.snapshot(new SnapshotParameters(), image);
+            File file = new File(screenFileName);
+    
+            try {
+                ImageIO.write(SwingFXUtils.fromFXImage(image, null), "png", file);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
     }
 
     public void LoadAll()
@@ -222,9 +222,9 @@ public class mainDiagramController
         HashMap<String, RelationshipItem> relationItems = baseController.getData().getRelationshipItems();
         for (Map.Entry<String, RelationshipItem> entry : relationItems.entrySet()) {
             ClassBox source = getClassBoxByName(entry.getValue().getSource().getName());
-            Point2D sourceLoc = entry.getValue().getSourceLoc();
+            Point2D sourceLoc = new Point2D(entry.getValue().getSourceX(), entry.getValue().getSourceY());
             ClassBox dest = getClassBoxByName(entry.getValue().getDestination().getName());
-            Point2D destLoc = entry.getValue().getDestLoc();
+            Point2D destLoc = new Point2D(entry.getValue().getDestX(), entry.getValue().getDestY());
 
             if (source != null && dest != null) {
                 RelationLine rLine = new RelationLine(baseController, anchorPane);
@@ -232,12 +232,12 @@ public class mainDiagramController
                 rLine.setEnd(dest, destLoc);
                 rLine.setType(entry.getValue().getType());
                 anchorPane.getChildren().add(rLine);
-
-                Platform.runLater(new Runnable() {
-                    @Override public void run() {
-                        rLine.Update(scaleTransform, true, darkMode, partyMode);
-                    }
-                });
+                rLine.Update(scaleTransform, true, darkMode, partyMode);
+                // Platform.runLater(new Runnable() {
+                //     @Override public void run() {
+                //         rLine.Update(scaleTransform, true, darkMode, partyMode);
+                //     }
+                // });
             }
         }
     }
@@ -287,10 +287,10 @@ public class mainDiagramController
         }
 
         for (Node node : anchorPane.getChildren()) {
-            // if (node instanceof RelationLine) {
-            //     RelationLine line = (RelationLine) node;
-            //     line.mouseMoved(event);
-            // }
+            if (node instanceof RelationLine) {
+                RelationLine line = (RelationLine) node;
+                line.mouseMoved(event, scaleTransform);
+            }
             if (node instanceof ClassBox) {
                 ClassBox classBox = (ClassBox) node;
                 if (placingRelation == null || placingRelation.getSource() != classBox)
@@ -665,6 +665,7 @@ public class mainDiagramController
 
             adjustAnchorPaneSize(newX, newY, classBox);
             updateRelationLines(classBox);
+            anchorPane.setEffect(effectHelperInner());
 
         });
 
