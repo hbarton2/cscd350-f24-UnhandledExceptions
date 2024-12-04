@@ -154,7 +154,7 @@ public class ClassItemTests {
   @Test
   public void testAddMethod() {
     // add a method to the class
-    classMap.get("testerclass").addMethod(classMap.get("testerclass"), "testmethod", "testType");
+    ClassItem.addMethod(classMap.get("testerclass"), "testmethod", "testType");
 
     // make sure the method is in the class
     assertTrue(classMap.get("testerclass").getMethodItems().containsKey("testmethod"));
@@ -164,7 +164,7 @@ public class ClassItemTests {
   public void testAddMethodNullName() {
     // add a method with a null name
     IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () -> {
-      classMap.get("testerclass").addMethod(classMap.get("testerclass"), null, "testType");
+      ClassItem.addMethod(classMap.get("testerclass"), null, "testType");
     });
 
     // make sure the exception is thrown
@@ -206,7 +206,7 @@ public class ClassItemTests {
   @Test
   public void testRemoveMethodDoesNotExist() {
     // remove a method that does not exist
-    assertEquals("Method name: testmethod does not exist", classMap.get("testerclass").removeMethod(classMap.get("testerclass"), "testmethod"));
+    assertEquals("Method name: testmethod does not exist", ClassItem.removeMethod(classMap.get("testerclass"), "testmethod"));
   }
 
   @Test
@@ -225,7 +225,7 @@ public class ClassItemTests {
   @Test
   public void testRenameMethodNullName() {
     // rename a method with a null name
-    assertEquals("Method names cannot be null or blank.", classMap.get(classMap.get("testerclass")).renameMethod(classMap.get("testerclass"), null, "newmethod"));
+    assertEquals("Method names cannot be null or blank.", ClassItem.renameMethod(classMap.get("testerclass"), null, "newmethod"));
   }
 
   @Test
