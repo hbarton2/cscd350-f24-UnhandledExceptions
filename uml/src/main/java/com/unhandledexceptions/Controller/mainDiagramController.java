@@ -67,7 +67,6 @@ public class mainDiagramController
         anchorPane.getTransforms().add(scaleTransform);
         scrollPane.addEventFilter(ScrollEvent.SCROLL, this::handleZoom);
         anchorPane.setOnMouseMoved(event -> mouseMove(event));
-        anchorPane.setOnScroll(event -> mouseScroll(event));
         anchorPane.setOnMouseClicked(event -> mouseClick(event));
     }
 
@@ -125,7 +124,7 @@ public class mainDiagramController
             //clear all
             newMenuClick();
 
-            LoadAll();   
+            LoadAll();
         }
     }
 
@@ -170,7 +169,7 @@ public class mainDiagramController
                 
                 Platform.runLater(new Runnable() {
                     @Override public void run() {
-                        rLine.Update(scaleTransform);
+                        rLine.Update(scaleTransform, true);
                     }
                 });
             }
@@ -199,36 +198,33 @@ public class mainDiagramController
         for (Node node : anchorPane.getChildren()) {
             if (node instanceof RelationLine) {
                 RelationLine line = (RelationLine) node;
-                line.Update(scaleTransform);
+                line.Update(scaleTransform, true);
             }
         }
     }
 
-    private void mouseScroll(ScrollEvent event)
-    {
-        // if (placingRelation != null)
-        // {
-        //     if (event.getDeltaY() > 0) // Scrolling up
-        //         placingRelation.setType(getNextRelationType(placingRelation.getType(), false));
-        //     else if (event.getDeltaY() < 0) // Scrolling down
-        //         placingRelation.setType(getNextRelationType(placingRelation.getType(), true));
-            
-        //     placingRelation.Update(scaleTransform, getFakeMouseEvent(event.getX(), event.getY()));
-        // }
+    private void updateRelationLines(ClassBox classBox) {
+        for (Node node : anchorPane.getChildren()) {
+            if (node instanceof RelationLine) {
+                RelationLine line = (RelationLine) node;
+                if (line.getSource() == classBox || line.getDest() == classBox)
+                    line.Update(scaleTransform, false);
+            }
+        }
     }
 
     private void mouseMove(MouseEvent event)
     {
         if (placingRelation != null)
         {
-            placingRelation.Update(scaleTransform, event);
+            placingRelation.Update(scaleTransform, false, event);
         }
 
         for (Node node : anchorPane.getChildren()) {
-            if (node instanceof RelationLine) {
-                RelationLine line = (RelationLine) node;
-                //line.mouseMoved(event);
-            }
+            // if (node instanceof RelationLine) {
+            //     RelationLine line = (RelationLine) node;
+            //     line.mouseMoved(event);
+            // }
             if (node instanceof ClassBox) {
                 ClassBox classBox = (ClassBox) node;
                 if (placingRelation == null || placingRelation.getSource() != classBox)
@@ -269,7 +265,7 @@ public class mainDiagramController
                 classBox.setLayoutY(newY / scaleTransform.getY());
 
                 placingRelation.setEnd(classBox, Point2D.ZERO);
-                placingRelation.Update(scaleTransform);
+                placingRelation.Update(scaleTransform, true);
                 baseController.getCareTaker().Lock();
                 placingRelation.Save(); //update model
                 baseController.getCareTaker().Unlock();
@@ -310,14 +306,14 @@ public class mainDiagramController
             RelationLine line = new RelationLine(baseController, anchorPane);
             line.setStart(classBox, offset);
             
-            line.Update(scaleTransform, event);
+            line.Update(scaleTransform, false, event);
             anchorPane.getChildren().add(line);
             placingRelation = line;
         }
         else
         {
             placingRelation.setEnd(classBox, offset);
-            placingRelation.Update(scaleTransform);
+            placingRelation.Update(scaleTransform, true);
             placingRelation.Save(); //update model
             placingRelation = null;
         }
@@ -437,6 +433,11 @@ public class mainDiagramController
             data.getClassItems().get(classBox.getClassName().toLowerCase().trim()).setY(newY);
 
             adjustAnchorPaneSize(newX, newY, classBox);
+            updateRelationLines(classBox);
+
+        });
+
+        classBox.getDragBox().setOnMouseReleased(event -> {
             updateRelationLines();
         });
 
@@ -482,43 +483,43 @@ public class mainDiagramController
         }
     }
 
-    private MouseEvent getFakeMouseEvent(double mouseX, double mouseY)
-    {
-        // Create a minimal MouseEvent for just the required X and Y
-        MouseEvent fakeMouseEvent = new MouseEvent(
-            MouseEvent.MOUSE_MOVED,  // Event type
-            mouseX,            // X coordinate
-            mouseY,            // Y coordinate
-            0,                       // Screen X (unused, can be 0)
-            0,                       // Screen Y (unused, can be 0)
-            MouseButton.NONE,        // No button pressed
-            0,                       // Click count
-            false,                   // Shift down
-            false,                   // Control down
-            false,                   // Alt down
-            false,                   // Meta down
-            false,                   // Primary button down
-            false,                   // Middle button down
-            false,                   // Secondary button down
-            false,                   // Synthesized
-            false,                   // Popup trigger
-            false,                   // Still since press
-            null                     // Pick result
-        );
+    // private MouseEvent getFakeMouseEvent(double mouseX, double mouseY)
+    // {
+    //     // Create a minimal MouseEvent for just the required X and Y
+    //     MouseEvent fakeMouseEvent = new MouseEvent(
+    //         MouseEvent.MOUSE_MOVED,  // Event type
+    //         mouseX,            // X coordinate
+    //         mouseY,            // Y coordinate
+    //         0,                       // Screen X (unused, can be 0)
+    //         0,                       // Screen Y (unused, can be 0)
+    //         MouseButton.NONE,        // No button pressed
+    //         0,                       // Click count
+    //         false,                   // Shift down
+    //         false,                   // Control down
+    //         false,                   // Alt down
+    //         false,                   // Meta down
+    //         false,                   // Primary button down
+    //         false,                   // Middle button down
+    //         false,                   // Secondary button down
+    //         false,                   // Synthesized
+    //         false,                   // Popup trigger
+    //         false,                   // Still since press
+    //         null                     // Pick result
+    //     );
 
-        return fakeMouseEvent;
-    }
+    //     return fakeMouseEvent;
+    // }
 
-    private String getNextRelationType(String currentType, boolean next)
-    {
-        String[] types = { "Aggregation", "Composition", "Generalization", "Realization" };
-        int currentIndex = java.util.Arrays.asList(types).indexOf(currentType);
+    // private String getNextRelationType(String currentType, boolean next)
+    // {
+    //     String[] types = { "Aggregation", "Composition", "Generalization", "Realization" };
+    //     int currentIndex = java.util.Arrays.asList(types).indexOf(currentType);
 
-        if (next)
-            currentIndex = (currentIndex - 1 + types.length) % types.length;
-        else
-            currentIndex = (currentIndex + 1) % types.length;
+    //     if (next)
+    //         currentIndex = (currentIndex - 1 + types.length) % types.length;
+    //     else
+    //         currentIndex = (currentIndex + 1) % types.length;
         
-        return types[currentIndex];
-    }
+    //     return types[currentIndex];
+    // }
 }
