@@ -302,14 +302,14 @@ public class mainDiagramController
     // mouse click on background event
     private void mouseClick(MouseEvent event)
     {
-        if (placingRelation == null && event.isShiftDown())
-        {
-            String name = "newClass" + new Random().nextInt(100000);
-            baseController.AddClassListener(name);
-            ClassBox classBox = addClass(name);
-            classBox.Update();
-            return;
-        }
+        // if (placingRelation == null && event.isShiftDown())
+        // {
+        //     String name = "newClass" + new Random().nextInt(100000);
+        //     baseController.AddClassListener(name);
+        //     ClassBox classBox = addClass(name);
+        //     classBox.Update();
+        //     return;
+        // }
 
         if (placingRelation != null && event.getButton() == MouseButton.PRIMARY)
         {
@@ -333,7 +333,7 @@ public class mainDiagramController
                 classBox.setLayoutX(newX / scaleTransform.getX());
                 classBox.setLayoutY(newY / scaleTransform.getY());
 
-                placingRelation.setEnd(classBox, Point2D.ZERO);
+                placingRelation.setEnd(classBox, new Point2D(100, -15));
                 placingRelation.Update(scaleTransform, true, darkMode, partyMode);
                 baseController.getCareTaker().Lock();
                 placingRelation.Save(); //update model
