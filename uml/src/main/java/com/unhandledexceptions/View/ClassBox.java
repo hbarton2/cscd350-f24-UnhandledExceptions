@@ -29,6 +29,7 @@ import com.unhandledexceptions.Model.ParameterItem;
 import javafx.scene.control.TitledPane;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
@@ -579,6 +580,38 @@ public class ClassBox extends StackPane implements PropertyChangeListener
                 }
             }
         });
+
+        methodParamList.setOnKeyPressed(event -> { // Detect 'Del' Key press
+            if(event.getCode() == KeyCode.DELETE){
+                String selectedItem = methodParamList.getSelectionModel().getSelectedItem();
+                if (selectedItem != null) {
+                    Alert warning = deleteWarning("Parameter");
+                    // get confirmation for delete
+                    Optional<ButtonType> result = warning.showAndWait();
+
+                    if (result.isPresent() && result.get() == ButtonType.OK) {
+                        // user accepted, get the method name
+                        String className = getClassBoxName(); 
+                        String[] parseParam = selectedItem.split(" ");
+                        String paramType = parseParam[0];
+                        String paramName = parseParam[1];
+                    
+                        // call controller delete passing this class name and the method we're in, and the selected parameter name and type.
+                        String modelUpdated = baseController.RemoveParameterListener(className, methodName, paramName, paramType);
+                        // parse result for either successful rename or failure
+                        if (!(modelUpdated == "good"))
+                        {
+                            System.out.println(modelUpdated);
+                            showError(modelUpdated);
+                        }
+
+                    } else {
+                        // user denied, cancel action
+                        return;
+                    }
+            }
+            }
+        });
     
 
         HBox titleBox = new HBox(30);
@@ -691,6 +724,7 @@ public class ClassBox extends StackPane implements PropertyChangeListener
      * <ul>
      *   <li>Add new fields using a "+" button. Prompts the user to input a type and name.</li>
      *   <li>Double-click an existing field to rename it via an input dialog.</li>
+     *   <li>Delete selected list item with Delete Key input, confirmed via comfirmation box.</li>
      *   <li>Updates the model using the {@code baseController.AddFieldListener()} method.</li>
      *   <li>Displays errors if invalid input is provided or if the addition/update fails.</li>
      * </ul>
@@ -738,31 +772,64 @@ public class ClassBox extends StackPane implements PropertyChangeListener
         
         // Enable double-click renaming for items in the ListView
         fieldsList.setOnMouseClicked(event -> {
-            if (event.getClickCount() == 2) { // Detect double-click
-                String selectedItem = fieldsList.getSelectionModel().getSelectedItem();
-                if (selectedItem != null) {
-                    // Split the selected item to get old name and type
-                    String[] parts = selectedItem.split(" "); // Assuming the format is "name - type"
-                    if (parts.length == 2) {
-                        String oldFieldType = parts[0].trim();
-                        String oldFieldName = parts[1].trim();
+            if (event.getClickCount() == 2) { // Detect 'Del' Key press
+                    String selectedItem = fieldsList.getSelectionModel().getSelectedItem();
+                    if (selectedItem != null) {
+                        // Split the selected item to get old name and type
+                        String[] parts = selectedItem.split(" "); // Assuming the format is "name - type"
+                        if (parts.length == 2) {
+                            String oldFieldType = parts[0].trim();
+                            String oldFieldName = parts[1].trim();
 
-                        // Create input dialog to get new name and type
-                        Pair<String, String> userInput = createInputDialogs("Field");
+                            // Create input dialog to get new name and type
+                            Pair<String, String> userInput = createInputDialogs("Field");
 
-                        if (userInput != null) {
-                            String newFieldName = (userInput.getValue() == null) ? oldFieldName : userInput.getValue();
-                            String newFieldType = (userInput.getKey() == null) ? oldFieldType : userInput.getKey();
+                            if (userInput != null) {
+                                String newFieldName = (userInput.getValue() == null) ? oldFieldName : userInput.getValue();
+                                String newFieldType = (userInput.getKey() == null) ? oldFieldType : userInput.getKey();
 
-                            // Call UpdateField to update the model
-                            UpdateField(oldFieldName, newFieldName, newFieldType);
-                        } else {
-                            System.out.println("Dialog was canceled");
+                                // Call UpdateField to update the model
+                                UpdateField(oldFieldName, newFieldName, newFieldType);
+                            } else {
+                                System.out.println("Dialog was canceled");
+                            }
                         }
                     }
-                }
+                } 
+            });
+            
+        fieldsList.setOnKeyPressed(event -> { // Detect triple-click
+            if(event.getCode() == KeyCode.DELETE){
+                String selectedItem = fieldsList.getSelectionModel().getSelectedItem();
+                if (selectedItem != null) {
+                    Alert warning = deleteWarning("Field");
+
+                    // get confirmation for delete
+                    Optional<ButtonType> result = warning.showAndWait();
+
+                    if (result.isPresent() && result.get() == ButtonType.OK) {
+                        // user accepted, get the field name
+                        String className = getClassBoxName(); 
+                        String[] parseField = selectedItem.split(" ");
+                        String fieldName = parseField[1];
+                    
+                        // call controller delete passing this class name and fieldName
+                        String modelUpdated = baseController.RemoveFieldListener(className, fieldName);
+                        // parse result for either successful rename or failure
+                        if (!(modelUpdated == "good"))
+                        {
+                            System.out.println(modelUpdated);
+                            showError(modelUpdated);
+                        }
+
+                    } else {
+                        // user denied, cancel action
+                        return;
+                    }
+            }
             }
         });
+        
     
         // Create an HBox to hold the fields label and the add button
         HBox fieldsTitleBox = new HBox(160); // Add spacing between label and button
@@ -900,7 +967,7 @@ public class ClassBox extends StackPane implements PropertyChangeListener
      */
     public Pair<String, String> createInputDialogs(String promptName) {
         Dialog<Pair<String, String>> dialog = new Dialog<>();
-        dialog.setTitle("Add: " + promptName);
+        dialog.setTitle(promptName);
         dialog.setHeaderText("Enter the " + promptName.toLowerCase() + " and name.");
 
         // Set the button types
@@ -974,18 +1041,40 @@ public class ClassBox extends StackPane implements PropertyChangeListener
         });
     }
 
-    // method to display warning when deleting a class box
+  /**
+ * Creates and configures a confirmation alert to warn the user about class deletion.
+ * 
+ * <p>This method sets up an {@link javafx.scene.control.Alert} of type 
+ * {@link javafx.scene.control.Alert.AlertType#CONFIRMATION} with a warning title and 
+ * header text. The alert is intended to confirm the user's intention before proceeding 
+ * with a delete action.</p>
+ *
+ * @return an {@link javafx.scene.control.Alert} configured with a warning message.
+ */
     private Alert deleteClassWarning() {
         // create an alert box
         Alert alert = new Alert(AlertType.CONFIRMATION);
         // set the title and header as a warning
         alert.setTitle("Warning");
         alert.setHeaderText("Are you sure you want to delete this class?");
+
+        // return the alert to be instantiated by delete action
+        return alert;
+    }
+       
+    // method to display warning when deleting a class box
+    private Alert deleteWarning(String type) {
+        // create an alert box
+        Alert alert = new Alert(AlertType.CONFIRMATION);
+        // set the title and header as a warning
+        alert.setTitle("Warning");
+        alert.setHeaderText("Are you sure you want to delete this " + type + "?");
         //alert.setContentText("This action can not be undone");
 
         // return the alert to be instantiated by delete action
         return alert;
     }
+
 
     // helper method to retrieve the class name from the label
     private String getClassBoxName() {
