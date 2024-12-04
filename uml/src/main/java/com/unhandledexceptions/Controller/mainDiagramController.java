@@ -157,16 +157,17 @@ public class mainDiagramController
 
     public void openMenuClick()
     {
-        String result = baseController.getData().Load(anchorPane);
-
+        Data d = baseController.getData();
+        String result = d.Load(anchorPane);
+        int i = 0;
         if (result.equals("good"))
         {
             //clear all
-            newMenuClick();
+            ClearAll();
 
             LoadAll();
         }
-    }
+    }   
 
     private void ClearAll()
     {
@@ -215,7 +216,12 @@ public class mainDiagramController
             ClassBox classBox = addClass(entry.getKey());
             classBox.setLayoutX(entry.getValue().getX());
             classBox.setLayoutY(entry.getValue().getY());
-            classBox.Update();
+            
+            Platform.runLater(new Runnable() {
+                @Override public void run() {
+                    classBox.Update();
+                }
+            });
         }
 
         // load relationships
