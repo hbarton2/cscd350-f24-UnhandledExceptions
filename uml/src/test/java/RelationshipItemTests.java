@@ -30,7 +30,7 @@ public class RelationshipItemTests {
     // ensures that the map has the correct key
     assertTrue(relationshipMap.containsKey("class1_class2"));
     // ensures that the map has the correct relationship object
-    assertEquals("class1 ---- composition ----> class2", relationshipMap.get("class1_class2").toString());
+    assertEquals("class1 ---- Composition ----> class2", relationshipMap.get("class1_class2").toString());
   }
 
   // test that a relationship is not created if the source class does not exist

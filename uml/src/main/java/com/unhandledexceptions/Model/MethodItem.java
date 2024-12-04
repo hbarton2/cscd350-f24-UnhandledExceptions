@@ -188,8 +188,8 @@ public class MethodItem implements UMLObject {
 			// return successfull rename message
 			return "good";
 		} else {
-			// methodItem does not contain a method with that name.
-			return "RENAMEParameter: " + oldParamName + " does not exist.";
+			// methodItem does not contain a parameter with that name.
+			return "Parameter: " + oldParamName + " does not exist.";
 		}
 	}
 
@@ -200,8 +200,6 @@ public class MethodItem implements UMLObject {
 		}
 		newParamType = newParamType.trim();
 
-		System.out.println(methodItem.getParameters().keySet());
-
 		if (methodItem.getParameters().containsKey(paramName)) {
 
 			methodItem.getParameter(paramName).setType(newParamType);
@@ -209,7 +207,7 @@ public class MethodItem implements UMLObject {
 			methodItem.support.firePropertyChange("parameterChange", null, paramName);
 			return "good";
 		} else {
-			return "RETYPEParameter: " + paramName + " does not exist.";
+			return "Parameter: " + paramName + " does not exist.";
 		}
 	}
 

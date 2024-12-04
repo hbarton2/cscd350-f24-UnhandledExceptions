@@ -4,6 +4,8 @@ import com.unhandledexceptions.Model.ClassItem;
 import com.unhandledexceptions.Model.MethodItem;
 import com.unhandledexceptions.Model.Data;
 import com.unhandledexceptions.Model.RelationshipItem;
+import com.unhandledexceptions.View.GUI;
+
 import java.util.function.Supplier;
 
 public class BaseController
@@ -15,7 +17,7 @@ public class BaseController
     public BaseController(Data data)
     {
         this.data = data;
-        careTaker = new Caretaker(data);
+        this.careTaker = new Caretaker(data);
     }
 
     public Data getData()
@@ -181,5 +183,29 @@ public class BaseController
 
     public String redoListener() {
         return this.careTaker.redo();
+    }
+
+    /**
+     * This method will take user input for screenshotting in the CLI with a file name.
+     * The method sets modes and file name in the GUI to take a screenshot, because we are now launching a GUI thread when we call this method.
+     * 
+     * @param fileName the name the user wants the screenshot to be called
+     * @return a string message indicating success or failure
+     */
+    public String screenshotListener(String fileName) {
+        try 
+        {
+            GUI.setBaseController(this);
+            GUI.setScreenshotMode(true);
+            GUI.setScreenshotFile(fileName);
+            GUI.main();
+
+            return "good";
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+            return "Screenshot Unsuccessful";
+        }
     }
 }

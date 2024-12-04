@@ -82,6 +82,8 @@ public class RelationLine extends Polyline
         ranchor.setVisible(false);
         anchorPane.getChildren().add(this.ranchor);
 
+
+
         //type button
         typeButton = new Button();
         ImageView typeImage = new ImageView("/images/link-image.png");
@@ -121,7 +123,7 @@ public class RelationLine extends Polyline
         anchorPane.getChildren().remove(this);
     }
 
-    public void mouseMoved(MouseEvent event)
+    public void mouseMoved(MouseEvent event, Scale scaleTransform)
     {
         deleteButton.setVisible(false);
 
@@ -140,7 +142,7 @@ public class RelationLine extends Polyline
             y2 = getPoints().get(i+3);
 
             Point2D pointOnSegment = getClosestPointOnSegment(event.getSceneX(), event.getSceneY(), x1, y1, x2, y2);
-            distance = pointOnSegment.distance(event.getSceneX(), event.getSceneY());
+            distance = pointOnSegment.distance(event.getSceneX(), event.getSceneY()-50);
             
             if (distance < 100 && distance < minDistance)
             {
@@ -151,8 +153,8 @@ public class RelationLine extends Polyline
 
         if (nearestPoint != null)
         {
-            typeButton.setLayoutX(nearestPoint.getX());
-            typeButton.setLayoutY(nearestPoint.getY());
+            typeButton.setLayoutX(nearestPoint.getX() / scaleTransform.getX());
+            typeButton.setLayoutY(nearestPoint.getY() / scaleTransform.getY());
 
             typeButton.setVisible(true);
         }
@@ -169,7 +171,7 @@ public class RelationLine extends Polyline
         {
             // Vertical segment: x-coordinate is constant
             double clampedY = Math.max(Math.min(y1, y2), Math.min(mouseY, Math.max(y1, y2)));
-            return new Point2D(x1, clampedY - 35);
+            return new Point2D(x1, clampedY - 70);
         }
         else if (Math.abs(y1 - y2) < 1)
         {

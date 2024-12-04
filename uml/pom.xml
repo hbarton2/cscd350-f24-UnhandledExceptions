@@ -24,6 +24,11 @@
         </dependency>
         <dependency>
             <groupId>org.openjfx</groupId>
+            <artifactId>javafx-swing</artifactId>
+            <version>${javafx.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openjfx</groupId>
             <artifactId>javafx-fxml</artifactId>
             <version>${javafx.version}</version>
         </dependency>
@@ -83,6 +88,77 @@
                     <mainClass>com.unhandledexceptions.Main</mainClass>
                 </configuration>
             </plugin>
+            <plugin>
+                <!-- Build an executable JAR -->
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.1.0</version>
+                <configuration>
+                    <archive>
+                    <manifest>
+                        <addClasspath>true</addClasspath>
+                        <classpathPrefix>lib/</classpathPrefix>
+                        <mainClass>com.unhandledexceptions.Main</mainClass>
+                    </manifest>
+                    </archive>
+                </configuration>
+            </plugin>
+            <!-- Maven Assembly Plugin for creating an executable JAR with dependencies -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>3.3.0</version>
+                <configuration>
+                    <descriptorRefs>
+                        <descriptorRef>jar-with-dependencies</descriptorRef>
+                    </descriptorRefs>
+                    <archive>
+                        <manifest>
+                            <mainClass>com.unhandledexceptions.Main</mainClass> <!-- Replace with your main class -->
+                        </manifest>
+                    </archive>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>make-assembly</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <!-- Jacoco for CodeCov plugin -->
+            <plugin>
+               <groupId>org.jacoco</groupId>
+               <artifactId>jacoco-maven-plugin</artifactId>
+               <version>0.8.11</version>
+               <executions>
+                 <execution>
+                   <goals>
+                     <goal>prepare-agent</goal>
+                     <goal>report</goal>
+                   </goals>
+                   <configuration>
+                    <includes>
+                     <include>com/unhandledexceptions/Model/**</include>    <!-- Only get coverage for Model-->
+                    </includes>
+                   </configuration>
+                 </execution>
+                 <execution>
+                   <id>report</id>
+                   <phase>verify</phase>
+                   <goals>
+                     <goal>report</goal>
+                   </goals>
+                   <configuration>
+                    <includes>
+                        <include>com/unhandledexceptions/Model/**</include>  <!-- Only upload the Model coverage to CodeCov-->
+                    </includes>
+                   </configuration>
+                 </execution>
+               </executions>
+             </plugin>
         </plugins>
     </build>
 
