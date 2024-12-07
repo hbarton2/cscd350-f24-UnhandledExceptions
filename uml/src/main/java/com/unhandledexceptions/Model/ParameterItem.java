@@ -1,28 +1,7 @@
 package com.unhandledexceptions.Model;
 
 public class ParameterItem implements UMLObject {
-    // enum to check if the data type is valid
-    public enum DataType {
-        INT,
-        FLOAT,
-        DOUBLE,
-        STRING,
-        BOOLEAN,
-        CHAR,
-        LONG,
-        BYTE,
-        SHORT;
 
-        // method to check if a string is a valid DataType
-        public static boolean isValidType(String type) {
-            try {
-                DataType.valueOf(type.toUpperCase());
-                return true;
-            } catch (IllegalArgumentException e) {
-                return false;
-            }
-        }
-    }
 
     // String representing the name
     private String parameterName;

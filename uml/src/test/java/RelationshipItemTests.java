@@ -100,5 +100,36 @@ public class RelationshipItemTests {
     // ensure that the map still has the key
     assertTrue(relationshipMap.containsKey("class1_class2"));
   }
+// test that the relationship constructor works
+  @Test
+  public void testRelationshipConstructor() {
+    // create relationship
+    RelationshipItem relationship = new RelationshipItem(classMap.get("class1"), classMap.get("class2"), "composition");
+    // ensure that the relationship is created correctly
+    assertEquals("class1 ---- Composition ----> class2", relationship.toString());
+  }
+  @Test
+  public void testRelationshipConstructorException(){
+    assertThrows(IllegalArgumentException.class, () -> {
+      new RelationshipItem(null, classMap.get("class2"), "realization");
+    });
+  }
+
+  // test that the relationship type can be changed
+  @Test
+  public void testChangeRelationType() {
+    // create relationship
+    RelationshipItem.addRelationship(classMap, relationshipMap, "class1", "class2", "composition");
+    // change relationship type
+    assertEquals("good", RelationshipItem.changeRelationType(relationshipMap, "class1", "class2", "realization"));
+    // ensure that the relationship type is changed
+    assertEquals("class1 ---- Realization ----> class2", relationshipMap.get("class1_class2").toString());
+  }
+  // test that the relationship type cant be found for changing
+  @Test
+  public void testChangeRelationTypeNotFound() {
+    // change relationship type that does not exist
+    assertEquals("Relationship not found.", RelationshipItem.changeRelationType(relationshipMap, "class1", "class2", "realization"));
+  }
 
 }

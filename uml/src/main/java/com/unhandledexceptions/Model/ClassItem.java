@@ -209,7 +209,7 @@ public class ClassItem implements PropertyChangeListener{
         }
 
         if (newClassItemName == null || oldClassItemName == null) {
-            throw new IllegalArgumentException("classItemNames cannot be null");
+            throw new NullPointerException("classItemNames cannot be null");
         }
 
         // checks that the old name to be changed exists, and that the name is not a
