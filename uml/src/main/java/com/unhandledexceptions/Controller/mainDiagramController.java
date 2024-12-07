@@ -20,6 +20,7 @@ import com.unhandledexceptions.View.RelationLine;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Point2D;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
@@ -34,6 +35,7 @@ import javafx.scene.transform.Scale;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.ToolBar;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.effect.InnerShadow;
 import javafx.scene.image.Image;
@@ -503,6 +505,23 @@ public class mainDiagramController
 
             darkMode = true;
         }
+    }
+
+    /**
+     * This method is for displaying the keyboard shortcuts after the user clicks on
+     * "Keyboard Shortcuts" in our help menu of the GUI. This will pop up an alert with our shortcuts.
+     */
+    @FXML
+    public void showKeyboardShortcuts() {
+        // String of shortcuts, if we add more, just add to this string
+        String shortcuts = "Zoom: ctrl + scroll\nDelete field or method: delete";
+
+        // creating the alert popup
+        Alert alert = new Alert(AlertType.INFORMATION);
+        alert.setTitle("Keyboard Shortcuts");
+        alert.setHeaderText(null);
+        alert.setContentText(shortcuts);
+        alert.showAndWait();
     }
 
     // light mode button
