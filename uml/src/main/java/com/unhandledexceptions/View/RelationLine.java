@@ -571,7 +571,7 @@ public class RelationLine extends Polyline
             }
             closedSet.add(current);
 
-            // Check neighbors
+            // Check[ neighbors
             for (int[] dir : new int[][]{{0, -1}, {0, 1}, {-1, 0}, {1, 0}})
             {
                 int neighborX = current.x + dir[0];
@@ -603,6 +603,7 @@ public class RelationLine extends Polyline
 
         return null; // No path found
     }
+
 
     private boolean isOvershooting(Node current, double endCol, double endRow) {
         if (current.direction == null) return false;
@@ -647,11 +648,11 @@ public class RelationLine extends Polyline
         }
 
         //testing
-        // Rectangle r = new Rectangle((x * CELL_SIZE), (y * CELL_SIZE), CELL_SIZE, CELL_SIZE);
-        // r.setStroke(Color.RED);
-        // r.setFill(Color.TRANSPARENT);
-        // testRects.add(r);
-        // anchorPane.getChildren().add(r);
+        Rectangle r = new Rectangle((x * CELL_SIZE), (y * CELL_SIZE), CELL_SIZE, CELL_SIZE);
+        r.setStroke(Color.RED);
+        r.setFill(Color.TRANSPARENT);
+        testRects.add(r);
+        anchorPane.getChildren().add(r);
 
         return node;
     }
@@ -733,11 +734,6 @@ public class RelationLine extends Polyline
             if (this == obj) return true;
             if (obj == null || getClass() != obj.getClass()) return false;
             Node node = (Node) obj;
-
-            // int ix = (int) x;
-            // int iy = (int) y;
-            // int inx = (int) node.x;
-            // int iny = (int) node.y;
 
             // return ix == inx && iy == iny;
             return x == node.x && y == node.y;

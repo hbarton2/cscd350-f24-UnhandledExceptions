@@ -149,16 +149,9 @@ public class ClassBox extends StackPane implements PropertyChangeListener
             // Calculate the closest position for the ranchor on the edge of the classBox
             double closestX = Math.min(Math.max(event.getX(), classBoxBounds.getMinX()), classBoxBounds.getMaxX());
             double closestY = Math.min(Math.max(event.getY(), classBoxBounds.getMinY()), classBoxBounds.getMaxY());
-    
-            //testing
-            double horizontalDistance = Math.min(Math.abs(closestY - classBoxBounds.getMinY()), Math.abs(closestY - classBoxBounds.getMaxY()));
-            double verticalDistance = Math.min(Math.abs(closestX - classBoxBounds.getMinX()), Math.abs(closestX - classBoxBounds.getMaxX()));
-            double distanceToEdgeMiddle = Math.min(horizontalDistance, verticalDistance);
-            double maxDistance = Math.max(classBoxBounds.getWidth(), classBoxBounds.getHeight()) / 2;
-            double spacing = 15 + (distanceToEdgeMiddle / maxDistance) * (125 - 15);
-            spacing = Math.max(15, Math.min(125, spacing));
 
-            Bounds modBounds = RelationLine.modBounds(classBoxBounds, spacing);
+            Bounds modBounds = new BoundingBox(classBoxBounds.getMinX() - 10, classBoxBounds.getMinY() - 10,
+                classBoxBounds.getWidth() + 10, classBoxBounds.getHeight() + 10);
 
             // Snap the ranchor to the nearest edge
             if (event.getX() < classBoxBounds.getMinX()) {
