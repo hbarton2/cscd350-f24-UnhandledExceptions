@@ -544,7 +544,12 @@ public class ClassBox extends StackPane implements PropertyChangeListener
         // when pressed, open dialog for user input
         addParamsButton.setOnAction(e -> {
             Pair<String, String> userInput = createInputDialogs("Parameters");
-
+            // input handling for blank or null values, creates an alert and exits the method
+            if (userInput.getKey() == null || userInput.getValue() == null || userInput.getKey().isEmpty() || userInput.getValue().isEmpty()) {
+                Alert alert = invalidInputWarning();
+                alert.showAndWait();
+                return;
+            }
             if(userInput != null){
                 String type = (userInput.getKey() == null) ? null : userInput.getKey().toLowerCase();
                 String name = (userInput.getValue() == null) ? null : userInput.getValue().toLowerCase();
@@ -554,9 +559,7 @@ public class ClassBox extends StackPane implements PropertyChangeListener
                 {
                     showError(result);
                 }
-            } else {    //prints to terminal that user canceled dialog box for adding field
-                System.out.println("Dialog was canceled");
-            }
+            } 
 
         });
 
@@ -756,7 +759,6 @@ public class ClassBox extends StackPane implements PropertyChangeListener
         addFieldButton.getStyleClass().add("transparent-button");
         addFieldButton.setOnAction(e -> {
             Pair<String, String> userInput = createInputDialogs("Field");
-            
             if (userInput != null) {
                 String type = (userInput.getKey() == null) ? null : userInput.getKey().toLowerCase();
                 String name = (userInput.getValue() == null) ? null : userInput.getValue().toLowerCase();
