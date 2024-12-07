@@ -75,7 +75,7 @@
         <Menu fx:id="helpMenu" mnemonicParsing="false" text="Help">
           <items>
             <MenuItem mnemonicParsing="false" onAction="#resetZoom" text="Reset Zoom" />
-            <MenuItem mnemonicParsing="false" text="About" />
+            <MenuItem mnemonicParsing="false" onAction="#showKeyboardShortcuts" text="Keyboard Shortcuts" />
           </items>
         </Menu>
       </menus>
