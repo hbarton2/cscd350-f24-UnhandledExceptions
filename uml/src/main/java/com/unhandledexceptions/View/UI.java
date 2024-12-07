@@ -158,7 +158,7 @@ public class UI
 		if (!verbose) System.out.print("Load: ");
 		System.out.print("load [filename]\n");
 		if (verbose) System.out.println("\t- Loads a previously saved project.");
-		System.out.print("screenshot\n");
+		System.out.print("screenshot [filename]\n");
 		if (verbose) System.out.println("\t- Takes your uml and converts it to an image.");
 		if (!verbose) System.out.print("Exit: ");
 		System.out.print("e or exit\n");
