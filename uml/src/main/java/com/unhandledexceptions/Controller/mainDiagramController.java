@@ -5,8 +5,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Random;
 
 import javax.imageio.ImageIO;
 
@@ -122,7 +124,12 @@ public class mainDiagramController
     public void openRecentMenuShowing()
     {
         //clear items
-        openRecentMenu.getItems().clear();
+        for (Iterator<MenuItem> iterator = openRecentMenu.getItems().iterator(); iterator.hasNext();) {
+            MenuItem item = iterator.next();
+            if (!"greatJobJavaFX".equals(item.getId())) {
+                iterator.remove();
+            }
+        }
 
         // Get the current working directory
         File dir = new File(System.getProperty("user.dir"));
@@ -161,7 +168,7 @@ public class mainDiagramController
     {
         Data d = baseController.getData();
         String result = d.Load(anchorPane);
-        int i = 0;
+
         if (result.equals("good"))
         {
             //clear all
@@ -310,14 +317,14 @@ public class mainDiagramController
     // mouse click on background event
     private void mouseClick(MouseEvent event)
     {
-        // if (placingRelation == null && event.isShiftDown())
-        // {
-        //     String name = "newClass" + new Random().nextInt(100000);
-        //     baseController.AddClassListener(name);
-        //     ClassBox classBox = addClass(name);
-        //     classBox.Update();
-        //     return;
-        // }
+        if (placingRelation == null && event.isShiftDown())
+        {
+            String name = "newclass" + new Random().nextInt(100000);
+            baseController.AddClassListener(name);
+            ClassBox classBox = addClass(name);
+            classBox.Update();
+            return;
+        }
 
         if (placingRelation != null && event.getButton() == MouseButton.PRIMARY)
         {
