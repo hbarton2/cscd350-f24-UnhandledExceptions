@@ -72,11 +72,12 @@ public class GUI extends Application
             stage.setOpacity(0);
             controller.LoadAll();
 
-            PauseTransition delay = new PauseTransition(Duration.millis(100));
+            PauseTransition delay = new PauseTransition(Duration.millis(300));
 
             delay.setOnFinished(event -> {
                 controller.screenshotFromCLI(screenshotFileName);
 
+                stage = null;
                 Platform.exit();
         
                 // Restore original streams

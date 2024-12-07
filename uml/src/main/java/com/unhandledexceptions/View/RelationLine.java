@@ -117,6 +117,7 @@ public class RelationLine extends Polyline
         anchorPane.getChildren().add(deleteButton);
     }
 
+    //proper way to remove this object from the anchorpane
     public void Remove(boolean justView)
     {
         if (!justView) baseController.RemoveRelationshipListener(source.getClassName(), dest.getClassName());
@@ -127,6 +128,8 @@ public class RelationLine extends Polyline
         anchorPane.getChildren().remove(this);
     }
 
+    //the mouse has moved on the scene's anchorpane and we want to
+    //place the line type change and delete buttons near the mouse near a line.
     public void mouseMoved(MouseEvent event, Scale scaleTransform)
     {
         deleteButton.setVisible(false);
@@ -169,6 +172,7 @@ public class RelationLine extends Polyline
 
     }
 
+    //helper for mousemove
     public Point2D getClosestPointOnSegment(double mouseX, double mouseY, double x1, double y1, double x2, double y2)
     {
         if (Math.abs(x1 - x2) < 1)
@@ -187,6 +191,7 @@ public class RelationLine extends Polyline
         return new Point2D(0, 0);
     }
 
+    //dialog box to change line type.
     private void typeDialog()
     {
         if (source == dest) return;
@@ -527,6 +532,7 @@ public class RelationLine extends Polyline
         }
     }
 
+    //actually find the path
     private List<Node> findPath(int startCol, int startRow, int endCol, int endRow)
     {
         //testing
@@ -604,7 +610,7 @@ public class RelationLine extends Polyline
         return null; // No path found
     }
 
-
+    //helper methods for astar
     private boolean isOvershooting(Node current, double endCol, double endRow) {
         if (current.direction == null) return false;
     
@@ -633,6 +639,7 @@ public class RelationLine extends Polyline
         }
     }
 
+    //get a node from an x y
     private Node getNode(int x, int y, Node parent, double gCost, int endCol, int endRow, Map<String, Node> allNodes, Node endNode)
     {
         String key = x + "," + y;
@@ -657,6 +664,7 @@ public class RelationLine extends Polyline
         return node;
     }
 
+    //check of x y is blocked
     private boolean isBlocked(int col, int row)
     {
         double x = col * CELL_SIZE;
@@ -699,6 +707,7 @@ public class RelationLine extends Polyline
         return false;
     }
 
+    //build the final path
     private List<Node> reconstructPath(Node node)
     {
         List<Node> path = new ArrayList<>();
@@ -711,6 +720,7 @@ public class RelationLine extends Polyline
         return path;
     }
 
+    //node class to use for astar
     static class Node
     {
         int x, y;
@@ -746,6 +756,7 @@ public class RelationLine extends Polyline
         }
     }
 
+    //effect helper for pary mode\dark mode
     public DropShadow effectHelper(boolean darkMode, boolean partyMode){
         DropShadow shadow = new DropShadow();
 
