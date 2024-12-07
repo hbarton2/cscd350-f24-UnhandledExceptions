@@ -452,6 +452,12 @@ public class ClassBox extends StackPane implements PropertyChangeListener
         // when pressed, open dialog for user input
         addMethodsButton.setOnAction(e -> {
             Pair<String, String> result = createInputDialogs("Method");
+            // input handling for blank or null values, creates an alert and exits the method
+            if (result.getKey() == null || result.getValue() == null || result.getKey().isEmpty() || result.getValue().isEmpty()) {
+                Alert alert = invalidInputWarning();
+                alert.showAndWait();
+                return;
+            }
             if(result != null){
                 String type = result.getKey().toLowerCase();
                 String name = result.getValue().toLowerCase();
@@ -1059,6 +1065,17 @@ public class ClassBox extends StackPane implements PropertyChangeListener
         alert.setHeaderText("Are you sure you want to delete this class?");
 
         // return the alert to be instantiated by delete action
+        return alert;
+    }
+
+    private Alert invalidInputWarning() {
+        // create alert box
+        Alert alert = new Alert(AlertType.ERROR);
+
+        // set alert info to display
+        alert.setTitle("Invalid inputs");
+        alert.setHeaderText("Type or name should not be blank or null");
+
         return alert;
     }
        
