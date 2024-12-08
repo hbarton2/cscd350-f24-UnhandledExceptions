@@ -239,37 +239,6 @@ public class ClassBox extends StackPane implements PropertyChangeListener
         return hbox;
     }
 
-    /* Still needed?
-    private void FieldClicked(String oldName, Label className){
-        TextInputDialog input = new TextInputDialog();
-        input.setTitle("Rename Field");
-        input.setHeaderText("Enter the field name");
-        input.setContentText("Field name: ");
-
-        Button okButton = (Button) input.getDialogPane().lookupButton(ButtonType.OK);
-        okButton.setDisable(true);
-
-        input.getEditor().textProperty().addListener((observable, oldValue, newValue) -> {
-            okButton.setDisable(newValue.trim().isEmpty());
-        });
-
-        Optional<String> result = input.showAndWait();
-
-        if (result.isPresent()) {
-            String newName = result.get();
-            oldName = oldName.trim().toLowerCase();
-            newName = newName.trim().toLowerCase();
-    
-            String modelUpdated = baseController.RenameFieldListener(className.getText(), oldName, newName);
-            // parse result for either successful rename or failure
-            if (!(modelUpdated == "good"))
-            {
-                showError(modelUpdated);
-            }
-        }
-    }
-     */
-
     public String getClassName()
     {
         return this.className;
@@ -441,6 +410,8 @@ public class ClassBox extends StackPane implements PropertyChangeListener
         methodsPane.setExpanded(false);
         methodsPane.setMaxHeight(250);
         methodsPane.getStyleClass().add("titled-pane");
+        // Don't know why this works but it does.
+        final String[] methodName = new String[1];
 
         // List of each methods TitledPane that will hold the individual method panes
         ListView<TitledPane> methodsList = new ListView<>();
@@ -461,12 +432,43 @@ public class ClassBox extends StackPane implements PropertyChangeListener
             if(result != null){
                 String type = result.getKey().toLowerCase();
                 String name = result.getValue().toLowerCase();
+                methodName[0] = name;
                 //String typeName = type + " " + name;    
                 String updateModel = baseController.AddMethodListener(className, name, type);   
                 if (!(updateModel == "good"))
                 {
                     showError(updateModel);
                 } 
+            }
+        });
+
+        // Delete a method
+        methodsList.setOnKeyPressed(event -> {
+            if(event.getCode() == KeyCode.DELETE){
+                TitledPane selectedItem = methodsList.getSelectionModel().getSelectedItem();
+                if (selectedItem != null) {
+                    Alert warning = deleteWarning("Method");
+                    // get confirmation for delete
+                    Optional<ButtonType> result = warning.showAndWait();
+
+                    if (result.isPresent() && result.get() == ButtonType.OK) {
+                        // user accepted, method name is the first element in the name array.
+                        // Get the class name
+                        String className = getClassBoxName();
+                        // call controller delete passing this class name and the selected method name.
+                        String modelUpdated = baseController.RemoveMethodListener(className, methodName[0]);
+                        // parse result for either successful rename or failure
+                        if (!(modelUpdated == "good"))
+                        {
+                            System.out.println(modelUpdated);
+                            showError(modelUpdated);
+                        }
+
+                    } else {
+                        // user denied, cancel action
+                        return;
+                    }
+                }
             }
         });
         
