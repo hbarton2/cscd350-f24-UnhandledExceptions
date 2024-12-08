@@ -560,7 +560,7 @@ public class mainDiagramController
     @FXML
     public void showKeyboardShortcuts() {
         // String of shortcuts, if we add more, just add to this string
-        String shortcuts = "Zoom: ctrl + scroll\nDelete field or method: delete";
+        String shortcuts = "Zoom: ctrl + scroll\nDelete field, parameter, or method: delete";
 
         // creating the alert popup
         Alert alert = new Alert(AlertType.INFORMATION);
