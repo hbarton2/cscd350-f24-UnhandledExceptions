@@ -118,9 +118,183 @@ public class ClassItemTests {
     // rename the class to a name that already exists
     assertEquals("testerclass is already in use.", ClassItem.renameClassItem(classMap, relationshipMap, "testclass", "testerclass"));
   }
+  @Test
+  public void testRenameClassItemListNull() {
+    assertThrows(IllegalArgumentException.class, () -> {
+      ClassItem.renameClassItem(null, relationshipMap, "testclass", "testerclass");
+    });
+  }
+  @Test
+  public void testRenameClassItemNewNameIsBlank() {
+    assertThrows(IllegalArgumentException.class, () -> {
+      ClassItem.renameClassItem(classMap, relationshipMap, "testclass", "");
+    });
+  }
+  //Test is expecting a NullPointerException... not an IllegalArgumentException
+  @Test
+  public void testRenameClassItemNewNameIsNull() {
+    assertThrows(NullPointerException.class, () -> {
+      ClassItem.renameClassItem(classMap, relationshipMap, "testclass", null);
+    });
+  }
+  @Test
+  public void testRenameClassItemOldNameIsBlank() {
+    assertThrows(IllegalArgumentException.class, () -> {
+      ClassItem.renameClassItem(classMap, relationshipMap, "", "testclass1");
+    });
+  }
+  @Test
+  public void testRenameClassItemOldNameIsNull() {
+    assertThrows(NullPointerException.class, () -> {
+      ClassItem.renameClassItem(classMap, relationshipMap, null, "testclass1");
+    });
+  }
 
 
+  @Test
+  public void testAddMethod() {
+    // add a method to the class
+    ClassItem.addMethod(classMap.get("testerclass"), "testmethod", "testType");
 
-   
+    // make sure the method is in the class
+    assertTrue(classMap.get("testerclass").getMethodItems().containsKey("testmethod"));
+  }
 
+  @Test
+  public void testAddMethodNullName() {
+    // add a method with a null name
+    IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () -> {
+      ClassItem.addMethod(classMap.get("testerclass"), null, "testType");
+    });
+
+    // make sure the exception is thrown
+    assertEquals("Method name cannot be null or blank", e.getMessage());
+  }
+
+  @Test
+  public void testAddMethodAlreadyExists() {
+    // add a method to the class
+    ClassItem.addMethod(classMap.get("testerclass"), "testmethod", "testType");
+
+    // add the same method again
+    assertEquals("Method name: testmethod already in use.", ClassItem.addMethod(classMap.get("testerclass"), "testmethod", "testType"));
+  }
+
+  @Test
+  public void testRemoveMethod() {
+    // add a method to the class
+    ClassItem.addMethod(classMap.get("testerclass"), "testmethod", "testType");
+
+    // remove the method
+    ClassItem.removeMethod(classMap.get("testerclass"), "testmethod");
+
+    // make sure the method is removed
+    assertFalse(classMap.get("testerclass").getMethodItems().containsKey("testmethod"));
+  }
+  
+  @Test
+  public void testRemoveMethodNullName () {
+    // remove a method with a null name
+    IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () -> {
+      ClassItem.removeMethod(classMap.get("testerclass"), null);
+    });
+
+    // make sure the exception is thrown
+    assertEquals("Method name cannot be null or blank", e.getMessage());
+  }
+
+  @Test
+  public void testRemoveMethodDoesNotExist() {
+    // remove a method that does not exist
+    assertEquals("Method name: testmethod does not exist", ClassItem.removeMethod(classMap.get("testerclass"), "testmethod"));
+  }
+
+  @Test
+  public void testRenameMethod() {
+    // add a method to the class
+    ClassItem.addMethod(classMap.get("testerclass"), "testmethod", "testType");
+
+    // rename the method
+    ClassItem.renameMethod(classMap.get("testerclass"), "testmethod", "newmethod");
+
+    // make sure the method is renamed
+    assertTrue(classMap.get("testerclass").getMethodItems().containsKey("newmethod"));
+    
+  }
+
+  @Test
+  public void testRenameMethodNullName() {
+    // rename a method with a null name
+    assertEquals("Method names cannot be null or blank.", ClassItem.renameMethod(classMap.get("testerclass"), null, "newmethod"));
+  }
+
+  @Test
+  public void testRenameMethodAlreadyExists() {
+    // add a method to the class
+    ClassItem.addMethod(classMap.get("testerclass"), "testmethod", "testType");
+
+    // attempt rename with existing method name
+    assertEquals("Method name: testmethod already in use.", ClassItem.renameMethod(classMap.get("testerclass"), "testmethod", "testmethod"));
+  }
+  @Test
+  public void testRenameField() {
+    // add a field to the class
+    ClassItem.addField(classMap.get("testerclass"), "testtype", "testfield");
+
+    // rename the field
+    ClassItem.renameField(classMap.get("testerclass"), "testfield", "newfield");
+
+    // make sure the field is renamed
+    assertTrue(classMap.get("testerclass").getFieldItems().containsKey("newfield"));
+  }
+
+  @Test
+  public void testRenameFieldNullName() {
+    // rename a field with a null name
+    ClassItem.addField(classMap.get("testerclass"), "testtype", "testfield");
+
+    assertEquals("Field names cannot be null or blank", ClassItem.renameField(classMap.get("testerclass"), null, "newfield"));
+  }
+
+  @Test
+  public void testRetypeField() {
+    // add a field to the class
+    ClassItem.addField(classMap.get("testerclass"), "testtype", "testfield");
+
+    // retype the field
+    ClassItem.retypeField(classMap.get("testerclass"), "testfield", "newtype");
+
+    // make sure the field is retyped
+    assertEquals("newtype", classMap.get("testerclass").getFieldItems().get("testfield").getType());
+  }
+
+  @Test
+  public void testRetypeMethod() {
+    // add a method to the class
+    ClassItem.addMethod(classMap.get("testerclass"), "testmethod", "testType");
+
+    // retype the method
+    ClassItem.retypeMethod(classMap.get("testerclass"), "testmethod", "newType");
+
+    // make sure the method is retyped
+    assertEquals("newType", classMap.get("testerclass").getMethodItems().get("testmethod").getType());
+  }
+
+  @Test
+  public void testRemoveField() {
+    // add a field to the class
+    ClassItem.addField(classMap.get("testerclass"), "testtype", "testfield");
+
+    // remove the field
+    ClassItem.removeField(classMap.get("testerclass"), "testfield");
+
+    // make sure the field is removed
+    assertFalse(classMap.get("testerclass").getFieldItems().containsKey("testfield"));
+  }
+
+  @Test
+  public void testRemoveFieldNullName() {
+    // make sure the exception is thrown
+    assertEquals("Field name cannot be null or blank", ClassItem.removeField(classMap.get("testerclass"), null));
+  }
 }
