@@ -6,6 +6,7 @@ import com.unhandledexceptions.Controller.BaseController;
 import com.unhandledexceptions.Controller.mainDiagramController;
 import com.unhandledexceptions.Model.Data;
 
+import javafx.animation.PauseTransition;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
@@ -13,6 +14,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import javafx.util.Duration;
 
 public class GUI extends Application
 {
@@ -69,12 +71,21 @@ public class GUI extends Application
             stage.show();
             stage.setOpacity(0);
             controller.LoadAll();
-            controller.screenshotFromCLI(screenshotFileName);
-            Platform.exit();
 
-            // Restore original streams
-            System.setOut(originalOut);
-            System.setErr(originalErr);
+            PauseTransition delay = new PauseTransition(Duration.millis(300));
+
+            delay.setOnFinished(event -> {
+                controller.screenshotFromCLI(screenshotFileName);
+
+                stage = null;
+                Platform.exit();
+        
+                // Restore original streams
+                System.setOut(originalOut);
+                System.setErr(originalErr);
+            });
+
+            delay.play();
         }
         else
         {    

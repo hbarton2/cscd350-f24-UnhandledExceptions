@@ -8,8 +8,6 @@ import javafx.scene.control.TitledPane;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
 
 public class ClassBoxBasicBuilder implements ClassBoxBuilderInterface {
     private AnchorPane anchorPane;
@@ -19,7 +17,6 @@ public class ClassBoxBasicBuilder implements ClassBoxBuilderInterface {
     private double boxHeight;
     private boolean fields = false;
     private boolean methods = false;
-    private Rectangle[] ranchors = new Rectangle[4];
     private ClassItem classItem;
 
     public ClassBoxBasicBuilder(AnchorPane anchorPane, BaseController baseController, String className, double boxWidth, double boxHeight, ClassItem classItem) {
@@ -32,16 +29,6 @@ public class ClassBoxBasicBuilder implements ClassBoxBuilderInterface {
     }
 
     public VBox setup(){
-        //creates a vbox for the relationship anchors
-        VBox vbase = new VBox();
-        vbase.setSpacing(10);
-        vbase.setAlignment(Pos.CENTER);
-
-        //creates a hbox for the relationship anchors
-        HBox hbase = new HBox();
-        hbase.setSpacing(10);
-        hbase.setAlignment(Pos.CENTER);
-
         //creates a vbox that will actually hold the panes that are displayed
         VBox vbox = new VBox();
         vbox.setId("contentBox");
@@ -49,35 +36,7 @@ public class ClassBoxBasicBuilder implements ClassBoxBuilderInterface {
         vbox.setAlignment(Pos.CENTER); // Center align the contents of the VBox
         vbox.getStyleClass().add("class-box");
 
-        // ranchors (relationship anchors)
-        for (int i = 0; i < 4; i++) {
-            ranchors[i] = new Rectangle(15, 15);
-            ranchors[i].setFill(Color.rgb(24, 24, 24));
-        }
-
-        //assumbling the classbox, creates a "+" shape with the middle being the classBox we see on screen.
-        vbase.getChildren().addAll(ranchors[0], hbase, ranchors[2]);
-        hbase.getChildren().addAll(ranchors[3], vbox, ranchors[1]);
-
-        // ranchor visibility
-        vbase.setOnMouseEntered(event -> {
-            for (Rectangle r : ranchors)
-                r.setVisible(true);
-        });
-        vbase.setOnMouseExited(event -> {
-            for (Rectangle r : ranchors)
-                r.setVisible(false);
-        });
-
-        vbox.setOnMouseEntered(event -> {
-            for (Rectangle r : ranchors)
-                r.setVisible(false);
-        });
-        vbox.setOnMouseExited(event -> {
-            for (Rectangle r : ranchors)
-                r.setVisible(true);
-        });
-        return vbase;   //returns vbase to be added as a child to a classBox, setting the contents of the classbox object
+        return vbox;   //returns vbase to be added as a child to a classBox, setting the contents of the classbox object
     }
 
     public void withFieldPane() {
@@ -89,7 +48,7 @@ public class ClassBoxBasicBuilder implements ClassBoxBuilderInterface {
     }
 
     public ClassBox build() {
-        ClassBox classBox = new ClassBox(anchorPane, baseController, className, boxWidth, boxHeight, ranchors, classItem);    //creates a new classBox object
+        ClassBox classBox = new ClassBox(anchorPane, baseController, className, boxWidth, boxHeight, classItem);    //creates a new classBox object
         classBox.getChildren().add(setup());    //adds VBox that is holding all of the content to the classBox
         HBox nameAndDelete = classBox.nameAndDelete(this.className);    //creates nameAndDelete part
         VBox contentBox = (VBox) classBox.lookup("#contentBox");   //grabs container VBox that holds the panes
@@ -106,7 +65,7 @@ public class ClassBoxBasicBuilder implements ClassBoxBuilderInterface {
             TitledPane methodPane = classBox.createMethodPane();
             contentBox.getChildren().add(methodPane);
         }
-        
+
         return classBox;    //returns the classBox
     }
 }

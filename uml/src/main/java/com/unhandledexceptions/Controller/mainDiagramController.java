@@ -5,8 +5,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Random;
 
 import javax.imageio.ImageIO;
 
@@ -17,9 +19,9 @@ import com.unhandledexceptions.View.ClassBox;
 import com.unhandledexceptions.View.ClassBoxBasicBuilder;
 import com.unhandledexceptions.View.RelationLine;
 
-import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.geometry.Point2D;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Menu;
@@ -31,19 +33,20 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.Node;
 import javafx.scene.SnapshotParameters;
-import javafx.scene.shape.Rectangle;
 import javafx.scene.transform.Scale;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.ToolBar;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.effect.DropShadow;
+import javafx.scene.effect.InnerShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
+import javafx.application.Platform;
 import javafx.embed.swing.SwingFXUtils;
 
 public class mainDiagramController
@@ -121,7 +124,12 @@ public class mainDiagramController
     public void openRecentMenuShowing()
     {
         //clear items
-        openRecentMenu.getItems().clear();
+        for (Iterator<MenuItem> iterator = openRecentMenu.getItems().iterator(); iterator.hasNext();) {
+            MenuItem item = iterator.next();
+            if (!"greatJobJavaFX".equals(item.getId())) {
+                iterator.remove();
+            }
+        }
 
         // Get the current working directory
         File dir = new File(System.getProperty("user.dir"));
@@ -158,16 +166,17 @@ public class mainDiagramController
 
     public void openMenuClick()
     {
-        String result = baseController.getData().Load(anchorPane);
+        Data d = baseController.getData();
+        String result = d.Load(anchorPane);
 
         if (result.equals("good"))
         {
             //clear all
-            newMenuClick();
+            ClearAll();
 
-            LoadAll();   
+            LoadAll();
         }
-    }
+    }   
 
     private void ClearAll()
     {
@@ -187,24 +196,25 @@ public class mainDiagramController
      * @param filename the file name to save the screenshot as
      */
     public void screenshotFromCLI(String filename) {
-        // Ensures the file name ends with .png since that is the image format
-        String screenFileName = filename;
-        if (!filename.endsWith(".png")) {
-            screenFileName += ".png";
-        }
-        // Logic for taking a screenshot of GUI window
-         double width = anchorPane.getWidth();
-         double height = anchorPane.getHeight();
- 
-         WritableImage image = new WritableImage((int) width, (int) height);
-         anchorPane.snapshot(new SnapshotParameters(), image);
-         File file = new File(screenFileName);
- 
-         try {
-             ImageIO.write(SwingFXUtils.fromFXImage(image, null), "png", file);
-         } catch (IOException e) {
-             e.printStackTrace();
-         }
+
+            // Ensures the file name ends with .png since that is the image format
+            String screenFileName = filename;
+            if (!filename.endsWith(".png")) {
+                screenFileName += ".png";
+            }
+            // Logic for taking a screenshot of GUI window
+            double width = anchorPane.getWidth();
+            double height = anchorPane.getHeight();
+    
+            WritableImage image = new WritableImage((int) width, (int) height);
+            anchorPane.snapshot(new SnapshotParameters(), image);
+            File file = new File(screenFileName);
+    
+            try {
+                ImageIO.write(SwingFXUtils.fromFXImage(image, null), "png", file);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
     }
 
     public void LoadAll()
@@ -215,16 +225,21 @@ public class mainDiagramController
             ClassBox classBox = addClass(entry.getKey());
             classBox.setLayoutX(entry.getValue().getX());
             classBox.setLayoutY(entry.getValue().getY());
-            classBox.Update();
+            
+            Platform.runLater(new Runnable() {
+                @Override public void run() {
+                    classBox.Update();
+                }
+            });
         }
 
         // load relationships
         HashMap<String, RelationshipItem> relationItems = baseController.getData().getRelationshipItems();
         for (Map.Entry<String, RelationshipItem> entry : relationItems.entrySet()) {
             ClassBox source = getClassBoxByName(entry.getValue().getSource().getName());
-            int sourceLoc = entry.getValue().getSourceLoc();
+            Point2D sourceLoc = new Point2D(entry.getValue().getSourceX(), entry.getValue().getSourceY());
             ClassBox dest = getClassBoxByName(entry.getValue().getDestination().getName());
-            int destLoc = entry.getValue().getDestLoc();
+            Point2D destLoc = new Point2D(entry.getValue().getDestX(), entry.getValue().getDestY());
 
             if (source != null && dest != null) {
                 RelationLine rLine = new RelationLine(baseController, anchorPane);
@@ -232,71 +247,17 @@ public class mainDiagramController
                 rLine.setEnd(dest, destLoc);
                 rLine.setType(entry.getValue().getType());
                 anchorPane.getChildren().add(rLine);
-
+                
                 Platform.runLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        rLine.Update(scaleTransform, partyMode);
+                    @Override public void run() {
+                        rLine.Update(scaleTransform, true, darkMode, partyMode);
                     }
                 });
             }
         }
     }
 
-    public ClassBox addClass(String className)
-    {
-        //creates a classBoxBuilder calls adds the panes we need, then builds it.
-        ClassBoxBasicBuilder classBoxBuilder = new ClassBoxBasicBuilder(
-            anchorPane, baseController, className, boxWidth, boxHeight,
-             baseController.getData().getClassItems().get(className.toLowerCase().trim()));
-        classBoxBuilder.withFieldPane();
-        classBoxBuilder.withMethodPane();
-        ClassBox classBox = classBoxBuilder.build();
-
-        classBox.setEffect(effectHelper());
-
-        anchorPane.getChildren().add(classBox);
-
-        classBox.setOnMouseClicked(event -> {
-            event.consume();
-        });
-        // setup mouse drag
-        classBox.getDragBox().setOnMousePressed(event -> {
-                classBox.toFront();
-                offsetX = (event.getSceneX() / scaleTransform.getX()) - classBox.getLayoutX();
-                offsetY = (event.getSceneY() / scaleTransform.getY()) - classBox.getLayoutY();
-                event.consume();
-            });
-    
-        classBox.getDragBox().setOnMouseDragged(event -> {
-            double newX = (event.getSceneX() / scaleTransform.getX()) - offsetX;
-            double newY = (event.getSceneY() / scaleTransform.getY()) - offsetY;
-            
-            classBox.setLayoutX(newX);
-            classBox.setLayoutY(newY);
-            baseController.getData().getClassItems().get(classBox.getClassName().toLowerCase().trim()).setX(newX);
-            baseController.getData().getClassItems().get(classBox.getClassName().toLowerCase().trim()).setY(newY);
-
-            classBox.setEffect(effectHelper());
-
-            adjustAnchorPaneSize(newX, newY, classBox);
-            updateRelationLines();
-        });
-
-        // setup ranchor events
-        for (int i = 0; i < 4; i++) {
-            int index = i;
-            classBox.getRanchor(i).setOnMouseClicked(event -> {
-                ranchorClick(event, classBox, index);
-                event.consume();
-            });
-        }
-
-        return classBox;
-    }
-
-    @FXML
-    public void resetZoom(ActionEvent event) {
+    @FXML public void resetZoom(ActionEvent event) {
         event.consume();
         scaleTransform.setX(1.0);
         scaleTransform.setY(1.0);
@@ -319,7 +280,17 @@ public class mainDiagramController
         for (Node node : anchorPane.getChildren()) {
             if (node instanceof RelationLine) {
                 RelationLine line = (RelationLine) node;
-                line.Update(scaleTransform, partyMode);
+                line.Update(scaleTransform, true, darkMode, partyMode);
+            }
+        }
+    }
+
+    private void updateRelationLines(ClassBox classBox) {
+        for (Node node : anchorPane.getChildren()) {
+            if (node instanceof RelationLine) {
+                RelationLine line = (RelationLine) node;
+                if (line.getSource() == classBox || line.getDest() == classBox)
+                    line.Update(scaleTransform, false, darkMode, partyMode);
             }
         }
     }
@@ -327,15 +298,18 @@ public class mainDiagramController
     private void mouseMove(MouseEvent event) {
         if (placingRelation != null)
         {
-            placingRelation.Update(scaleTransform, event, partyMode);
+            placingRelation.Update(scaleTransform, false, event, darkMode, partyMode);
         }
-        else
-        {
-            for (Node node : anchorPane.getChildren()) {
-                if (node instanceof RelationLine) {
-                    RelationLine line = (RelationLine) node;
-                    line.mouseMoved(event, scaleTransform);
-                }
+
+        for (Node node : anchorPane.getChildren()) {
+            if (node instanceof RelationLine) {
+                RelationLine line = (RelationLine) node;
+                line.mouseMoved(event, scaleTransform);
+            }
+            if (node instanceof ClassBox) {
+                ClassBox classBox = (ClassBox) node;
+                if (placingRelation == null || placingRelation.getSource() != classBox)
+                    classBox.mouseMoved(event);
             }
         }
     }
@@ -343,6 +317,15 @@ public class mainDiagramController
     // mouse click on background event
     private void mouseClick(MouseEvent event)
     {
+        if (placingRelation == null && event.isShiftDown())
+        {
+            String name = "newclass" + new Random().nextInt(100000);
+            baseController.AddClassListener(name);
+            ClassBox classBox = addClass(name);
+            classBox.Update();
+            return;
+        }
+
         if (placingRelation != null && event.getButton() == MouseButton.PRIMARY)
         {
             //user is dragging around a relation line and has clicked the background
@@ -360,25 +343,24 @@ public class mainDiagramController
                     e.printStackTrace();
                 }
 
-                int i = (placingRelation.getI1() + 2) % 4;
-                Rectangle r = classBox.getRanchor(i);
-                double newX = event.getSceneX() - r.getBoundsInParent().getMinX();
-                double newY = event.getSceneY() - r.getBoundsInParent().getMinY() - 35;
+                double newX = event.getSceneX();
+                double newY = event.getSceneY() - 35;
                 classBox.setLayoutX(newX / scaleTransform.getX());
                 classBox.setLayoutY(newY / scaleTransform.getY());
 
-                placingRelation.setEnd(classBox, i);
-                placingRelation.Update(scaleTransform, partyMode);
+                placingRelation.setEnd(classBox, new Point2D(100, -15));
+                placingRelation.Update(scaleTransform, true, darkMode, partyMode);
                 baseController.getCareTaker().Lock();
                 placingRelation.Save(); //update model
                 baseController.getCareTaker().Unlock();
                 placingRelation = null;
             }).start();
-        } else if (placingRelation != null && event.getButton() != MouseButton.PRIMARY) {
-            // user is dragging around a relation line and has rightclicked the background
-            // stop placing the relation line. just delete it
-            // need to find an alternative for our right mouse button challenged friends
-            //anchorPane.getChildren().remove(placingRelation);
+        }
+        else if (placingRelation != null && event.getButton() != MouseButton.PRIMARY)
+        {
+            //user is dragging around a relation line and has rightclicked the background
+            //stop placing the relation line. just delete it
+            //need to find an alternative for our right mouse button challenged friends
             placingRelation.Remove(true);
             placingRelation = null;
         } else if (placingRelation == null && event.getButton() == MouseButton.PRIMARY) {
@@ -395,51 +377,30 @@ public class mainDiagramController
 
     }
 
-    // mouse click on relation anchor event
-    private void ranchorClick(MouseEvent event, ClassBox classBox, int index) {
-        if (placingRelation == null) {
-            RelationLine line = new RelationLine(baseController, anchorPane);
-            line.setStart(classBox, index);
+    //mouse click on relation anchor event
+    private void ranchorClick(MouseEvent event, ClassBox classBox)
+    {
+        //get offset
+        int offsetX = (int) (classBox.getRanchor().getCenterX() - classBox.getLayoutX());
+        int offsetY = (int) (classBox.getRanchor().getCenterY() - classBox.getLayoutY());
+        Point2D offset = new Point2D(offsetX, offsetY);
+        //System.out.println(offset.toString());
 
-            line.Update(scaleTransform, event, partyMode);
+        if (placingRelation == null)
+        {
+            RelationLine line = new RelationLine(baseController, anchorPane);
+            line.setStart(classBox, offset);
+            
+            line.Update(scaleTransform, false, event, darkMode, partyMode);
             anchorPane.getChildren().add(line);
             placingRelation = line;
-        } else {
-            placingRelation.setEnd(classBox, index);
-            placingRelation.Update(scaleTransform, partyMode);
+        }
+        else
+        {
+            placingRelation.setEnd(classBox, offset);
+            placingRelation.Update(scaleTransform, true, darkMode, partyMode);
             placingRelation.Save(); //update model
             placingRelation = null;
-        }
-    }
-
-    private ClassBox getClassBoxByName(String className) {
-        for (Node node : anchorPane.getChildren()) {
-            if (node instanceof ClassBox) {
-                ClassBox classBox = (ClassBox) node;
-                if (classBox.getClassName().equals(className))
-                    return classBox;
-            }
-        }
-        return null;
-    }
-
-    private void adjustAnchorPaneSize(double newX, double newY, ClassBox classBox) {
-        // Expand AnchorPane if object goes beyond current bounds
-        if (newX < 0) {
-            anchorPane.setPrefWidth(anchorPane.getPrefWidth() - newX);
-            classBox.setLayoutX(0);
-        }
-        if (newY < 0) {
-            anchorPane.setPrefHeight(anchorPane.getPrefHeight() - newY);
-            classBox.setLayoutY(0);
-        }
-
-        if (newX + boxWidth > anchorPane.getPrefWidth()) {
-            anchorPane.setPrefWidth(newX + boxWidth);
-        }
-
-        if (newY + boxHeight > anchorPane.getPrefHeight()) {
-            anchorPane.setPrefHeight(newY + boxHeight);
         }
     }
 
@@ -643,6 +604,29 @@ public class mainDiagramController
         return shadow;
     }
 
+    public InnerShadow effectHelperInner(){
+        InnerShadow shadow = new InnerShadow();
+
+        Color color = (darkMode) ? darkColor : lightColor;
+
+        shadow.setRadius(10);
+
+        if(partyMode){
+            int max = 255;
+            int min = 0;
+
+            int r= (int)(Math.random() * (max - min + 1)) + min;
+            int g = (int)(Math.random() * (max - min + 1)) + min;
+            int b = (int)(Math.random() * (max - min + 1)) + min;
+
+            color = Color.rgb(r, g, b);
+        }
+
+        shadow.setColor(color);
+
+        return shadow;
+    }
+
     @FXML
     public void onTakeScreenshot() {
         takeScreenshot();
@@ -677,4 +661,131 @@ public class mainDiagramController
         }
     }
 
+    public ClassBox addClass(String className)
+    {
+        //creates a classBoxBuilder calls adds the panes we need, then builds it.
+        ClassBoxBasicBuilder classBoxBuilder = new ClassBoxBasicBuilder(anchorPane, baseController, className,
+                 boxWidth, boxHeight, baseController.getData().getClassItems().get(className.toLowerCase().trim()));
+        classBoxBuilder.withFieldPane();
+        classBoxBuilder.withMethodPane();
+        ClassBox classBox = classBoxBuilder.build();
+       
+        anchorPane.getChildren().add(classBox);
+
+        classBox.setOnMouseMoved(event -> {
+            classBox.getRanchor().setVisible(false);
+            event.consume();
+        });
+        classBox.setOnMouseClicked(event -> event.consume());
+
+        // setup mouse drag
+        classBox.getDragBox().setOnMousePressed(event -> {
+                classBox.toFront();
+                offsetX = (event.getSceneX() / scaleTransform.getX()) - classBox.getLayoutX();
+                offsetY = (event.getSceneY() / scaleTransform.getY()) - classBox.getLayoutY();
+                event.consume();
+        });
+    
+        classBox.getDragBox().setOnMouseDragged(event -> {
+            double newX = (event.getSceneX() / scaleTransform.getX()) - offsetX;
+            double newY = (event.getSceneY() / scaleTransform.getY()) - offsetY;
+        
+            classBox.setLayoutX(newX);
+            classBox.setLayoutY(newY);
+            baseController.getData().getClassItems().get(classBox.getClassName().toLowerCase().trim()).setX(newX);
+            baseController.getData().getClassItems().get(classBox.getClassName().toLowerCase().trim()).setY(newY);
+
+            adjustAnchorPaneSize(newX, newY, classBox);
+            updateRelationLines(classBox);
+            anchorPane.setEffect(effectHelperInner());
+
+        });
+
+        classBox.getDragBox().setOnMouseReleased(event -> {
+            updateRelationLines();
+            classBox.setEffect(effectHelper());
+            anchorPane.setEffect(effectHelperInner());
+        });
+
+        classBox.getRanchor().setOnMouseClicked(event -> {
+            ranchorClick(event, classBox);
+            event.consume();
+        });
+
+        return classBox;
+    }
+
+    private ClassBox getClassBoxByName(String className)
+    {
+        for (Node node : anchorPane.getChildren())
+        {
+            if (node instanceof ClassBox)
+            {
+                ClassBox classBox = (ClassBox) node;
+                if (classBox.getClassName().equals(className))
+                    return classBox;
+            }
+        }
+        return null;
+    }
+
+    private void adjustAnchorPaneSize(double newX, double newY, ClassBox classBox) {
+        // Expand AnchorPane if object goes beyond current bounds
+        if (newX < 0) {
+            anchorPane.setPrefWidth(anchorPane.getPrefWidth() - newX);
+            classBox.setLayoutX(0);
+        }
+        if (newY < 0) {
+            anchorPane.setPrefHeight(anchorPane.getPrefHeight() - newY);
+            classBox.setLayoutY(0);
+        }
+
+        if (newX + boxWidth > anchorPane.getPrefWidth()) {
+            anchorPane.setPrefWidth(newX + boxWidth);
+        }
+
+        if (newY + boxHeight > anchorPane.getPrefHeight()) {
+            anchorPane.setPrefHeight(newY + boxHeight);
+        }
+    }
+
+    // private MouseEvent getFakeMouseEvent(double mouseX, double mouseY)
+    // {
+    //     // Create a minimal MouseEvent for just the required X and Y
+    //     MouseEvent fakeMouseEvent = new MouseEvent(
+    //         MouseEvent.MOUSE_MOVED,  // Event type
+    //         mouseX,            // X coordinate
+    //         mouseY,            // Y coordinate
+    //         0,                       // Screen X (unused, can be 0)
+    //         0,                       // Screen Y (unused, can be 0)
+    //         MouseButton.NONE,        // No button pressed
+    //         0,                       // Click count
+    //         false,                   // Shift down
+    //         false,                   // Control down
+    //         false,                   // Alt down
+    //         false,                   // Meta down
+    //         false,                   // Primary button down
+    //         false,                   // Middle button down
+    //         false,                   // Secondary button down
+    //         false,                   // Synthesized
+    //         false,                   // Popup trigger
+    //         false,                   // Still since press
+    //         null                     // Pick result
+    //     );
+
+    //     return fakeMouseEvent;
+    // }
+
+    // private String getNextRelationType(String currentType, boolean next)
+    // {
+    //     String[] types = { "Aggregation", "Composition", "Generalization", "Realization" };
+    //     int currentIndex = java.util.Arrays.asList(types).indexOf(currentType);
+
+    //     if (next)
+    //         currentIndex = (currentIndex - 1 + types.length) % types.length;
+    //     else
+    //         currentIndex = (currentIndex + 1) % types.length;
+        
+    //     return types[currentIndex];
+    // }
 }

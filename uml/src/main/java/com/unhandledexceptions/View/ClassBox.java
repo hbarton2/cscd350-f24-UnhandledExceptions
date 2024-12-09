@@ -2,6 +2,8 @@ package com.unhandledexceptions.View;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.geometry.BoundingBox;
+import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -38,7 +40,8 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.shape.Rectangle;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
 import javafx.util.Pair;
 import javafx.scene.control.ButtonBar;
 
@@ -54,24 +57,26 @@ import javafx.scene.control.ButtonBar;
 public class ClassBox extends StackPane implements PropertyChangeListener
 {
     private String className;
-    final double RANCHOR_VIEW_DISTANCE = 50; // Distance threshold for visibility
     private VBox dragBox;
     BaseController baseController;
-    private Rectangle[] ranchors = new Rectangle[4]; // Relationship anchors
     AnchorPane anchorPane;
     TitledPane methodsPane;
     TitledPane fieldsPane;
+    Circle ranchor;
     private ClassItem classItem; // ClassItem object associated with the ClassBox to add listeners
 
     public ClassBox(AnchorPane anchorPane, BaseController baseController, String classNameIn, double boxWidth,
-     double boxHeight, Rectangle[] ranchors, ClassItem classItem)
+     double boxHeight, ClassItem classItem)
     {
         this.anchorPane = anchorPane;
         this.baseController = baseController;
         this.className = classNameIn;
-        this.ranchors = ranchors;
         this.classItem = classItem;
         this.classItem.addPropertyChangeListener(this);
+        this.ranchor = new Circle(5);
+        this.ranchor.setFill(Color.BLACK);
+        this.ranchor.setVisible(false);
+        anchorPane.getChildren().add(this.ranchor);
         // createClassBox(classNameIn, boxWidth, boxHeight);
     }
 
@@ -95,6 +100,80 @@ public class ClassBox extends StackPane implements PropertyChangeListener
     public AnchorPane getAnchorPane()
     {
         return this.anchorPane;
+    }
+
+    public void mouseMoved(MouseEvent event)
+    {
+        // Get the bounds of the classBox relative to the AnchorPane
+        Bounds classBoxBounds = localToParent(getBoundsInLocal());
+
+        // Check if the mouse is near the classBox
+        double threshold = 25.0; // Distance threshold for "nearby"
+        boolean isNear = classBoxBounds.intersects(event.getX() - threshold, event.getY() -
+         threshold, threshold * 2, threshold * 2);
+
+        if (isNear)
+        {
+            // make sure we arent near another line connecton
+            Bounds rbounds = ranchor.getBoundsInParent();
+            for (Node node : anchorPane.getChildren()) {
+                if (node instanceof RelationLine) {
+                    RelationLine line = (RelationLine) node;
+                    if (line.getSource() == this)
+                    {
+                        Bounds obounds = new BoundingBox(getLayoutX() + line.getSourceOffset().getX(), getLayoutY() +
+                         line.getSourceOffset().getY(), rbounds.getWidth(), rbounds.getHeight());
+
+                        if (obounds.intersects(event.getX() - threshold, event.getY() -
+                         threshold, threshold * 2, threshold * 2))
+                        {
+                            ranchor.setVisible(false);
+                            return;
+                        }
+                    }
+                    else if (line.getDest() == this)
+                    {
+                        Bounds obounds = new BoundingBox(getLayoutX() + line.getDestOffset().getX(), getLayoutY() +
+                         line.getDestOffset().getY(), rbounds.getWidth(), rbounds.getHeight());
+
+                        if (obounds.intersects(event.getX() - threshold, event.getY() -
+                         threshold, threshold * 2, threshold * 2))
+                        {
+                            ranchor.setVisible(false);
+                            return;
+                        }
+                    }
+                }
+            }
+
+            // Calculate the closest position for the ranchor on the edge of the classBox
+            double closestX = Math.min(Math.max(event.getX(), classBoxBounds.getMinX()), classBoxBounds.getMaxX());
+            double closestY = Math.min(Math.max(event.getY(), classBoxBounds.getMinY()), classBoxBounds.getMaxY());
+
+            Bounds modBounds = new BoundingBox(classBoxBounds.getMinX() - 10, classBoxBounds.getMinY() - 10,
+                classBoxBounds.getWidth() + 10, classBoxBounds.getHeight() + 10);
+
+            // Snap the ranchor to the nearest edge
+            if (event.getX() < classBoxBounds.getMinX()) {
+                closestX = modBounds.getMinX(); // Left edge
+            } else if (event.getX() > classBoxBounds.getMaxX()) {
+                closestX = modBounds.getMaxX(); // Right edge
+            }
+            else if (event.getY() < classBoxBounds.getMinY()) {
+                closestY = modBounds.getMinY(); // Top edge
+            } else if (event.getY() > classBoxBounds.getMaxY()) {
+                closestY = modBounds.getMaxY(); // Bottom edge
+            }
+    
+            // Set the ranchor's position
+            ranchor.setCenterX(closestX);
+            ranchor.setCenterY(closestY);
+            ranchor.setVisible(true);
+        } 
+        else 
+        {
+            ranchor.setVisible(false); // Hide the ranchor if the mouse is not near
+        }
     }
 
     public void Update()
@@ -167,7 +246,7 @@ public class ClassBox extends StackPane implements PropertyChangeListener
          for (Node node : anchorPane.getChildren()) {
              if(node instanceof RelationLine) {
                  RelationLine line = (RelationLine) node;
-                 if (line.getC1().equals(this) || line.getC2().equals(this)) {
+                 if (line.getSource().equals(this) || line.getDest().equals(this)) {
                      nodesToRemove.add(line);
                  }
              }
@@ -181,12 +260,6 @@ public class ClassBox extends StackPane implements PropertyChangeListener
          AnchorPane anchorPane = this.getAnchorPane();
          anchorPane.getChildren().remove(this);
     }
-
-
-    public void setDragBox(VBox dragBox){
-        this.dragBox = dragBox;
-    }
-
 
     private void NameClicked(String oldName, Label className) {
 
@@ -253,22 +326,13 @@ public class ClassBox extends StackPane implements PropertyChangeListener
         return this.dragBox;
     }
 
-    public Rectangle getRanchor(int i)
-    {
-        return this.ranchors[i];
+    public void setDragBox(VBox dragBox){
+        this.dragBox = dragBox;
     }
 
-    public Rectangle[] getRanchors()
+    public Circle getRanchor()
     {
-        return this.ranchors;
-    }
-
-    public Rectangle getClickedRanchor(MouseEvent event)
-    {
-        for (Rectangle ranchor : ranchors)
-            if (ranchor.contains(event.getX(), event.getY()))
-                return ranchor;
-        return null;
+        return this.ranchor;
     }
 
     /* method to create a delete button, sets the action to call
