@@ -1,23 +1,41 @@
 package com.unhandledexceptions.View;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.PriorityQueue;
+import java.util.Set;
+
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import com.unhandledexceptions.Controller.BaseController;
+import com.unhandledexceptions.Model.RelationshipItem;
 
 import javafx.application.Platform;
+import javafx.collections.ObservableList;
+import javafx.geometry.BoundingBox;
 import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
 import javafx.scene.control.Button;
 import javafx.scene.effect.DropShadow;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Polygon;
+import javafx.scene.shape.Circle;
+import javafx.scene.shape.Line;
 import javafx.scene.shape.Polyline;
+import javafx.scene.shape.Rectangle;
+import javafx.scene.shape.Shape;
 import javafx.scene.transform.Scale;
 import javafx.scene.transform.Transform;
 
@@ -29,18 +47,28 @@ import javafx.scene.transform.Transform;
 
 public class RelationLine extends Polyline
 {
-    // indexes of the classboxes' relationship anchors either 0, 1, 2, or 3
-    private int i1, i2;
+    //temp
+    List<Rectangle> testRects = new ArrayList<>();
+
+    private static final int CELL_SIZE = 10; // Grid resolution
+    
+    //private Point2D sourceOffset, destOffset; not serializable!!
+    private double sourceX, sourceY, destX, destY;
     // classboxes that the relation line connects
-    private ClassBox c1, c2;
+    private ClassBox source, dest;
     // type of relationship (Aggregation, Composition, Generalization, Realization)
     private String type;
 
-    private Polygon shape;
     BaseController baseController;
     AnchorPane anchorPane;
     Button typeButton;
     Button deleteButton;
+    ImageView typeIcon;
+    Circle ranchor;
+    Rectangle testRect; Line testLine;
+
+    private final Color lightColor = Color.rgb(211, 211, 211);
+    private final Color darkColor = Color.rgb(27, 70, 160);
 
     // constructor for relationship line
     public RelationLine(BaseController baseController, AnchorPane anchorPane)
@@ -50,11 +78,15 @@ public class RelationLine extends Polyline
         this.anchorPane = anchorPane;
         this.baseController = baseController;
         type = "Composition";
-        shape = new Polygon();
-        anchorPane.getChildren().add(shape);
-        shape.toBack();
+        typeIcon = new ImageView(new Image("/images/Composition.png"));
+        typeIcon.setVisible(false);
+        anchorPane.getChildren().add(typeIcon);
+        typeIcon.toBack();
 
-
+        ranchor = new Circle(5);
+        ranchor.setFill(Color.BLACK);
+        ranchor.setVisible(false);
+        anchorPane.getChildren().add(this.ranchor);
 
         //type button
         typeButton = new Button();
@@ -72,7 +104,6 @@ public class RelationLine extends Polyline
             deleteButton.setLayoutY(typeButton.getLayoutY());
         });
         anchorPane.getChildren().add(typeButton);
-
         //delete button
         deleteButton = new Button();
         ImageView deleteImage = new ImageView("/images/trash-can-icon.png");
@@ -86,20 +117,24 @@ public class RelationLine extends Polyline
         anchorPane.getChildren().add(deleteButton);
     }
 
+    //proper way to remove this object from the anchorpane
     public void Remove(boolean justView)
     {
-        if (!justView) baseController.RemoveRelationshipListener(c1.getClassName(), c2.getClassName());
-        anchorPane.getChildren().remove(shape);
+        if (!justView) baseController.RemoveRelationshipListener(source.getClassName(), dest.getClassName());
+        anchorPane.getChildren().remove(typeIcon);
+        anchorPane.getChildren().remove(ranchor);
         anchorPane.getChildren().remove(typeButton);
         anchorPane.getChildren().remove(deleteButton);
         anchorPane.getChildren().remove(this);
     }
 
+    //the mouse has moved on the scene's anchorpane and we want to
+    //place the line type change and delete buttons near the mouse near a line.
     public void mouseMoved(MouseEvent event, Scale scaleTransform)
     {
         deleteButton.setVisible(false);
 
-        if (c1 == c2) return;
+        if (source == dest) return;
 
         Point2D nearestPoint = null;
         double minDistance = Double.MAX_VALUE;
@@ -116,7 +151,7 @@ public class RelationLine extends Polyline
             Point2D pointOnSegment = getClosestPointOnSegment(event.getSceneX(), event.getSceneY(), x1, y1, x2, y2);
             distance = pointOnSegment.distance(event.getSceneX(), event.getSceneY()-50);
             
-            if (distance < 100 && distance < minDistance)
+            if (distance < 25 && distance < minDistance)
             {
                 minDistance = distance;
                 nearestPoint = pointOnSegment;
@@ -137,6 +172,7 @@ public class RelationLine extends Polyline
 
     }
 
+    //helper for mousemove
     public Point2D getClosestPointOnSegment(double mouseX, double mouseY, double x1, double y1, double x2, double y2)
     {
         if (Math.abs(x1 - x2) < 1)
@@ -155,9 +191,10 @@ public class RelationLine extends Polyline
         return new Point2D(0, 0);
     }
 
+    //dialog box to change line type.
     private void typeDialog()
     {
-        if (c1 == c2) return;
+        if (source == dest) return;
 
         Scale scaleTransform = null;
         for (Transform transform : anchorPane.getTransforms())
@@ -182,23 +219,27 @@ public class RelationLine extends Polyline
         if (result == JOptionPane.OK_OPTION) {
             String selectedOption = (String) comboBox.getSelectedItem();
             type = selectedOption;
-            baseController.ChangeRelationshipTypeListener(c1.getClassName(), c2.getClassName(), selectedOption);
+            typeIcon.setImage(new Image("/images/" + type + ".png"));
+            baseController.ChangeRelationshipTypeListener(source.getClassName(), dest.getClassName(), selectedOption);
         } else {
             System.out.println("Dialog was canceled.");
         }
 
-        Update(scaleTransform, false);
+        Update(scaleTransform, true, false, false);
     }
 
     // saves the relationships between classes into the model using the controller
     public void Save()
     {
-        String c1Name = c1.getClassName().toLowerCase().trim();
-        String c2Name = c2.getClassName().toLowerCase().trim();
+        String c1Name = source.getClassName().toLowerCase().trim();
+        String c2Name = dest.getClassName().toLowerCase().trim();
 
         baseController.AddRelationshipListener(c1Name, c2Name, type);
-        baseController.getData().getRelationshipItems().get(c1Name + "_" + c2Name).setSourceLoc(i1);
-        baseController.getData().getRelationshipItems().get(c1Name + "_" + c2Name).setDestLoc(i2);
+        RelationshipItem r = baseController.getData().getRelationshipItems().get(c1Name + "_" + c2Name);
+        r.setSourceX(getSourceOffset().getX());
+        r.setSourceY(getSourceOffset().getY());
+        r.setDestX(getDestOffset().getX());
+        r.setDestY(getDestOffset().getY());
     }
 
     /*
@@ -209,17 +250,15 @@ public class RelationLine extends Polyline
      *
      * @param scaleTransform the scale transformation to be applied to the coordinates
      */
-    public void Update(Scale scaleTransform, boolean partyMode)
+    public void Update(Scale scaleTransform, boolean pathfinding, boolean darkMode, boolean partyMode)
     {
         Platform.runLater(new Runnable() {
             @Override public void run() {
-                Bounds bounds = c1.getRanchor(i1).localToScene(c1.getRanchor(i1).getBoundsInLocal());
-                Bounds bounds2 = c2.getRanchor(i2).localToScene(c2.getRanchor(i2).getBoundsInLocal());
-                double startX = bounds.getCenterX() / scaleTransform.getX();
-                double startY = (bounds.getCenterY() - 50) / scaleTransform.getY();
-                double endX = bounds2.getCenterX() / scaleTransform.getX();
-                double endY = (bounds2.getCenterY() - 50) / scaleTransform.getY();
-                update(startX, startY, endX, endY, partyMode);
+                double startX = (source.getLayoutX() + getSourceOffset().getX()) / scaleTransform.getX();
+                double startY = ((source.getLayoutY() + getSourceOffset().getY())) / scaleTransform.getY();
+                double endX = (dest.getLayoutX() + getDestOffset().getX()) / scaleTransform.getX();
+                double endY = ((dest.getLayoutY() + getDestOffset().getY())) / scaleTransform.getY();
+                update(scaleTransform, startX, startY, endX, endY, pathfinding, darkMode, partyMode);
             }
         });
     }
@@ -231,16 +270,15 @@ public class RelationLine extends Polyline
      * @param scaleTransform the scale transformation to be applied to the coordinates
      * @param event the mouse event containing the new position
      */
-    public void Update(Scale scaleTransform, MouseEvent event, boolean partyMode)
+    public void Update(Scale scaleTransform, boolean pathfinding, MouseEvent event, boolean darkMode, boolean partyMode)
     {
         Platform.runLater(new Runnable() {
             @Override public void run() {
-                Bounds bounds = c1.getRanchor(i1).localToScene(c1.getRanchor(i1).getBoundsInLocal());
-                double startX = bounds.getCenterX() / scaleTransform.getX();
-                double startY = (bounds.getCenterY() - 50) / scaleTransform.getY();
-                double endX = event.getSceneX() / scaleTransform.getX();
-                double endY = event.getSceneY() / scaleTransform.getY();
-                update(startX, startY, endX, endY, partyMode);
+                double startX = (source.getLayoutX() + getSourceOffset().getX()) / scaleTransform.getX();
+                double startY = ((source.getLayoutY() + getSourceOffset().getY())) / scaleTransform.getY();
+                double endX = event.getX() / scaleTransform.getX();
+                double endY = event.getY() / scaleTransform.getY();
+                update(scaleTransform, startX, startY, endX, endY, pathfinding, darkMode, partyMode);
             }
         });
     }
@@ -254,176 +292,154 @@ public class RelationLine extends Polyline
      * @param endX the ending X coordinate of the line
      * @param endY the ending Y coordinate of the line
      */
-    private void update(double startX, double startY, double endX, double endY, boolean partyMode)
+    private void update(Scale scaleTransform, double startX, double startY, double endX, double endY, boolean pathfinding, boolean darkMode, boolean partyMode)
     {
         toBack();
         getPoints().clear();
-        shape.getPoints().clear();
 
-        //start
+        double preX = startX, firstX = startX;
+        double preY = startY, firstY = startY;
+        double postX = endX, lastX = endX;
+        double postY = endY, lastY = endY;
+
+        // anchorPane.getChildren().remove(testRect);
+        // testRect = new Rectangle(sourceBounds.getMinX(), sourceBounds.getMinY(), sourceBounds.getWidth(), sourceBounds.getHeight());
+        // testRect.setStroke(Color.RED);
+        // testRect.setFill(Color.TRANSPARENT);
+        // anchorPane.getChildren().add(testRect);
+        // testRect.toBack();
+
+        //get pre-start
+        if (getSourceOffset().getX() < 0)
+        {
+            firstX = startX - 20;
+            preX = startX + 10;
+            typeIcon.setRotate(0);
+        }
+        else if (getSourceOffset().getX() > source.getWidth())
+        {
+            firstX = startX + 20;
+            preX = startX - 10;
+            typeIcon.setRotate(180);
+        }
+        else if (getSourceOffset().getY() < 0)
+        {
+            firstY = startY - 20;
+            preY = startY + 10;
+            typeIcon.setRotate(90);
+        }
+        else if (getSourceOffset().getY() > source.getHeight())
+        {
+            firstY = startY + 20;
+            preY = startY - 10;
+            typeIcon.setRotate(-90);
+        }
+
+        //get post-end
+        if (source != dest)
+        {
+            if (getDestOffset().getX() < 0)
+            {
+                lastX = endX - 20;
+                postX = endX + 10;
+                if (type.equals("Generalization") || type.equals("Realization")) typeIcon.setRotate(0);
+            }
+            else if (getDestOffset().getX() > dest.getWidth())
+            {
+                lastX = endX + 20;
+                postX = endX - 10;
+                if (type.equals("Generalization") || type.equals("Realization"))typeIcon.setRotate(180);
+            }
+            else if (getDestOffset().getY() < 0)
+            {
+                lastY = endY - 20;
+                postY = endY + 10;
+                if (type.equals("Generalization") || type.equals("Realization"))typeIcon.setRotate(90);
+            }
+            else if (getDestOffset().getY() > dest.getHeight())
+            {
+                lastY = endY + 20;
+                postY = endY - 10;
+                if (type.equals("Generalization") || type.equals("Realization"))typeIcon.setRotate(-90);
+            }
+        }
+
+        //set pre-start point
+        getPoints().add(preX);
+        getPoints().add(preY);
+
+        //set first real point
+        getPoints().add(firstX);
+        getPoints().add(firstY);
+
+        //middle =====================================================================================
+
+        if (pathfinding) drawPath(firstX, firstY, lastX, lastY);
+
+        //end ========================================================================================
+        //get post-end
+        if (source != dest)
+        {
+            //set final 2 points (dragging a classbox)
+            getPoints().add(lastX);
+            getPoints().add(lastY);
+            getPoints().add(postX);
+            getPoints().add(postY);
+        }
+        else
+        {
+            //set final point (placing the line with the mouse)
+            getPoints().add(lastX);
+            getPoints().add(lastY);
+        }
+
+        //extra parts
         if (type.equals("Aggregation") || type.equals("Composition"))
         {
-            double aimX = c1.getLayoutX() + c1.getWidth() / 2;
-            double aimY = c1.getLayoutY() + c1.getHeight() / 2;
-            double angle = Math.atan2(aimY - startY, aimX - startX);
-
-            //type shape
-            int offset = 20;
-            shape.getPoints().clear();
-
-            shape.getPoints().add(startX - (offset) * Math.cos(angle));
-            shape.getPoints().add(startY - (offset) * Math.sin(angle));
-
-            shape.getPoints().add(startX + (offset/2) * Math.cos(angle + Math.PI / 2));
-            shape.getPoints().add(startY + (offset/2) * Math.sin(angle + Math.PI / 2));
-
-            shape.getPoints().add(startX + (offset) * Math.cos(angle));
-            shape.getPoints().add(startY + (offset) * Math.sin(angle));
-
-            shape.getPoints().add(startX + (offset/2) * Math.cos(angle - Math.PI / 2));
-            shape.getPoints().add(startY + (offset/2) * Math.sin(angle - Math.PI / 2));
-
-            startX = startX - (offset) * Math.cos(angle);
-            startY = startY - (offset) * Math.sin(angle);
+            typeIcon.setLayoutX(startX - typeIcon.getImage().getWidth() / 2);
+            typeIcon.setLayoutY(startY - typeIcon.getImage().getHeight() / 2);
+            ranchor.setCenterX(endX);
+            ranchor.setCenterY(endY);
         }
-        getPoints().add(startX);
-        getPoints().add(startY);
-
-        //middle for top anchor
-        if (i1 == 0)
+        else
         {
-            if (endY > startY)
-            {
-                double shift = c1.getWidth() / 2;
-                if (endX < startX)
-                    shift = shift * -1;
-                getPoints().add(startX + shift);
-                getPoints().add(startY);
-            }
-            getPoints().add(getPoints().get(getPoints().size() - 2));
-            getPoints().add(endY);
+            typeIcon.setLayoutX(endX - typeIcon.getImage().getWidth() / 2);
+            typeIcon.setLayoutY(endY - typeIcon.getImage().getHeight() / 2);
+            ranchor.setCenterX(startX);
+            ranchor.setCenterY(startY);
         }
 
-        //middle for bottom anchor
-        if (i1 == 2)
-        {
-            if (endY < startY)
-            {
-                double shift = c1.getWidth() / 2;
-                if (endX < startX)
-                    shift = shift * -1;
-                getPoints().add(startX + shift);
-                getPoints().add(startY);
-            }
-            getPoints().add(getPoints().get(getPoints().size() - 2));
-            getPoints().add(endY);
-        }
-
-        //middle for left anchor
-        if (i1 == 3)
-        {
-            if (endX > startX)
-            {
-                double shift = c1.getHeight() / 2;
-                if (endY < startY)
-                    shift = shift * -1;
-                getPoints().add(startX);
-                getPoints().add(startY + shift);
-            }
-            getPoints().add(endX);
-            getPoints().add(getPoints().get(getPoints().size() - 2));
-        }
-
-        //middle for right anchor
-        if (i1 == 1)
-        {
-            if (endX < startX)
-            {
-                double shift = c1.getHeight() / 2;
-                if (endY < startY)
-                    shift = shift * -1;
-                getPoints().add(startX);
-                getPoints().add(startY + shift);
-            }
-            getPoints().add(endX);
-            getPoints().add(getPoints().get(getPoints().size() - 2));
-        }
-
-        //end
-        getPoints().add(endX);
-        getPoints().add(endY);
-
-        if (c1 != c2)
-        {
-            if (type.equals("Generalization") || type.equals("Realization"))
-            {
-                int offset = 10;
-
-                double aimX = c2.getLayoutX() + c2.getWidth() / 2;
-                double aimY = c2.getLayoutY() + c2.getHeight() / 2;
-                double angle = Math.atan2(aimY - endY, aimX - endX);
-
-                endX = (endX + 5 * Math.cos(angle));
-                endY = (endY + 5 * Math.sin(angle));
-
-                getPoints().add(endX);
-                getPoints().add(endY);
-
-                //type shape
-                shape.getPoints().clear();
-
-                shape.getPoints().add(endX + (offset) * Math.cos(angle + Math.PI / 2));
-                shape.getPoints().add(endY + (offset) * Math.sin(angle + Math.PI / 2));
-
-                shape.getPoints().add(endX + (offset) * Math.cos(angle));
-                shape.getPoints().add(endY + (offset) * Math.sin(angle));
-
-                shape.getPoints().add(endX + (offset) * Math.cos(angle - Math.PI / 2));
-                shape.getPoints().add(endY + (offset) * Math.sin(angle - Math.PI / 2));
-            }
-            else
-            {
-                getPoints().add(c2.getLayoutX() + c2.getWidth() / 2);
-                getPoints().add(c2.getLayoutY() + c2.getHeight() / 2);
-            }
-        }
-
-        int r = 24, g = 24, b = 24;
+        typeIcon.toBack();
+        ranchor.toBack();
         
-        DropShadow shadow = new DropShadow();
+        //misc "Aggregation", "Composition", "Generalization", "Realization"
+        typeIcon.setVisible(true);
+        ranchor.setVisible(true);
+        setStrokeWidth(3);
 
-        shadow.setOffsetX(1);
-        shadow.setOffsetY(1);
-        shadow.setRadius(1);
+        DropShadow effect = effectHelper(darkMode, partyMode);
+        source.setEffect(effect);
+        dest.setEffect(effect);
 
         if(partyMode){
-            int max = 255;
-            int min = 0;
-
-            r = (int)(Math.random() * (max - min + 1)) + min;
-            g = (int)(Math.random() * (max - min + 1)) + min;
-            b = (int)(Math.random() * (max - min + 1)) + min;
-
-            shadow.setColor(Color.rgb(r, g, b));
-            setEffect(shadow);
+            setStroke(effect.getColor());
+        }else{
+            setStroke(Color.BLACK);
         }
-
-        //misc
-        setStrokeWidth(3);
-        setEffect(shadow);
-        setStroke(Color.rgb(r, g, b));
-        shape.setStrokeWidth(3);
-        shape.setStroke(Color.rgb(r, g, b));
-        shape.setFill(Color.rgb(r, g, b));
-        shape.setEffect(shadow);
+        
         getStrokeDashArray().clear();
-        if (!type.equals("Composition"))
-            shape.setFill(Color.TRANSPARENT);
         if (type.equals("Realization"))
             getStrokeDashArray().addAll(10.0, 10.0);
         
     }
-    
+
+    //helper function for resizing a bounds
+    public static Bounds modBounds(Bounds bounds, double amount)
+    {
+        return new BoundingBox(bounds.getMinX() - amount, bounds.getMinY() - amount,
+                            bounds.getWidth() + (amount * 2), bounds.getHeight() + (amount * 2));
+    }
+
     // default getters and setters
     public String getType()
     {
@@ -433,26 +449,41 @@ public class RelationLine extends Polyline
     public void setType(String type)
     {
         this.type = type;
+        typeIcon.setImage(new Image("/images/" + type + ".png"));
     }
 
-    public int getI1()
+    public ClassBox getSource()
     {
-        return this.i1;
+        return this.source;
     }
 
-    public int getI2()
+    public ClassBox getDest()
     {
-        return this.i2;
+        return this.dest;
     }
 
-    public ClassBox getC1()
+    public Point2D getSourceOffset()
     {
-        return this.c1;
+        Point2D sourceOffset = new Point2D(this.sourceX, this.sourceY);
+        return sourceOffset;
     }
 
-    public ClassBox getC2()
+    public Point2D getDestOffset()
     {
-        return this.c2;
+        Point2D destOffset = new Point2D(this.destX, this.destY);
+        return destOffset;
+    }
+
+    public void setSourceOffset(Point2D sourceOffset)
+    {
+        this.sourceX = sourceOffset.getX();
+        this.sourceY = sourceOffset.getY();
+    }
+
+    public void setDestOffset(Point2D destOffset)
+    {
+        this.destX = destOffset.getX();
+        this.destY = destOffset.getY();
     }
 
     /*
@@ -461,12 +492,12 @@ public class RelationLine extends Polyline
      * @param classBox the classbox that the relationship line starts from
      * @param index the index of the relationship anchor that the relationship line starts from
      */
-    public void setStart(ClassBox classBox, int index)
+    public void setStart(ClassBox classBox, Point2D offset)
     {
-        this.c1 = classBox;
-        this.i1 = index;
-        this.c2 = c1;
-        this.i2 = i1;
+        this.source = classBox;
+        setSourceOffset(offset);
+        this.dest = source;
+        setDestOffset(offset);
     }
 
     /*
@@ -475,9 +506,279 @@ public class RelationLine extends Polyline
      * @param classBox the classbox that the relationship line ends at
      * @param index the index of the relationship anchor that the relationship line ends at
      */
-    public void setEnd(ClassBox classBox, int index)
+    public void setEnd(ClassBox classBox, Point2D offset)
     {
-        this.c2 = classBox;
-        this.i2 = index;
+        this.dest = classBox;
+        setDestOffset(offset);
+    }
+
+    //a-star pathfinding
+    private void drawPath(double startX, double startY, double endX, double endY)
+    {
+        // Convert points to grid coordinates
+        int startCol = (int) (startX / CELL_SIZE);
+        int startRow = (int) (startY / CELL_SIZE);
+        int endCol = (int) (endX / CELL_SIZE);
+        int endRow = (int) (endY / CELL_SIZE);
+
+        // Perform a-star pathfinding
+        List<Node> path = findPath(startCol, startRow, endCol, endRow);
+
+        if (path != null)
+        {
+            // Convert path to polyline
+            for (Node node : path)
+                getPoints().addAll((double) node.x * CELL_SIZE, (double) node.y * CELL_SIZE);
+        }
+    }
+
+    //actually find the path
+    private List<Node> findPath(int startCol, int startRow, int endCol, int endRow)
+    {
+        //testing
+        for (Rectangle rect : testRects)
+        {
+            anchorPane.getChildren().remove(rect);
+            rect = null;
+        }
+        testRects.clear();
+
+         // Check if start and end are the same
+         if (startCol == endCol && startRow == endRow) {
+            // Return a path with just the start node (no pathfinding needed)
+            Node startNode = getNode(startCol, startRow, null, 0, endCol, endRow, new HashMap<>(), null);
+            return Collections.singletonList(startNode); // Return the start node as the path
+        }
+
+        PriorityQueue<Node> openSet = new PriorityQueue<>(Comparator.comparingDouble(n -> n.gCost + n.hCost));
+        Map<String, Node> allNodes = new HashMap<>();
+
+        Node startNode = getNode(startCol, startRow, null, 0, endCol, endRow, allNodes, null);
+        startNode.direction = null;
+        Node endNode = getNode(endCol, endRow, null, 0, endCol, endRow, allNodes, null);
+        endNode.direction = null;
+
+        openSet.add(startNode);
+        Set<Node> closedSet = new HashSet<>();
+
+        while (!openSet.isEmpty())
+        {
+            Node current = openSet.poll();
+
+            //System.out.println("openSet: " + openSet.size());
+            //System.out.println("closedSet: " + closedSet.size());
+            if (closedSet.size() > 10000 || openSet.size() > 10000)
+                return null;
+
+            // Check if we've reached the destination
+            if (current.equals(endNode))
+            {
+                return reconstructPath(current);
+            }
+            closedSet.add(current);
+
+            // Check[ neighbors
+            for (int[] dir : new int[][]{{0, -1}, {0, 1}, {-1, 0}, {1, 0}})
+            {
+                int neighborX = current.x + dir[0];
+                int neighborY = current.y + dir[1];
+                String newDirection = dir[0] == -1 ? "W" : dir[0] == 1 ? "E" : dir[1] == -1 ? "N" : "S";
+
+                // Skip directions that don't match the current direction unless blocked or overshooting
+                if (current.direction != null && !current.direction.equals(newDirection)) {
+                    // Allow direction change only if blocked or overshooting
+                    if (!isBlocked(current.x + dx(current.direction), current.y + dy(current.direction))
+                            && !isOvershooting(current, endCol, endRow)) {
+                        continue;
+                    }
+                }
+
+                // Skip blocked or invalid neighbors
+                if (isBlocked(neighborX, neighborY)) continue;
+
+                Node neighbor = getNode(neighborX, neighborY, current, current.gCost + 1, endCol, endRow, allNodes, endNode);
+                neighbor.direction = newDirection;
+
+                if (closedSet.contains(neighbor)) continue;
+
+                if (!openSet.contains(neighbor)) {
+                    openSet.add(neighbor);
+                }
+            }
+        }
+
+        return null; // No path found
+    }
+
+    //helper methods for astar
+    private boolean isOvershooting(Node current, double endCol, double endRow) {
+        if (current.direction == null) return false;
+    
+        switch (current.direction) {
+            case "N": return current.y <= endRow;
+            case "S": return current.y >= endRow;
+            case "E": return current.x >= endCol;
+            case "W": return current.x <= endCol;
+            default: return false;
+        }
+    }
+
+    private int dx(String direction) {
+        switch (direction) {
+            case "W": return -1;
+            case "E": return 1;
+            default: return 0;
+        }
+    }
+
+    private int dy(String direction) {
+        switch (direction) {
+            case "N": return -1;
+            case "S": return 1;
+            default: return 0;
+        }
+    }
+
+    //get a node from an x y
+    private Node getNode(int x, int y, Node parent, double gCost, int endCol, int endRow, Map<String, Node> allNodes, Node endNode)
+    {
+        String key = x + "," + y;
+        Node node = allNodes.get(key);
+        if (node == null)
+        {
+            node = new Node(x, y, gCost, Math.abs(endCol - x) + Math.abs(endRow - y), parent, parent != null ? parent.direction : null);
+            allNodes.put(key, node);
+        }
+        if (node == endNode)
+        {
+            node.parent = parent;
+        }
+
+        //testing
+        Rectangle r = new Rectangle((x * CELL_SIZE), (y * CELL_SIZE), CELL_SIZE, CELL_SIZE);
+        r.setStroke(Color.RED);
+        r.setFill(Color.TRANSPARENT);
+        testRects.add(r);
+        anchorPane.getChildren().add(r);
+
+        return node;
+    }
+
+    //check of x y is blocked
+    private boolean isBlocked(int col, int row)
+    {
+        double x = col * CELL_SIZE;
+        double y = row * CELL_SIZE;
+        for (javafx.scene.Node node : anchorPane.getChildren())
+        {
+            if (node instanceof ClassBox)
+            {
+                Bounds bounds = modBounds(node.getBoundsInParent(), 10);
+                if (bounds.intersects(x, y, CELL_SIZE, CELL_SIZE))
+                {
+                    return true;
+                }
+            }
+            else if (node instanceof RelationLine && node != this)
+            {
+                Rectangle curNode = new Rectangle(x, y, CELL_SIZE, CELL_SIZE);
+                RelationLine line = (RelationLine) node;
+                
+                ObservableList<Double> points = line.getPoints(); // Get the points of the relation line
+
+                // Iterate through the polyline segments
+                for (int i = 0; i < points.size() - 2; i += 2)
+                {
+                    double x1 = points.get(i);
+                    double y1 = points.get(i + 1);
+                    double x2 = points.get(i + 2);
+                    double y2 = points.get(i + 3);
+
+                    // Create a line for the current segment
+                    Line segment = new Line(x1, y1, x2, y2);
+
+                    // Check if the rectangle intersects the segment
+                    Shape intersection = Shape.intersect(curNode, segment);
+                    if (intersection.getBoundsInLocal().getWidth() > 0 || intersection.getBoundsInLocal().getHeight() > 0)
+                        return true; // Rectangle is touching the polyline
+                }
+            }
+        }
+        return false;
+    }
+
+    //build the final path
+    private List<Node> reconstructPath(Node node)
+    {
+        List<Node> path = new ArrayList<>();
+        while (node != null)
+        {
+            path.add(node);
+            node = node.parent;
+        }
+        Collections.reverse(path);
+        return path;
+    }
+
+    //node class to use for astar
+    static class Node
+    {
+        int x, y;
+        double gCost, hCost;
+        Node parent;
+        String direction;
+
+        Node(int x, int y, double gCost, double hCost, Node parent, String direction)
+        {
+            this.x = x;
+            this.y = y;
+            this.gCost = gCost;
+            this.hCost = hCost;
+            this.parent = parent;
+            this.direction = direction;
+        }
+
+        @Override
+        public boolean equals(Object obj)
+        {
+            if (this == obj) return true;
+            if (obj == null || getClass() != obj.getClass()) return false;
+            Node node = (Node) obj;
+
+            // return ix == inx && iy == iny;
+            return x == node.x && y == node.y;
+        }
+
+        @Override
+        public int hashCode()
+        {
+            return Objects.hash(x, y);
+        }
+    }
+
+    //effect helper for pary mode\dark mode
+    public DropShadow effectHelper(boolean darkMode, boolean partyMode){
+        DropShadow shadow = new DropShadow();
+
+        Color color = (darkMode) ? darkColor : lightColor;
+
+        shadow.setOffsetX(5);
+        shadow.setOffsetY(5);
+        shadow.setRadius(10);
+
+        if(partyMode){
+            int max = 255;
+            int min = 0;
+
+            int r= (int)(Math.random() * (max - min + 1)) + min;
+            int g = (int)(Math.random() * (max - min + 1)) + min;
+            int b = (int)(Math.random() * (max - min + 1)) + min;
+
+            color = Color.rgb(r, g, b);
+        }
+
+        shadow.setColor(color);
+
+        return shadow;
     }
 }

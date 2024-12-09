@@ -2,6 +2,8 @@ package com.unhandledexceptions.View;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.geometry.BoundingBox;
+import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -29,6 +31,7 @@ import com.unhandledexceptions.Model.ParameterItem;
 import javafx.scene.control.TitledPane;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
@@ -37,7 +40,8 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.shape.Rectangle;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
 import javafx.util.Pair;
 import javafx.scene.control.ButtonBar;
 
@@ -53,24 +57,26 @@ import javafx.scene.control.ButtonBar;
 public class ClassBox extends StackPane implements PropertyChangeListener
 {
     private String className;
-    final double RANCHOR_VIEW_DISTANCE = 50; // Distance threshold for visibility
     private VBox dragBox;
     BaseController baseController;
-    private Rectangle[] ranchors = new Rectangle[4]; // Relationship anchors
     AnchorPane anchorPane;
     TitledPane methodsPane;
     TitledPane fieldsPane;
+    Circle ranchor;
     private ClassItem classItem; // ClassItem object associated with the ClassBox to add listeners
 
     public ClassBox(AnchorPane anchorPane, BaseController baseController, String classNameIn, double boxWidth,
-     double boxHeight, Rectangle[] ranchors, ClassItem classItem)
+     double boxHeight, ClassItem classItem)
     {
         this.anchorPane = anchorPane;
         this.baseController = baseController;
         this.className = classNameIn;
-        this.ranchors = ranchors;
         this.classItem = classItem;
         this.classItem.addPropertyChangeListener(this);
+        this.ranchor = new Circle(5);
+        this.ranchor.setFill(Color.BLACK);
+        this.ranchor.setVisible(false);
+        anchorPane.getChildren().add(this.ranchor);
         // createClassBox(classNameIn, boxWidth, boxHeight);
     }
 
@@ -94,6 +100,80 @@ public class ClassBox extends StackPane implements PropertyChangeListener
     public AnchorPane getAnchorPane()
     {
         return this.anchorPane;
+    }
+
+    public void mouseMoved(MouseEvent event)
+    {
+        // Get the bounds of the classBox relative to the AnchorPane
+        Bounds classBoxBounds = localToParent(getBoundsInLocal());
+
+        // Check if the mouse is near the classBox
+        double threshold = 25.0; // Distance threshold for "nearby"
+        boolean isNear = classBoxBounds.intersects(event.getX() - threshold, event.getY() -
+         threshold, threshold * 2, threshold * 2);
+
+        if (isNear)
+        {
+            // make sure we arent near another line connecton
+            Bounds rbounds = ranchor.getBoundsInParent();
+            for (Node node : anchorPane.getChildren()) {
+                if (node instanceof RelationLine) {
+                    RelationLine line = (RelationLine) node;
+                    if (line.getSource() == this)
+                    {
+                        Bounds obounds = new BoundingBox(getLayoutX() + line.getSourceOffset().getX(), getLayoutY() +
+                         line.getSourceOffset().getY(), rbounds.getWidth(), rbounds.getHeight());
+
+                        if (obounds.intersects(event.getX() - threshold, event.getY() -
+                         threshold, threshold * 2, threshold * 2))
+                        {
+                            ranchor.setVisible(false);
+                            return;
+                        }
+                    }
+                    else if (line.getDest() == this)
+                    {
+                        Bounds obounds = new BoundingBox(getLayoutX() + line.getDestOffset().getX(), getLayoutY() +
+                         line.getDestOffset().getY(), rbounds.getWidth(), rbounds.getHeight());
+
+                        if (obounds.intersects(event.getX() - threshold, event.getY() -
+                         threshold, threshold * 2, threshold * 2))
+                        {
+                            ranchor.setVisible(false);
+                            return;
+                        }
+                    }
+                }
+            }
+
+            // Calculate the closest position for the ranchor on the edge of the classBox
+            double closestX = Math.min(Math.max(event.getX(), classBoxBounds.getMinX()), classBoxBounds.getMaxX());
+            double closestY = Math.min(Math.max(event.getY(), classBoxBounds.getMinY()), classBoxBounds.getMaxY());
+
+            Bounds modBounds = new BoundingBox(classBoxBounds.getMinX() - 10, classBoxBounds.getMinY() - 10,
+                classBoxBounds.getWidth() + 10, classBoxBounds.getHeight() + 10);
+
+            // Snap the ranchor to the nearest edge
+            if (event.getX() < classBoxBounds.getMinX()) {
+                closestX = modBounds.getMinX(); // Left edge
+            } else if (event.getX() > classBoxBounds.getMaxX()) {
+                closestX = modBounds.getMaxX(); // Right edge
+            }
+            else if (event.getY() < classBoxBounds.getMinY()) {
+                closestY = modBounds.getMinY(); // Top edge
+            } else if (event.getY() > classBoxBounds.getMaxY()) {
+                closestY = modBounds.getMaxY(); // Bottom edge
+            }
+    
+            // Set the ranchor's position
+            ranchor.setCenterX(closestX);
+            ranchor.setCenterY(closestY);
+            ranchor.setVisible(true);
+        } 
+        else 
+        {
+            ranchor.setVisible(false); // Hide the ranchor if the mouse is not near
+        }
     }
 
     public void Update()
@@ -166,7 +246,7 @@ public class ClassBox extends StackPane implements PropertyChangeListener
          for (Node node : anchorPane.getChildren()) {
              if(node instanceof RelationLine) {
                  RelationLine line = (RelationLine) node;
-                 if (line.getC1().equals(this) || line.getC2().equals(this)) {
+                 if (line.getSource().equals(this) || line.getDest().equals(this)) {
                      nodesToRemove.add(line);
                  }
              }
@@ -180,12 +260,6 @@ public class ClassBox extends StackPane implements PropertyChangeListener
          AnchorPane anchorPane = this.getAnchorPane();
          anchorPane.getChildren().remove(this);
     }
-
-
-    public void setDragBox(VBox dragBox){
-        this.dragBox = dragBox;
-    }
-
 
     private void NameClicked(String oldName, Label className) {
 
@@ -238,37 +312,6 @@ public class ClassBox extends StackPane implements PropertyChangeListener
         return hbox;
     }
 
-    /* Still needed?
-    private void FieldClicked(String oldName, Label className){
-        TextInputDialog input = new TextInputDialog();
-        input.setTitle("Rename Field");
-        input.setHeaderText("Enter the field name");
-        input.setContentText("Field name: ");
-
-        Button okButton = (Button) input.getDialogPane().lookupButton(ButtonType.OK);
-        okButton.setDisable(true);
-
-        input.getEditor().textProperty().addListener((observable, oldValue, newValue) -> {
-            okButton.setDisable(newValue.trim().isEmpty());
-        });
-
-        Optional<String> result = input.showAndWait();
-
-        if (result.isPresent()) {
-            String newName = result.get();
-            oldName = oldName.trim().toLowerCase();
-            newName = newName.trim().toLowerCase();
-    
-            String modelUpdated = baseController.RenameFieldListener(className.getText(), oldName, newName);
-            // parse result for either successful rename or failure
-            if (!(modelUpdated == "good"))
-            {
-                showError(modelUpdated);
-            }
-        }
-    }
-     */
-
     public String getClassName()
     {
         return this.className;
@@ -283,22 +326,13 @@ public class ClassBox extends StackPane implements PropertyChangeListener
         return this.dragBox;
     }
 
-    public Rectangle getRanchor(int i)
-    {
-        return this.ranchors[i];
+    public void setDragBox(VBox dragBox){
+        this.dragBox = dragBox;
     }
 
-    public Rectangle[] getRanchors()
+    public Circle getRanchor()
     {
-        return this.ranchors;
-    }
-
-    public Rectangle getClickedRanchor(MouseEvent event)
-    {
-        for (Rectangle ranchor : ranchors)
-            if (ranchor.contains(event.getX(), event.getY()))
-                return ranchor;
-        return null;
+        return this.ranchor;
     }
 
     /* method to create a delete button, sets the action to call
@@ -440,6 +474,8 @@ public class ClassBox extends StackPane implements PropertyChangeListener
         methodsPane.setExpanded(false);
         methodsPane.setMaxHeight(250);
         methodsPane.getStyleClass().add("titled-pane");
+        // Don't know why this works but it does.
+        final String[] methodName = new String[1];
 
         // List of each methods TitledPane that will hold the individual method panes
         ListView<TitledPane> methodsList = new ListView<>();
@@ -451,15 +487,52 @@ public class ClassBox extends StackPane implements PropertyChangeListener
         // when pressed, open dialog for user input
         addMethodsButton.setOnAction(e -> {
             Pair<String, String> result = createInputDialogs("Method");
+            // input handling for blank or null values, creates an alert and exits the method
+            if (result.getKey() == null || result.getValue() == null || result.getKey().isEmpty() || result.getValue().isEmpty()) {
+                Alert alert = invalidInputWarning();
+                alert.showAndWait();
+                return;
+            }
             if(result != null){
                 String type = result.getKey().toLowerCase();
                 String name = result.getValue().toLowerCase();
+                methodName[0] = name;
                 //String typeName = type + " " + name;    
                 String updateModel = baseController.AddMethodListener(className, name, type);   
                 if (!(updateModel == "good"))
                 {
                     showError(updateModel);
                 } 
+            }
+        });
+
+        // Delete a method
+        methodsList.setOnKeyPressed(event -> {
+            if(event.getCode() == KeyCode.DELETE){
+                TitledPane selectedItem = methodsList.getSelectionModel().getSelectedItem();
+                if (selectedItem != null) {
+                    Alert warning = deleteWarning("Method");
+                    // get confirmation for delete
+                    Optional<ButtonType> result = warning.showAndWait();
+
+                    if (result.isPresent() && result.get() == ButtonType.OK) {
+                        // user accepted, method name is the first element in the name array.
+                        // Get the class name
+                        String className = getClassBoxName();
+                        // call controller delete passing this class name and the selected method name.
+                        String modelUpdated = baseController.RemoveMethodListener(className, methodName[0]);
+                        // parse result for either successful rename or failure
+                        if (!(modelUpdated == "good"))
+                        {
+                            System.out.println(modelUpdated);
+                            showError(modelUpdated);
+                        }
+
+                    } else {
+                        // user denied, cancel action
+                        return;
+                    }
+                }
             }
         });
         
@@ -537,7 +610,12 @@ public class ClassBox extends StackPane implements PropertyChangeListener
         // when pressed, open dialog for user input
         addParamsButton.setOnAction(e -> {
             Pair<String, String> userInput = createInputDialogs("Parameters");
-
+            // input handling for blank or null values, creates an alert and exits the method
+            if (userInput.getKey() == null || userInput.getValue() == null || userInput.getKey().isEmpty() || userInput.getValue().isEmpty()) {
+                Alert alert = invalidInputWarning();
+                alert.showAndWait();
+                return;
+            }
             if(userInput != null){
                 String type = (userInput.getKey() == null) ? null : userInput.getKey().toLowerCase();
                 String name = (userInput.getValue() == null) ? null : userInput.getValue().toLowerCase();
@@ -547,9 +625,7 @@ public class ClassBox extends StackPane implements PropertyChangeListener
                 {
                     showError(result);
                 }
-            } else {    //prints to terminal that user canceled dialog box for adding field
-                System.out.println("Dialog was canceled");
-            }
+            } 
 
         });
 
@@ -577,6 +653,38 @@ public class ClassBox extends StackPane implements PropertyChangeListener
                         }
                     }
                 }
+            }
+        });
+
+        methodParamList.setOnKeyPressed(event -> { // Detect 'Del' Key press
+            if(event.getCode() == KeyCode.DELETE){
+                String selectedItem = methodParamList.getSelectionModel().getSelectedItem();
+                if (selectedItem != null) {
+                    Alert warning = deleteWarning("Parameter");
+                    // get confirmation for delete
+                    Optional<ButtonType> result = warning.showAndWait();
+
+                    if (result.isPresent() && result.get() == ButtonType.OK) {
+                        // user accepted, get the method name
+                        String className = getClassBoxName(); 
+                        String[] parseParam = selectedItem.split(" ");
+                        String paramType = parseParam[0];
+                        String paramName = parseParam[1];
+                    
+                        // call controller delete passing this class name and the method we're in, and the selected parameter name and type.
+                        String modelUpdated = baseController.RemoveParameterListener(className, methodName, paramName, paramType);
+                        // parse result for either successful rename or failure
+                        if (!(modelUpdated == "good"))
+                        {
+                            System.out.println(modelUpdated);
+                            showError(modelUpdated);
+                        }
+
+                    } else {
+                        // user denied, cancel action
+                        return;
+                    }
+            }
             }
         });
     
@@ -691,6 +799,7 @@ public class ClassBox extends StackPane implements PropertyChangeListener
      * <ul>
      *   <li>Add new fields using a "+" button. Prompts the user to input a type and name.</li>
      *   <li>Double-click an existing field to rename it via an input dialog.</li>
+     *   <li>Delete selected list item with Delete Key input, confirmed via comfirmation box.</li>
      *   <li>Updates the model using the {@code baseController.AddFieldListener()} method.</li>
      *   <li>Displays errors if invalid input is provided or if the addition/update fails.</li>
      * </ul>
@@ -716,7 +825,6 @@ public class ClassBox extends StackPane implements PropertyChangeListener
         addFieldButton.getStyleClass().add("transparent-button");
         addFieldButton.setOnAction(e -> {
             Pair<String, String> userInput = createInputDialogs("Field");
-            
             if (userInput != null) {
                 String type = (userInput.getKey() == null) ? null : userInput.getKey().toLowerCase();
                 String name = (userInput.getValue() == null) ? null : userInput.getValue().toLowerCase();
@@ -738,31 +846,64 @@ public class ClassBox extends StackPane implements PropertyChangeListener
         
         // Enable double-click renaming for items in the ListView
         fieldsList.setOnMouseClicked(event -> {
-            if (event.getClickCount() == 2) { // Detect double-click
-                String selectedItem = fieldsList.getSelectionModel().getSelectedItem();
-                if (selectedItem != null) {
-                    // Split the selected item to get old name and type
-                    String[] parts = selectedItem.split(" "); // Assuming the format is "name - type"
-                    if (parts.length == 2) {
-                        String oldFieldType = parts[0].trim();
-                        String oldFieldName = parts[1].trim();
+            if (event.getClickCount() == 2) { // Detect 'Del' Key press
+                    String selectedItem = fieldsList.getSelectionModel().getSelectedItem();
+                    if (selectedItem != null) {
+                        // Split the selected item to get old name and type
+                        String[] parts = selectedItem.split(" "); // Assuming the format is "name - type"
+                        if (parts.length == 2) {
+                            String oldFieldType = parts[0].trim();
+                            String oldFieldName = parts[1].trim();
 
-                        // Create input dialog to get new name and type
-                        Pair<String, String> userInput = createInputDialogs("Field");
+                            // Create input dialog to get new name and type
+                            Pair<String, String> userInput = createInputDialogs("Field");
 
-                        if (userInput != null) {
-                            String newFieldName = (userInput.getValue() == null) ? oldFieldName : userInput.getValue();
-                            String newFieldType = (userInput.getKey() == null) ? oldFieldType : userInput.getKey();
+                            if (userInput != null) {
+                                String newFieldName = (userInput.getValue() == null) ? oldFieldName : userInput.getValue();
+                                String newFieldType = (userInput.getKey() == null) ? oldFieldType : userInput.getKey();
 
-                            // Call UpdateField to update the model
-                            UpdateField(oldFieldName, newFieldName, newFieldType);
-                        } else {
-                            System.out.println("Dialog was canceled");
+                                // Call UpdateField to update the model
+                                UpdateField(oldFieldName, newFieldName, newFieldType);
+                            } else {
+                                System.out.println("Dialog was canceled");
+                            }
                         }
                     }
-                }
+                } 
+            });
+            
+        fieldsList.setOnKeyPressed(event -> { // Detect triple-click
+            if(event.getCode() == KeyCode.DELETE){
+                String selectedItem = fieldsList.getSelectionModel().getSelectedItem();
+                if (selectedItem != null) {
+                    Alert warning = deleteWarning("Field");
+
+                    // get confirmation for delete
+                    Optional<ButtonType> result = warning.showAndWait();
+
+                    if (result.isPresent() && result.get() == ButtonType.OK) {
+                        // user accepted, get the field name
+                        String className = getClassBoxName(); 
+                        String[] parseField = selectedItem.split(" ");
+                        String fieldName = parseField[1];
+                    
+                        // call controller delete passing this class name and fieldName
+                        String modelUpdated = baseController.RemoveFieldListener(className, fieldName);
+                        // parse result for either successful rename or failure
+                        if (!(modelUpdated == "good"))
+                        {
+                            System.out.println(modelUpdated);
+                            showError(modelUpdated);
+                        }
+
+                    } else {
+                        // user denied, cancel action
+                        return;
+                    }
+            }
             }
         });
+        
     
         // Create an HBox to hold the fields label and the add button
         HBox fieldsTitleBox = new HBox(160); // Add spacing between label and button
@@ -900,7 +1041,7 @@ public class ClassBox extends StackPane implements PropertyChangeListener
      */
     public Pair<String, String> createInputDialogs(String promptName) {
         Dialog<Pair<String, String>> dialog = new Dialog<>();
-        dialog.setTitle("Add: " + promptName);
+        dialog.setTitle(promptName);
         dialog.setHeaderText("Enter the " + promptName.toLowerCase() + " and name.");
 
         // Set the button types
@@ -974,18 +1115,51 @@ public class ClassBox extends StackPane implements PropertyChangeListener
         });
     }
 
-    // method to display warning when deleting a class box
+  /**
+ * Creates and configures a confirmation alert to warn the user about class deletion.
+ * 
+ * <p>This method sets up an {@link javafx.scene.control.Alert} of type 
+ * {@link javafx.scene.control.Alert.AlertType#CONFIRMATION} with a warning title and 
+ * header text. The alert is intended to confirm the user's intention before proceeding 
+ * with a delete action.</p>
+ *
+ * @return an {@link javafx.scene.control.Alert} configured with a warning message.
+ */
     private Alert deleteClassWarning() {
         // create an alert box
         Alert alert = new Alert(AlertType.CONFIRMATION);
         // set the title and header as a warning
         alert.setTitle("Warning");
         alert.setHeaderText("Are you sure you want to delete this class?");
+
+        // return the alert to be instantiated by delete action
+        return alert;
+    }
+
+    private Alert invalidInputWarning() {
+        // create alert box
+        Alert alert = new Alert(AlertType.ERROR);
+
+        // set alert info to display
+        alert.setTitle("Invalid inputs");
+        alert.setHeaderText("Type or name should not be blank or null");
+
+        return alert;
+    }
+       
+    // method to display warning when deleting a class box
+    private Alert deleteWarning(String type) {
+        // create an alert box
+        Alert alert = new Alert(AlertType.CONFIRMATION);
+        // set the title and header as a warning
+        alert.setTitle("Warning");
+        alert.setHeaderText("Are you sure you want to delete this " + type + "?");
         //alert.setContentText("This action can not be undone");
 
         // return the alert to be instantiated by delete action
         return alert;
     }
+
 
     // helper method to retrieve the class name from the label
     private String getClassBoxName() {

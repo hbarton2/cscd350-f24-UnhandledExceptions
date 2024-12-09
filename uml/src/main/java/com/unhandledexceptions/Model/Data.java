@@ -161,11 +161,18 @@ public class Data
 	*/
 	public String Load(String filepath)
 	{
-		HashMap<String, Object> items =  new HashMap<>();
+		if (filepath == null || filepath.isEmpty()) {
+			return "invalid filepath";
+		}
+		File file = new File(filepath);
+		if (!file.exists()) {
+			return "file does not exist";
+		}
+		HashMap<String, Object> items = new HashMap<>();
 		try
 		{//try to read the combined hashmap from the file
 			ObjectMapper objectMapper = new ObjectMapper();
-			items = objectMapper.readValue(new File(filepath),
+			items = objectMapper.readValue(file,
 			 new TypeReference<HashMap<String, Object>>() {});
 		} catch (JsonParseException e) {
         	e.printStackTrace();

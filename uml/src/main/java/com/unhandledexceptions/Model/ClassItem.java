@@ -209,7 +209,7 @@ public class ClassItem implements PropertyChangeListener{
         }
 
         if (newClassItemName == null || oldClassItemName == null) {
-            throw new IllegalArgumentException("classItemNames cannot be null");
+            throw new NullPointerException("classItemNames cannot be null");
         }
 
         // checks that the old name to be changed exists, and that the name is not a
@@ -495,7 +495,7 @@ public class ClassItem implements PropertyChangeListener{
             return "Field name or type cannot be null or blank";
         }
 
-        fieldName = fieldName.toLowerCase().trim();
+        fieldName = fieldName.toLowerCase().trim().replace(" ", "");
         // types can be uppercase for example: String name
         // type = type.toLowerCase().trim();
         type = type.trim();
@@ -528,7 +528,7 @@ public class ClassItem implements PropertyChangeListener{
 
         // check if field exists
         if (!classItem.getFieldItems().containsKey(fieldName)) {
-            return "good";
+            return "Field " + fieldName + " does not exist.";
         }
 
         // remove field from map
@@ -536,7 +536,7 @@ public class ClassItem implements PropertyChangeListener{
         // fire support for removed field item
         classItem.support.firePropertyChange("field", classItem, fieldName);
 
-        return "Field name: " + fieldName + " successfully removed.";
+        return "good";
     }
 
     public static String renameField(ClassItem classItem, String oldName, String newName) {

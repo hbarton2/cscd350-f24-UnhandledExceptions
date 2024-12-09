@@ -37,6 +37,8 @@ public class ClassBoxTests {
         FxToolkit.registerPrimaryStage();
         anchorPane = new AnchorPane();
         baseController = new BaseController(new Data());
+        baseController.AddClassListener(className);
+        classItem = baseController.getData().getClassItems().get(className.toLowerCase().trim());
         classBoxBuilder = new ClassBoxBasicBuilder(anchorPane, baseController, className, boxWidth, boxHeight, classItem);
     }
 
@@ -88,5 +90,4 @@ public class ClassBoxTests {
         VBox contentBox = (VBox) classBox.lookup("#contentBox");
         assertEquals(3, contentBox.getChildren().size()); // 1 for class name label + 1 for field pane + 1 for method pane
     }
-
 }

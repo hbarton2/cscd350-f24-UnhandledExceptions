@@ -152,7 +152,7 @@ public class MethodItem implements UMLObject {
 			methodItem.getParameters().remove(oldName);
 
 			// create new parameter object
-			ParameterItem newParam = new ParameterItem(newType, newName);
+			ParameterItem newParam = new ParameterItem(newName, newType);
 
 			// add new parameter back to map
 			methodItem.getParameters().put(newName, newParam);

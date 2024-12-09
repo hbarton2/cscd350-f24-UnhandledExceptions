@@ -32,23 +32,23 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 -->
 
+<?import javafx.scene.control.Button?>
 <?import javafx.scene.control.CustomMenuItem?>
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.SeparatorMenuItem?>
-<?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.StackPane?>
-<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.ToggleButton?>
 <?import javafx.scene.control.ToolBar?>
-<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
-<?import javafx.scene.control.Separator?>
-<?import javafx.scene.control.Tooltip?>
-<?import javafx.scene.control.ToggleButton?>
-
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
 
 <VBox fx:id="rootVBox" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1280.0" stylesheets="@/css/classBoxStyle.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.unhandledexceptions.Controller.mainDiagramController">
   <children>
@@ -61,7 +61,7 @@
             <MenuItem fx:id="openMenu" mnemonicParsing="false" onAction="#openMenuClick" text="Open…" />
             <Menu fx:id="openRecentMenu" mnemonicParsing="false" onShowing="#openRecentMenuShowing" text="Open Recent">
                      <items>
-                        <CustomMenuItem mnemonicParsing="false" text="Unspecified Action" />
+                        <CustomMenuItem id="greatJobJavaFX" mnemonicParsing="false" text="Unspecified Action" />
                      </items></Menu>
             <SeparatorMenuItem mnemonicParsing="false" />
             <MenuItem fx:id="saveMenu" mnemonicParsing="false" onAction="#saveMenuClick" text="Save" />
@@ -73,18 +73,18 @@
         <Menu fx:id="helpMenu" mnemonicParsing="false" text="Help">
           <items>
             <MenuItem mnemonicParsing="false" onAction="#resetZoom" text="Reset Zoom" />
-            <MenuItem mnemonicParsing="false" text="About" />
+            <MenuItem mnemonicParsing="false" onAction="#showKeyboardShortcuts" text="Keyboard Shortcuts" />
           </items>
         </Menu>
       </menus>
     </MenuBar>
     <ToolBar fx:id="toolBar" VBox.vgrow="NEVER">
         <items>
-          <Button fx:id="addClassButton" text="Add Class" onAction="#onAddClassClicked" styleClass="transparent-button-toolbar" />
+          <Button fx:id="addClassButton" onAction="#onAddClassClicked" styleClass="transparent-button-toolbar" text="Add Class" />
           <Separator />
-          <Button text="" onAction="#onUndoClicked" styleClass="transparent-button-toolbar">
+          <Button onAction="#onUndoClicked" styleClass="transparent-button-toolbar" text="">
           <graphic>
-              <ImageView fx:id="undoImageView" fitWidth="12" fitHeight="12">
+              <ImageView fx:id="undoImageView" fitHeight="12" fitWidth="12">
                 <image>
                   <Image url="@/images/undo-arrow.png" />
                 </image>
@@ -94,9 +94,9 @@
               <Tooltip text="Undo" />
             </tooltip>
           </Button>
-          <Button text="" onAction="#onRedoClicked" styleClass="transparent-button-toolbar">
+          <Button onAction="#onRedoClicked" styleClass="transparent-button-toolbar" text="">
             <graphic>
-              <ImageView fx:id="redoImageView" fitWidth="12" fitHeight="12">
+              <ImageView fx:id="redoImageView" fitHeight="12" fitWidth="12">
                 <image>
                   <Image url="@/images/redo-arrow.png" />
                 </image>
@@ -107,33 +107,46 @@
             </tooltip>
           </Button>
           <Separator />
-          <Button text="" onAction="#onDarkModeClicked" styleClass="transparent-button-toolbar" >
+          <Button onAction="#onDarkModeClicked" styleClass="transparent-button-toolbar" text="">
             <graphic>
-              <ImageView fx:id="darkModeImageView" fitWidth="12" fitHeight="12">
+              <ImageView fx:id="darkModeImageView" fitHeight="12" fitWidth="12">
                 <image>
                   <Image url="@/images/dark-mode-toggle.png" />
                 </image>
               </ImageView>
             </graphic>
           </Button>
-          <Button text="" onAction="#onLightModeClicked" styleClass="transparent-button-toolbar" >
+          <Button onAction="#onLightModeClicked" styleClass="transparent-button-toolbar" text="">
             <graphic>
-              <ImageView fx:id="lightModeImageView" fitWidth="12" fitHeight="12">
+              <ImageView fx:id="lightModeImageView" fitHeight="12" fitWidth="12">
                 <image>
                   <Image url="@/images/light-mode-toggle.png" />
                 </image>
               </ImageView>
             </graphic>
           </Button>
-          <ToggleButton text="" onAction="#onPartyModeClicked" styleClass="transparent-button-toolbar" >
+          <ToggleButton onAction="#onPartyModeClicked" styleClass="transparent-button-toolbar" text="">
             <graphic>
-              <ImageView fx:id="partyModeImageView" fitWidth="12" fitHeight="12">
+              <ImageView fx:id="partyModeImageView" fitHeight="12" fitWidth="12">
                 <image>
                   <Image url="@/images/party-mode-toggle.png" />
                 </image>
               </ImageView>
             </graphic>
           </ToggleButton>
+
+          <HBox HBox.hgrow="ALWAYS" /> <!-- Anything after this region is pushed to the right of the toolbar -->
+          <!-- <Region Hbox.hgrow="ALWAYS" /> Anything after this region is pushed to the right of the toolbar -->
+
+          <Button onAction="#onTakeScreenshot" styleClass="transparent-button-toolbar" text="">
+            <graphic>
+              <ImageView fx:id="screenshotImageView" fitHeight="12" fitWidth="12">
+                <image>
+                  <Image url="@/images/snapshot-icon.png" />
+                </image>
+              </ImageView>
+            </graphic>
+          </Button>
         </items>
       </ToolBar>
       <StackPane fx:id="bgpane" prefHeight="150.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
