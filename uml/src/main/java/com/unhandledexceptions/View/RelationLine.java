@@ -655,11 +655,11 @@ public class RelationLine extends Polyline
         }
 
         //testing
-        Rectangle r = new Rectangle((x * CELL_SIZE), (y * CELL_SIZE), CELL_SIZE, CELL_SIZE);
-        r.setStroke(Color.RED);
-        r.setFill(Color.TRANSPARENT);
-        testRects.add(r);
-        anchorPane.getChildren().add(r);
+        // Rectangle r = new Rectangle((x * CELL_SIZE), (y * CELL_SIZE), CELL_SIZE, CELL_SIZE);
+        // r.setStroke(Color.RED);
+        // r.setFill(Color.TRANSPARENT);
+        // testRects.add(r);
+        // anchorPane.getChildren().add(r);
 
         return node;
     }
