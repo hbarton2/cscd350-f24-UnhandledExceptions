@@ -5,6 +5,9 @@ This is a Java-based UML (Unified Modeling Language) editor that supports both a
 
 ### Note: Currently does not work on Linux operating systems.
 
+![image](https://github.com/user-attachments/assets/6ce4405d-4e13-4124-8473-d7b29f5e3be0)
+
+
 ### Access/view the Code-Cov report
 In order to generate the CodeCov report to view code coverage, the following is needed on your system:
    - [Maven 3+](https://maven.apache.org/)
