@@ -27,6 +27,6 @@ In order to generate the CodeCov report to view code coverage, the following is 
 
 ### Downloading and running the program
 
-1. Download uml.jar found in the root directory of this repository.
-2. Once downloaded, go to the directory containing uml.jar in your terminal
-3. run the command `java -jar uml.jar` to run the program.
+1. Download uml-1.0-SNAPSHOT-jar-with-dependencies.jar found in the root directory of this repository.
+2. Once downloaded, go to the directory containing uml-1.0-SNAPSHOT-jar-with-dependencies.jar in your terminal
+3. run the command `java -jar uml-1.0-SNAPSHOT-jar-with-dependencies.jar` to run the program.
