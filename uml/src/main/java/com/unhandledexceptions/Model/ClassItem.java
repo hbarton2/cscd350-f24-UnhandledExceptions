@@ -96,17 +96,17 @@ public class ClassItem implements PropertyChangeListener{
             finished = true;//ready to end the loop unless a box is too close to this one
             double x1 = Math.random() * 900;//boundaries of the GUI box creation
             double y1 = Math.random() * 565;
-            if(classItems.size() < 18){//hard cap on how many classes can be displayed. can be reoved once scrolling thorugh is working
-                for (HashMap.Entry<String, ClassItem> entry : classItems.entrySet()) {//for loop iterates through list of classes to check distance
-                    double x2 = entry.getValue().getX();
-                    double y2 = entry.getValue().getY();
-                    double distance = Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
-                    if(distance < 150){//if the distance is less than 150 pixels, the loop will start over and try again
-                        finished = false;
-                        break;
-                    }
+            //if(classItems.size() < 18){//hard cap on how many classes can be displayed. can be reoved once scrolling thorugh is working
+            for (HashMap.Entry<String, ClassItem> entry : classItems.entrySet()) {//for loop iterates through list of classes to check distance
+                double x2 = entry.getValue().getX();
+                double y2 = entry.getValue().getY();
+                double distance = Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
+                if(distance < 150 && classItems.size() < 18){//if the distance is less than 150 pixels, the loop will start over and try again
+                    finished = false;
+                    break;
                 }
             }
+            //}
             classItem.setX(x1);//got throught the loop and found not too close to other classes, set the x and y values
             classItem.setY(y1);
         }
