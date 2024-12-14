@@ -101,7 +101,7 @@ public class ClassItem implements PropertyChangeListener{
                 double x2 = entry.getValue().getX();
                 double y2 = entry.getValue().getY();
                 double distance = Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
-                if(distance < 150){//if the distance is less than 150 pixels, the loop will start over and try again
+                if(distance < 150 && classItems.size() < 18){//if the distance is less than 150 pixels, the loop will start over and try again
                     finished = false;
                     break;
                 }
